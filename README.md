@@ -30,6 +30,6 @@ This project is divided into two main phases:
 ## 📂 Repository Structure
 ....Section to be updated during development.
 
-📄 Documentation
+## 📄 Documentation
 ....Section to be updated during development.
 
