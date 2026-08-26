@@ -1,0 +1,11 @@
+[project]
+name = "loss-aware-synthetic-data-generation"
+version = "0.1.0"
+description = "methodologies for measuring and mitigating the utility loss introduced during synthetic data generation through loss-aware optimization."
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "numpy>=2.5.2",
+    "pandas>=3.0.5",
+    "torch>=2.13.0",
+]
