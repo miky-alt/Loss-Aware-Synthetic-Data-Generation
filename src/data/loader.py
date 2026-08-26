@@ -1,0 +1,138 @@
+"""
+Data loaders for all datasets used in the project.
+
+Each loader returns a unified DatasetBundle with:
+- real: pd.DataFrame (preprocessed, ready for evaluation)
+- target_col: str (column name to use for downstream classification)
+- name: str (human-readable dataset name)
+- domain: str (e.g. "medical", "socioeconomic")
+"""
+
+from dataclasses import dataclass
+
+import pandas as pd
+from ucimlrepo import fetch_ucirepo
+
+
+@dataclass
+class DatasetBundle:
+    real: pd.DataFrame
+    target_col: str
+    name: str
+    domain: str
+
+
+def _encode_categoricals(df: pd.DataFrame) -> pd.DataFrame:
+    """Label-encode all object/category columns in place."""
+    for col in df.select_dtypes(include=["object", "category"]).columns:
+        df[col] = df[col].astype("category").cat.codes
+    return df
+
+
+def load_uci_adult() -> DatasetBundle:
+    """
+    UCI Adult (Census Income) dataset.
+    ~48k rows, 14 features.
+    Target: income >50K (binary).
+    Domain: socioeconomic.
+    """
+    dataset = fetch_ucirepo(id=2)
+    X = dataset.data.features.copy()
+    y = dataset.data.targets.copy()
+
+    df = pd.concat([X, y], axis=1)
+    df.columns = [c.strip() for c in df.columns]
+
+    # Normalize target to binary 0/1
+    target_col = "income"
+    df[target_col] = df[target_col].astype(str).str.strip().str.replace(".", "", regex=False)
+    df[target_col] = (df[target_col].str.contains(">50K")).astype(int)
+
+    df = df.dropna().reset_index(drop=True)
+    df = _encode_categoricals(df)
+
+    return DatasetBundle(
+        real=df,
+        target_col=target_col,
+        name="UCI Adult (Census Income)",
+        domain="socioeconomic",
+    )
+
+
+def load_diabetes_130() -> DatasetBundle:
+    """
+    Diabetes 130-US Hospitals dataset.
+    ~100k rows, 50 features.
+    Target: readmitted within 30 days (binary).
+    Domain: medical.
+    """
+    dataset = fetch_ucirepo(id=296)
+    X = dataset.data.features.copy()
+    y = dataset.data.targets.copy()
+
+    df = pd.concat([X, y], axis=1)
+    df.columns = [c.strip() for c in df.columns]
+
+    # Normalize target: "<30" → 1 (readmitted early), else → 0
+    target_col = "readmitted"
+    df[target_col] = (df[target_col].astype(str).str.strip() == "<30").astype(int)
+
+    # Drop columns with too many missing values
+    df = df.replace("?", pd.NA)
+    missing_threshold = 0.4
+    df = df.dropna(thresh=int(len(df) * (1 - missing_threshold)), axis=1)
+    df = df.dropna().reset_index(drop=True)
+    df = _encode_categoricals(df)
+
+    return DatasetBundle(
+        real=df,
+        target_col=target_col,
+        name="Diabetes 130-US Hospitals",
+        domain="medical",
+    )
+
+
+def load_heart_disease() -> DatasetBundle:
+    """
+    Heart Disease (Cleveland) dataset.
+    ~300 rows, 13 features.
+    Target: presence of heart disease (binary).
+    Domain: medical.
+    """
+    dataset = fetch_ucirepo(id=45)
+    X = dataset.data.features.copy()
+    y = dataset.data.targets.copy()
+
+    df = pd.concat([X, y], axis=1)
+    df.columns = [c.strip() for c in df.columns]
+
+    # Normalize target: 0 → no disease, 1-4 → disease present
+    target_col = "num"
+    df[target_col] = (df[target_col] > 0).astype(int)
+
+    df = df.dropna().reset_index(drop=True)
+    df = _encode_categoricals(df)
+
+    return DatasetBundle(
+        real=df,
+        target_col=target_col,
+        name="Heart Disease (Cleveland)",
+        domain="medical",
+    )
+
+
+LOADERS = {
+    "adult": load_uci_adult,
+    "diabetes": load_diabetes_130,
+    "heart": load_heart_disease,
+}
+
+
+def load_dataset(name: str) -> DatasetBundle:
+    """
+    Load a dataset by short name.
+    Available: 'adult', 'diabetes', 'heart'
+    """
+    if name not in LOADERS:
+        raise ValueError(f"Unknown dataset '{name}'. Choose from: {list(LOADERS.keys())}")
+    return LOADERS[name]()
