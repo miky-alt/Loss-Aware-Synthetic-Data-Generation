@@ -22,7 +22,22 @@ This project is divided into two main phases:
 ---
 
 ## ⚙️ Setup and Installation
-....Section to be updated during development.
+
+The project is implemented in Python using [uv](https://uv.readthedocs.io/en/latest/) for environment management. To set up the project, follow these steps:
+
+1. **Clone the Repository:**
+   ```bash
+   git clone https://github.com/miky-alt/Loss-Aware-Synthetic-Data-Generation.git
+   cd Loss-Aware-Synthetic-Data-Generation
+    ```
+
+2. Install uv if you haven't already following the instructions on the [official uv documentation](https://uv.readthedocs.io/en/latest/installation.html).
+3. **Initialize uv**:
+   ```bash
+   uv sync
+   ```
+
+
 
 ## 🚀 Usage
 ....Section to be updated during development.
