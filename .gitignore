@@ -312,3 +312,9 @@ TSWLatexianTemp*
 #*Notes.bib
 
 .DS_Store
+
+# private working notes, not meant to be shared publicly
+theory/
+
+### workflow files
+./theory/
