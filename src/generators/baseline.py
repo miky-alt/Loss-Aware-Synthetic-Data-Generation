@@ -1,13 +1,9 @@
 """Baseline synthetic data generators, wrapping the SDV library's
 single-table synthesizers behind the project's `SyntheticGenerator` interface.
-
-These are plug-and-play baselines (Week 1 deliverable). The loss-aware
-variants that add penalty terms to the training objective will subclass
-or replace these later, without changing the fit/sample contract.
 """
 
 import pandas as pd
-from sdv.metadata import SingleTableMetadata
+from sdv.metadata import Metadata
 from sdv.single_table import CTGANSynthesizer, TVAESynthesizer
 
 from src.generators.base import SyntheticGenerator
@@ -28,8 +24,7 @@ class _SDVSynthesizerGenerator(SyntheticGenerator):
         self._synthesizer = None
 
     def fit(self, real_data: pd.DataFrame) -> "SyntheticGenerator":
-        metadata = SingleTableMetadata()
-        metadata.detect_from_dataframe(real_data)
+        metadata = Metadata.detect_from_dataframe(real_data)
         self._synthesizer = self._synthesizer_cls(metadata, **self._synthesizer_kwargs)
         self._synthesizer.fit(real_data)
         return self

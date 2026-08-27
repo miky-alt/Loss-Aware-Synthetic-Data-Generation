@@ -12,3 +12,15 @@ dependencies = [
     "torch>=2.13.0",
     "sdv>=1.17.0",
 ]
+
+[dependency-groups]
+dev = [
+    "pytest>=8.0",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["."]
+markers = [
+    "slow: exercises real model training (e.g. CTGAN/TVAE fit); skip with -m 'not slow'",
+]
+
