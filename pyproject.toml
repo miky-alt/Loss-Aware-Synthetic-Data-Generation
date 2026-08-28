@@ -11,20 +11,19 @@ dependencies = [
     "scipy>=1.18.1",
     "torch>=2.13.0",
     "sdv>=1.17.0",
+    "ucimlrepo>=0.0.7",
 ]
 
 [dependency-groups]
 dev = [
     "pytest>=8.0",
+    "hatchling>=1.32.0",
 ]
 
 [tool.pytest.ini_options]
 pythonpath = ["."]
 markers = [
     "slow: exercises real model training (e.g. CTGAN/TVAE fit); skip with -m 'not slow'",
-]
-
-    "ucimlrepo>=0.0.7",
 ]
 
 [tool.uv]
@@ -34,13 +33,8 @@ package = true
 requires = ["hatchling"]
 build-backend = "hatchling.build"
 
-[dependency-groups]
-dev = [
-    "hatchling>=1.32.0",
-]
-
 [tool.hatch.build.targets.wheel]
-packages = ["src/data", "src/evaluation"]
+packages = ["src/data", "src/evaluation", "src/generators"]
 
 [tool.hatch.build.targets.sdist]
 include = ["src/**/*.py", "README.md", "pyproject.toml"]
