@@ -28,5 +28,6 @@ dev = [
 [tool.hatch.build.targets.wheel]
 packages = ["src/data", "src/evaluation"]
 
-[tool.hatch.build]
-sources = {"src" = ""}
+[tool.hatch.build.targets.sdist]
+include = ["src/**/*.py", "README.md", "pyproject.toml"]
+exclude = [".venv", ".git", "docs", "dist"]
