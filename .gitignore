@@ -312,3 +312,13 @@ TSWLatexianTemp*
 #*Notes.bib
 
 .DS_Store
+
+# private working notes, not meant to be shared publicly
+theory/
+
+# Python packaging artifacts (e.g. from `uv build` / setuptools egg-info)
+build/
+dist/
+*.egg-info/
+__pycache__/
+.pytest_cache/

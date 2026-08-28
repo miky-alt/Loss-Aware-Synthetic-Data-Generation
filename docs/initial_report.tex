@@ -1,0 +1,69 @@
+\documentclass[11pt, a4paper]{article}
+
+% --- Packages ---
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{lmodern}
+\usepackage[margin=1in]{geometry}
+\usepackage{titlesec}
+\usepackage{hyperref}
+\usepackage{setspace}
+\usepackage{parskip}
+
+% --- Hyperref setup ---
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    filecolor=magenta,      
+    urlcolor=blue,
+    pdftitle={Initial Report: Loss-Aware Synthetic Data Generation},
+    pdfpagemode=FullScreen,
+}
+
+% --- Formatting ---
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\setstretch{1.15}
+
+% --- Title and Author Information ---
+\title{\vspace{-1.5cm}\textbf{Loss-Aware Synthetic Data Generation:\\Estimating Utility Loss and Preventing It}\vspace{0.5cm}}
+\author{
+    \textbf{Michelangelo Urbano} \\
+    Email: \href{mailto:michelangelo.urbano@studio.unibo.it}{michelangelo.urbano@studio.unibo.it} \\
+    Immatricolation Number: 0001160217
+    \and
+    \textbf{Gianlorenzo Urbano} \\
+    Email: \href{mailto:gianlorenzo.urbano@studio.unibo.it}{gianlorenzo.urbano@studio.unibo.it} \\
+    Immatricolation Number: 0001169323
+}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+% --- Abstract ---
+\renewcommand{\abstractname}{\large Abstract}
+\begin{abstract}
+\noindent The generation of synthetic data presents a fundamental trade-off between preserving individual privacy and retaining the statistical utility of the original dataset. This project investigates methodologies to measure and mitigate the utility loss inherently introduced during the generation process through loss-aware optimization. We define utility loss as the quantitative gap between real and synthetic data concerning distributional fidelity, feature correlation preservation, and downstream predictive performance (evaluated via metrics such as MMD, EMD, and F1-score discrepancy). Concurrently, privacy constraints are strictly monitored using established indicators including DCR, Overfitting Protection, Inference Risk, CM3, and Disclosure Protection. To transition from mere evaluation to active prevention, this research explores the integration of explicit penalty terms within the training objectives of synthetic data generators. By designing a multi-objective loss function that penalizes distribution mismatch, correlation distortion, and privacy leakage during the training phase, we aim to systematically balance utility and privacy. The ultimate goal is to deliver a computational framework capable of estimating utility loss, evaluating generator architectures, and actively minimizing information degradation.
+\end{abstract}
+
+\vspace{0.5cm}
+
+% --- Description ---
+\section*{Project Description: Goals and Methodology}
+The central vision of this project is to shift the paradigm of synthetic data generation from post-generation evaluation to active, in-training optimization. Synthetic data must not only adhere to strict privacy constraints but also retain a rich statistical structure to remain highly effective for downstream machine learning tasks. 
+
+\textbf{Methodology \& Goals:}\\
+The first phase of the study focuses on formally defining and estimating \textit{utility loss}. This is articulated as the gap between real and synthetic data across several dimensions: distributional fidelity, feature correlation preservation, and predictive performance. This gap will be quantified using advanced statistical metrics such as Maximum Mean Discrepancy (MMD), Earth Mover's Distance (EMD), and downstream F1-score discrepancy. Simultaneously, privacy guarantees will be rigorously monitored using indicators like Distance to Closest Record (DCR), Inference Risk, CM3, and explicit Disclosure Protection constraints.
+
+The second phase transitions from measurement to \textit{prevention}. We will investigate how to modify the core training objective of synthetic data generators by integrating explicit penalty terms for distribution mismatch, correlation distortion, downstream performance degradation, and privacy leakage. Rather than passively observing utility loss after generation, this approach enforces a multi-objective loss function that dynamically balances utility and privacy throughout the training process.
+
+\section*{Expected Deliverables}
+By the conclusion of the project, we aim to deliver the following key contributions:
+\begin{enumerate}
+    \item \textbf{A Computational Framework:} A robust toolset for accurately estimating the utility loss introduced by synthetic data, factoring in both statistical properties and downstream application performance.
+    \item \textbf{Architecture Analysis:} The identification and comparative analysis of synthetic data generator architectures to determine which inherently minimize information loss.
+    \item \textbf{Loss Function Design:} The mathematical formulation, implementation, and empirical validation of a novel multi-objective loss function designed to actively reduce utility loss while preserving stringent privacy guarantees during training.
+\end{enumerate}
+
+\end{document}
