@@ -18,14 +18,16 @@ Each stage is implemented as an independent module with a well-defined interface
 src/
   data/
     loader.py           # Stage 1: data ingestion and preprocessing
-  generator/            # Stage 2: synthetic data generation (colleague's module)
-    ctgan.py            # CTGAN wrapper
-    tvae.py             # TVAE wrapper
+  generators/           # Stage 2: synthetic data generation
+    base.py             # SyntheticGenerator interface (fit/sample contract)
+    baseline.py         # CTGANGenerator, TVAEGenerator (sdv-backed)
   evaluation/
     utility.py          # Stage 3a: utility metrics
     privacy.py          # Stage 3b: privacy metrics
   main.py               # Orchestration: loops over datasets and generators
 ```
+
+See [generators.md](generators.md) for the rationale behind the generator interface and baseline choices.
 
 ---
 

@@ -17,13 +17,16 @@ src/
   evaluation/
     utility.py        # Utility metrics: MMD, EMD, F1 discrepancy, correlation distance
     privacy.py        # Privacy metrics: DCR, NNDR, Inference Risk, Disclosure Protection
-  generator/          # (colleague) Synthetic data generators: CTGAN, TVAE
+  generators/         # Synthetic data generators: interface + CTGAN/TVAE baselines
+    base.py           # SyntheticGenerator interface (fit/sample contract)
+    baseline.py        # CTGANGenerator, TVAEGenerator (sdv-backed)
   main.py             # Pipeline entrypoint — runs full evaluation across all datasets
 
 docs/
   index.md            # This file
   datasets.md         # Dataset selection rationale and preprocessing decisions
   architecture.md     # Module design, data flow, and key design decisions
+  generators.md       # Generator interface and CTGAN/TVAE baseline design decisions
   metrics/
     utility.md        # Theory and implementation of utility metrics
     privacy.md        # Theory and implementation of privacy metrics
