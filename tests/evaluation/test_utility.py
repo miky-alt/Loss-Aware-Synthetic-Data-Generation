@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evaluation.utility import (
+from src.evaluation.utility import (
     compute_correlation_distance,
     compute_emd,
     compute_f1_discrepancy,
