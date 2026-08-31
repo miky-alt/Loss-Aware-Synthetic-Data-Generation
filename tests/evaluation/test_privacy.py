@@ -2,7 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
-from evaluation.privacy import (
+from src.evaluation.privacy import (
     compute_dcr,
     compute_disclosure_protection,
     compute_inference_risk,

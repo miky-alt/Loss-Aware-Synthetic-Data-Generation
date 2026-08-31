@@ -322,3 +322,7 @@ dist/
 *.egg-info/
 __pycache__/
 .pytest_cache/
+
+# experiment output artifacts — reproducible from code, not committed
+experiments/results/*.json
+experiments/results/*.pkl

@@ -2,6 +2,7 @@ import pandas as pd
 import pytest
 
 from src.generators.baseline import CTGANGenerator, TVAEGenerator
+from src.generators.registry import GENERATORS, build_generator
 
 
 @pytest.fixture
@@ -19,6 +20,22 @@ def test_sample_before_fit_raises():
     generator = CTGANGenerator(epochs=1)
     with pytest.raises(RuntimeError):
         generator.sample(1)
+
+
+def test_build_generator_returns_correct_type():
+    assert isinstance(build_generator("ctgan"), CTGANGenerator)
+    assert isinstance(build_generator("tvae"), TVAEGenerator)
+
+
+def test_build_generator_unknown_name_raises():
+    with pytest.raises(ValueError, match="Unknown generator"):
+        build_generator("unknown")
+
+
+def test_build_generator_covers_all_registered():
+    # ensures every key in GENERATORS is constructable
+    for name, cls in GENERATORS.items():
+        assert isinstance(build_generator(name), cls)
 
 
 # epochs=1 keeps these fast, but they still train real torch models, so they
