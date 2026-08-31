@@ -19,9 +19,10 @@ class SyntheticGenerator(ABC):
 ### Why this shape
 
 - **Symmetry with `DatasetBundle`**: the evaluation framework already treats datasets as an opaque contract (`DatasetBundle`). The generator side needed the same treatment — `main.py` (once wired up) should be able to swap generator implementations without changing the orchestration code.
-- **Minimal surface area on purpose**: no `transform`, no `score`, no dataset-specific hooks. Every additional method would be one more thing a future loss-aware generator has to implement, even if it doesn't use it.
+
 - **`fit` returns `self`**: allows `generator = CTGANGenerator().fit(real_data)` in one line, matching the scikit-learn convention already used elsewhere in the evaluation code (`RandomForestClassifier`, `StandardScaler`).
-- **This is the extension point for the loss-aware generator.** The core contribution of the project (Week 2) is a generator whose training loop is penalized by the utility/privacy metrics already implemented in `evaluation/`. That generator will implement the same `SyntheticGenerator` interface, so it can be evaluated with the exact same code path as the baselines below — the only thing that changes is what happens inside `fit`.
+
+- **This is the extension point for the loss-aware generator.** The core contribution of the project is a generator whose training loop is penalized by the utility/privacy metrics already implemented in `evaluation/`. That generator will implement the same `SyntheticGenerator` interface, so it can be evaluated with the exact same code path as the baselines below — the only thing that changes is what happens inside `fit`.
 
 ---
 
