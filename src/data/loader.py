@@ -11,6 +11,7 @@ Each loader returns a unified DatasetBundle with:
 from dataclasses import dataclass
 
 import pandas as pd
+from sklearn.model_selection import train_test_split
 from ucimlrepo import fetch_ucirepo
 
 
@@ -136,3 +137,36 @@ def load_dataset(name: str) -> DatasetBundle:
     if name not in LOADERS:
         raise ValueError(f"Unknown dataset '{name}'. Choose from: {list(LOADERS.keys())}")
     return LOADERS[name]()
+
+
+def split_dataset(
+    bundle: DatasetBundle,
+    test_size: float = 0.2,
+    seed: int = 42,
+) -> tuple[DatasetBundle, DatasetBundle]:
+    """
+    Split a DatasetBundle into train/test, stratified on target_col.
+
+    The train split is what the generator should fit() on; the test split is
+    held out and never seen during training, so evaluation measures
+    generalization rather than memorization of the training data.
+    """
+    train_df, test_df = train_test_split(
+        bundle.real,
+        test_size=test_size,
+        random_state=seed,
+        stratify=bundle.real[bundle.target_col],
+    )
+    train_bundle = DatasetBundle(
+        real=train_df.reset_index(drop=True),
+        target_col=bundle.target_col,
+        name=bundle.name,
+        domain=bundle.domain,
+    )
+    test_bundle = DatasetBundle(
+        real=test_df.reset_index(drop=True),
+        target_col=bundle.target_col,
+        name=bundle.name,
+        domain=bundle.domain,
+    )
+    return train_bundle, test_bundle

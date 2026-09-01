@@ -2,6 +2,7 @@ import argparse
 
 from src.experiments.config import ExperimentMode, TrainingConfig
 from src.experiments.experiment import run_experiment
+from src.experiments.query import query_index
 from src.experiments.report import summarize_report
 from src.generators.registry import GENERATORS
 
@@ -46,7 +47,9 @@ def main():
             "    python -m src.main evaluate --pretrained-run adult_ctgan_seed42 "
             "--dataset adult --generator ctgan\n\n"
             "  Print the summary of a saved report:\n"
-            "    python -m src.main show adult_ctgan_seed42"
+            "    python -m src.main show adult_ctgan_seed42\n\n"
+            "  Find runs matching given criteria:\n"
+            "    python -m src.main find --dataset adult --generator ctgan --kwarg epochs=300"
         ),
     )
     sub = parser.add_subparsers(dest="command", required=True)
@@ -63,6 +66,7 @@ def main():
     run_p.add_argument("--num-samples", type=int, default=1000)
     run_p.add_argument("--kwarg", action="append", metavar="KEY=VALUE", help=_kwarg_help)
     run_p.add_argument("--seed", type=int, default=42)
+    run_p.add_argument("--test-size", type=float, default=0.2, help="fraction held out from training, used for evaluation")
     run_p.add_argument("--output-dir", default="experiments/results")
 
     eval_p = sub.add_parser(
@@ -79,11 +83,22 @@ def main():
     eval_p.add_argument("--generator", required=True, choices=_GENERATORS)
     eval_p.add_argument("--num-samples", type=int, default=1000)
     eval_p.add_argument("--seed", type=int, default=42)
+    eval_p.add_argument("--test-size", type=float, default=0.2, help="must match the value used for the original training run")
     eval_p.add_argument("--output-dir", default="experiments/results")
 
     show_p = sub.add_parser("show", help="Print the summary of a saved experiment report.")
     show_p.add_argument("run_name", help="run_name of the saved report (e.g. adult_ctgan_seed42)")
     show_p.add_argument("--output-dir", default="experiments/results")
+
+    find_p = sub.add_parser("find", help="Query index.jsonl for runs matching given criteria.")
+    find_p.add_argument("--dataset", choices=_DATASETS)
+    find_p.add_argument("--generator", choices=_GENERATORS)
+    find_p.add_argument("--seed", type=int)
+    find_p.add_argument("--test-size", type=float)
+    find_p.add_argument("--code-version", help="short git commit hash, e.g. abcdef1")
+    find_p.add_argument("--kwarg", action="append", metavar="KEY=VALUE",
+                         help="match generator_kwargs entries (repeatable)")
+    find_p.add_argument("--output-dir", default="experiments/results")
 
     args = parser.parse_args()
 
@@ -93,6 +108,7 @@ def main():
             generator_name=args.generator,
             num_samples=args.num_samples,
             seed=args.seed,
+            test_size=args.test_size,
             generator_kwargs=_parse_kwargs(args.kwarg),
         )
         report = run_experiment(config, output_dir=args.output_dir)
@@ -104,6 +120,7 @@ def main():
             generator_name=args.generator,
             num_samples=args.num_samples,
             seed=args.seed,
+            test_size=args.test_size,
         )
         report = run_experiment(
             config,
@@ -115,6 +132,26 @@ def main():
 
     elif args.command == "show":
         print(summarize_report(args.run_name, output_dir=args.output_dir))
+
+    elif args.command == "find":
+        matches = query_index(
+            output_dir=args.output_dir,
+            dataset_name=args.dataset,
+            generator_name=args.generator,
+            seed=args.seed,
+            test_size=args.test_size,
+            code_version=args.code_version,
+            kwargs=_parse_kwargs(args.kwarg),
+        )
+        if not matches:
+            print("No matching runs found.")
+        else:
+            for row in matches:
+                print(
+                    f"{row['run_name']}  "
+                    f"(dataset={row.get('dataset_name')}, generator={row.get('generator_name')}, "
+                    f"kwargs={row.get('generator_kwargs')}, code_version={row.get('code_version')})"
+                )
 
 
 if __name__ == "__main__":

@@ -23,7 +23,7 @@ class SyntheticGenerator(ABC):
         """Draw `num_rows` synthetic records from the fitted generator."""
         raise NotImplementedError
 
-    def get_run_artifacts(self) -> dict:
+    def get_training_diagnostics(self) -> dict:
         """Generator-specific post-fit artifacts included in the experiment report.
 
         Override in subclasses to expose training history, learned distributions,
