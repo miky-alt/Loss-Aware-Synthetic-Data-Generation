@@ -72,10 +72,10 @@ def test_summarize_report_includes_training_history_count():
         "config": {"dataset_name": "adult", "generator_name": "ctgan"},
         "utility": {},
         "privacy": {},
-        "training_history": [{"epoch": 0}, {"epoch": 1}],
+        "artifacts": {"training_history": [{"epoch": 0}, {"epoch": 1}]},
     }
     summary = summarize_report(report)
-    assert "training_history: 2 epochs" in summary
+    assert "artifacts.training_history: 2 entries" in summary
 
 
 def test_summarize_report_loads_from_disk(tmp_path):
@@ -96,34 +96,35 @@ def test_save_report_creates_missing_dirs(tmp_path):
     assert (nested / "r.json").exists()
 
 
-# --- build_report: training_history ---
+# --- build_report: artifacts ---
 
 @pytest.fixture
 def tiny_frames():
-    import pandas as pd
     import numpy as np
+    import pandas as pd
     rng = np.random.default_rng(0)
     n = 30
     df = pd.DataFrame({"x": rng.random(n), "y": rng.integers(0, 2, n)})
     return df, df.copy()
 
 
-def test_build_report_includes_training_history(tiny_frames):
+def test_build_report_includes_artifacts(tiny_frames):
     real, synthetic = tiny_frames
     cfg = TrainingConfig(dataset_name="heart", generator_name="ctgan", num_samples=30)
 
     class _FakeGenerator:
-        training_history = [{"epoch": 0, "loss": 1.2}, {"epoch": 1, "loss": 0.8}]
+        def get_run_artifacts(self):
+            return {"training_history": [{"epoch": 0, "loss": 1.2}]}
 
     report = build_report(cfg, real, synthetic, target_col="y", generator=_FakeGenerator())
-    assert report["training_history"] == _FakeGenerator.training_history
+    assert report["artifacts"] == {"training_history": [{"epoch": 0, "loss": 1.2}]}
 
 
-def test_build_report_omits_training_history_when_empty(tiny_frames):
+def test_build_report_omits_artifacts_when_empty(tiny_frames):
     real, synthetic = tiny_frames
     cfg = TrainingConfig(dataset_name="heart", generator_name="ctgan", num_samples=30)
     report = build_report(cfg, real, synthetic, target_col="y", generator=None)
-    assert "training_history" not in report
+    assert "artifacts" not in report
 
 
 # --- save_generator / load_generator ---
