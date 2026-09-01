@@ -4,7 +4,7 @@ single-table synthesizers behind the project's `SyntheticGenerator` interface.
 
 import pandas as pd
 from sdv.metadata import Metadata
-from sdv.single_table import CTGANSynthesizer, TVAESynthesizer
+from sdv.single_table import CTGANSynthesizer, GaussianCopulaSynthesizer, TVAESynthesizer
 
 from src.generators.base import SyntheticGenerator
 
@@ -45,3 +45,18 @@ class TVAEGenerator(_SDVSynthesizerGenerator):
     """Baseline generator using SDV's TVAE synthesizer."""
 
     _synthesizer_cls = TVAESynthesizer
+
+
+class GaussianCopulaGenerator(_SDVSynthesizerGenerator):
+    """Baseline generator using SDV's GaussianCopula synthesizer.
+
+    Exposes per-column learned distributions via get_run_artifacts().
+    Does not accept an `epochs` parameter (statistical model, not neural network).
+    """
+
+    _synthesizer_cls = GaussianCopulaSynthesizer
+
+    def get_run_artifacts(self) -> dict:
+        if self._synthesizer is None:
+            return {}
+        return {"learned_distributions": self._synthesizer.get_learned_distributions()}

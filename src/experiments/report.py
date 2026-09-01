@@ -38,9 +38,10 @@ def build_report(
         # datasets define a separate one.
         "privacy": compute_privacy_report(real, synthetic, target_col),
     }
-    history = getattr(generator, "training_history", [])
-    if history:
-        report["training_history"] = history
+    if generator is not None:
+        artifacts = generator.get_run_artifacts()
+        if artifacts:
+            report["artifacts"] = artifacts
     return report
 
 
@@ -69,6 +70,10 @@ def summarize_report(
             if key == "emd_per_feature":
                 continue
             lines.append(f"{section}.{key}: {value}")
-    if "training_history" in report:
-        lines.append(f"training_history: {len(report['training_history'])} epochs")
+    if "artifacts" in report:
+        for key, value in report["artifacts"].items():
+            if isinstance(value, list):
+                lines.append(f"artifacts.{key}: {len(value)} entries")
+            else:
+                lines.append(f"artifacts.{key}: present")
     return "\n".join(lines)

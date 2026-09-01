@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from src.generators.baseline import CTGANGenerator, TVAEGenerator
+from src.generators.baseline import CTGANGenerator, GaussianCopulaGenerator, TVAEGenerator
 from src.generators.registry import GENERATORS, build_generator
 
 
@@ -25,6 +25,7 @@ def test_sample_before_fit_raises():
 def test_build_generator_returns_correct_type():
     assert isinstance(build_generator("ctgan"), CTGANGenerator)
     assert isinstance(build_generator("tvae"), TVAEGenerator)
+    assert isinstance(build_generator("gaussian_copula"), GaussianCopulaGenerator)
 
 
 def test_build_generator_unknown_name_raises():

@@ -9,14 +9,39 @@ _DATASETS = ["adult", "diabetes", "heart"]
 _GENERATORS = list(GENERATORS.keys())
 
 
+def _parse_kwargs(kwarg_list: list[str] | None) -> dict:
+    """Parse ['key=value', ...] into a dict, auto-casting ints and floats."""
+    if not kwarg_list:
+        return {}
+    result = {}
+    for item in kwarg_list:
+        if "=" not in item:
+            raise ValueError(f"--kwarg must be in KEY=VALUE format, got: {item!r}")
+        key, raw = item.split("=", 1)
+        for cast in (int, float):
+            try:
+                result[key] = cast(raw)
+                break
+            except ValueError:
+                pass
+        else:
+            result[key] = raw
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Loss-aware synthetic data experiments.",
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog=(
             "examples:\n"
-            "  Train and evaluate:\n"
+            "  Train with default kwargs:\n"
             "    python -m src.main run --dataset adult --generator ctgan\n\n"
+            "  Train with custom kwargs (neural-network generators):\n"
+            "    python -m src.main run --dataset adult --generator ctgan "
+            "--kwarg epochs=50 --kwarg batch_size=500\n\n"
+            "  Train with GaussianCopula (no epochs):\n"
+            "    python -m src.main run --dataset heart --generator gaussian_copula\n\n"
             "  Re-evaluate a pre-trained generator without retraining:\n"
             "    python -m src.main evaluate --pretrained-run adult_ctgan_seed42 "
             "--dataset adult --generator ctgan\n\n"
@@ -26,11 +51,17 @@ def main():
     )
     sub = parser.add_subparsers(dest="command", required=True)
 
+    _kwarg_help = (
+        "Generator constructor kwarg as KEY=VALUE (repeatable). "
+        "e.g. --kwarg epochs=50 --kwarg batch_size=500. "
+        "Not needed for gaussian_copula (statistical model)."
+    )
+
     run_p = sub.add_parser("run", help="Train a generator and evaluate it.")
     run_p.add_argument("--dataset", required=True, choices=_DATASETS)
     run_p.add_argument("--generator", required=True, choices=_GENERATORS)
     run_p.add_argument("--num-samples", type=int, default=1000)
-    run_p.add_argument("--epochs", type=int, default=300, help="passed through as a generator kwarg")
+    run_p.add_argument("--kwarg", action="append", metavar="KEY=VALUE", help=_kwarg_help)
     run_p.add_argument("--seed", type=int, default=42)
     run_p.add_argument("--output-dir", default="experiments/results")
 
@@ -62,7 +93,7 @@ def main():
             generator_name=args.generator,
             num_samples=args.num_samples,
             seed=args.seed,
-            generator_kwargs={"epochs": args.epochs},
+            generator_kwargs=_parse_kwargs(args.kwarg),
         )
         report = run_experiment(config, output_dir=args.output_dir)
         print(summarize_report(report))
