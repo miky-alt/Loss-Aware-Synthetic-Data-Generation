@@ -3,19 +3,42 @@ import pytest
 
 from src.experiments.config import ExperimentMode, TrainingConfig
 from src.experiments.persistence import load_generator, load_report, save_generator, save_metadata
-from src.experiments.report import build_report, save_report, summarize_report
+from src.experiments.report import append_to_index, build_report, save_report, summarize_report
 
 
 # --- TrainingConfig ---
 
 def test_run_name_format():
     cfg = TrainingConfig(dataset_name="adult", generator_name="ctgan", num_samples=100)
-    assert cfg.run_name == "adult_ctgan_seed42"
+    assert cfg.run_name.startswith("adult_ctgan_seed42_")
 
 
 def test_run_name_uses_seed():
     cfg = TrainingConfig(dataset_name="heart", generator_name="tvae", num_samples=50, seed=7)
-    assert cfg.run_name == "heart_tvae_seed7"
+    assert cfg.run_name.startswith("heart_tvae_seed7_")
+
+
+def test_run_name_differs_with_different_kwargs():
+    # deterministic via _kwargs_hash: doesn't depend on timing, never flaky
+    cfg1 = TrainingConfig(dataset_name="adult", generator_name="ctgan", num_samples=100,
+                           generator_kwargs={"epochs": 50})
+    cfg2 = TrainingConfig(dataset_name="adult", generator_name="ctgan", num_samples=100,
+                           generator_kwargs={"epochs": 300})
+    assert cfg1.run_name != cfg2.run_name
+
+
+def test_run_name_differs_with_different_test_size():
+    cfg1 = TrainingConfig(dataset_name="adult", generator_name="ctgan", num_samples=100, test_size=0.2)
+    cfg2 = TrainingConfig(dataset_name="adult", generator_name="ctgan", num_samples=100, test_size=0.3)
+    assert cfg1.run_name != cfg2.run_name
+
+
+def test_run_name_unique_even_with_identical_config():
+    # random suffix in created_at: two instances with the exact same
+    # hyperparameters still never collide (e.g. rerunning after a code change)
+    cfg1 = TrainingConfig(dataset_name="adult", generator_name="ctgan", num_samples=100)
+    cfg2 = TrainingConfig(dataset_name="adult", generator_name="ctgan", num_samples=100)
+    assert cfg1.run_name != cfg2.run_name
 
 
 # --- save_report ---
@@ -94,6 +117,51 @@ def test_save_report_creates_missing_dirs(tmp_path):
     nested = tmp_path / "a" / "b" / "c"
     save_report({}, run_name="r", output_dir=str(nested))
     assert (nested / "r.json").exists()
+
+
+# --- append_to_index ---
+
+def _fake_report(**config_overrides) -> dict:
+    config = {
+        "dataset_name": "adult",
+        "generator_name": "ctgan",
+        "seed": 42,
+        "test_size": 0.2,
+        "num_samples": 1000,
+        "generator_kwargs": {"epochs": 50},
+        "created_at": "20260901-120000-abc123",
+    }
+    config.update(config_overrides)
+    return {"config": config, "code_version": "abcdef1"}
+
+
+def test_append_to_index_creates_jsonl(tmp_path):
+    index_path = append_to_index(_fake_report(), run_name="run1", output_dir=str(tmp_path))
+    assert index_path == tmp_path / "index.jsonl"
+    assert index_path.exists()
+
+
+def test_append_to_index_row_is_valid_json(tmp_path):
+    index_path = append_to_index(_fake_report(), run_name="run1", output_dir=str(tmp_path))
+    with open(index_path) as f:
+        row = json.loads(f.readline())
+    assert row["run_name"] == "run1"
+    assert row["dataset_name"] == "adult"
+    assert row["generator_kwargs"] == {"epochs": 50}
+    assert row["code_version"] == "abcdef1"
+
+
+def test_append_to_index_appends_multiple_runs(tmp_path):
+    append_to_index(_fake_report(), run_name="run1", output_dir=str(tmp_path))
+    append_to_index(_fake_report(generator_kwargs={"epochs": 300}), run_name="run2", output_dir=str(tmp_path))
+    index_path = tmp_path / "index.jsonl"
+    with open(index_path) as f:
+        lines = f.readlines()
+    assert len(lines) == 2
+    rows = [json.loads(line) for line in lines]
+    assert rows[0]["run_name"] == "run1"
+    assert rows[1]["run_name"] == "run2"
+    assert rows[1]["generator_kwargs"] == {"epochs": 300}
 
 
 # --- build_report: artifacts ---

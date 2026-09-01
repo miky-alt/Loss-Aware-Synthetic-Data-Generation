@@ -10,7 +10,7 @@ Each step is delegated to a single-responsibility module:
 from src.data.loader import load_dataset, split_dataset
 from src.experiments.config import ExperimentMode, TrainingConfig
 from src.experiments.persistence import load_generator, save_generator, save_metadata
-from src.experiments.report import build_report, save_report
+from src.experiments.report import append_to_index, build_report, save_report
 from src.generators.registry import build_generator
 
 
@@ -38,5 +38,6 @@ def run_experiment(
     synthetic = generator.sample(config.num_samples)
     report = build_report(config, test_bundle.real, synthetic, bundle.target_col, generator)
     save_report(report, config.run_name, output_dir)
+    append_to_index(report, config.run_name, output_dir)
 
     return report
