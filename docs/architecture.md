@@ -28,9 +28,10 @@ src/
   experiments/          # Orchestration layer
     config.py           # TrainingConfig + ExperimentMode
     experiment.py       # run_experiment(): full pipeline entry point
-    report.py           # build_report, save_report, summarize_report
-    persistence.py      # save/load generator (.pkl), load_report
-  main.py               # CLI: run / evaluate / show subcommands
+    report.py           # build_report, save_report, append_to_index, summarize_report
+    persistence.py      # save/load generator (.pkl), save_metadata, load_report
+    query.py            # load_index, query_index — find runs by criteria
+  main.py               # CLI: run / evaluate / show / find subcommands
 ```
 
 See [generators.md](generators.md) for the rationale behind the generator interface and baseline choices, and [experiments.md](experiments.md) for the orchestration layer design.
@@ -43,17 +44,22 @@ See [generators.md](generators.md) for the rationale behind the generator interf
 load_dataset(name)
     └─→ DatasetBundle(real, target_col, name, domain)
             │
-            ├─→ generator.fit(bundle.real)
-            │       └─→ synthetic: pd.DataFrame
-            │
-            ├─→ compute_utility_report(real, synthetic, target_col)
-            │       └─→ dict of utility scores
-            │
-            └─→ compute_privacy_report(real, synthetic, sensitive_col)
-                    └─→ dict of privacy scores
+            └─→ split_dataset(bundle, test_size, seed)
+                    └─→ (train_bundle, test_bundle)   [stratified, deterministic]
+                            │
+                            ├─→ generator.fit(train_bundle.real)
+                            │       └─→ synthetic: pd.DataFrame
+                            │
+                            ├─→ compute_utility_report(test_bundle.real, synthetic, target_col)
+                            │       └─→ dict of utility scores
+                            │
+                            └─→ compute_privacy_report(test_bundle.real, synthetic, sensitive_col)
+                                    └─→ dict of privacy scores
 ```
 
-The only shared data structure between modules is `pd.DataFrame`. No module imports from another — the orchestration layer (`main.py`) is the only place that connects them. This makes each module independently testable with dummy data, which we verified during development.
+The generator only ever sees `train_bundle.real`; every metric is computed against `test_bundle.real`, which it never saw during training. See [experiments.md](experiments.md#why-the-traintest-split-matters) for why this split was introduced.
+
+The only shared data structure between modules is `pd.DataFrame`. No module imports from another — the orchestration layer (`src/experiments/experiment.py`) is the only place that connects them. This makes each module independently testable with dummy data, which we verified during development.
 
 ---
 

@@ -13,27 +13,29 @@ The central argument is that the standard paradigm — generate synthetic data, 
 ```
 src/
   data/
-    loader.py         # Dataset loading and preprocessing (3 datasets)
+    loader.py         # Dataset loading, preprocessing, and train/test splitting (3 datasets)
   evaluation/
     utility.py        # Utility metrics: MMD, EMD, F1 discrepancy, correlation distance
     privacy.py        # Privacy metrics: DCR, NNDR, Inference Risk, Disclosure Protection
-  generators/         # Synthetic data generators: interface + CTGAN/TVAE baselines
-    base.py           # SyntheticGenerator interface (fit/sample contract)
-    baseline.py       # CTGANGenerator, TVAEGenerator (sdv-backed)
+  generators/         # Synthetic data generators: interface + CTGAN/TVAE/GaussianCopula baselines
+    base.py           # SyntheticGenerator interface (fit/sample/get_training_diagnostics contract)
+    baseline.py       # CTGANGenerator, TVAEGenerator, GaussianCopulaGenerator (sdv-backed)
     registry.py       # GENERATORS dict + build_generator() — single extension point
   experiments/        # Experiment orchestration layer
     config.py         # TrainingConfig + ExperimentMode
     experiment.py     # run_experiment(): full pipeline entry point
-    report.py         # build_report, save_report, summarize_report
-    persistence.py    # save/load generator (.pkl), load_report
-  main.py             # CLI: run / evaluate / show subcommands
+    report.py         # build_report, save_report, append_to_index, summarize_report
+    persistence.py    # save/load generator (.pkl), save_metadata, load_report
+    query.py          # load_index, query_index — find runs by criteria
+  main.py             # CLI: run / evaluate / show / find subcommands
 
 docs/
   index.md            # This file
   datasets.md         # Dataset selection rationale and preprocessing decisions
   architecture.md     # Module design, data flow, and key design decisions
-  generators.md       # Generator interface and CTGAN/TVAE baseline design decisions
-  experiments.md      # Experiment pipeline, config, persistence, and CLI
+  generators.md       # Generator interface and CTGAN/TVAE/GaussianCopula baseline design decisions
+  experiments.md      # Experiment pipeline, config, persistence, run indexing, and CLI
+  design-exploration.md  # sdv features investigated but not integrated, and why
   metrics/
     utility.md        # Theory and implementation of utility metrics
     privacy.md        # Theory and implementation of privacy metrics
@@ -46,35 +48,36 @@ docs/
 ### Prerequisites
 
 ```bash
-# Install dependencies
-uv pip install -e .
+uv sync
 ```
 
-### Run the full evaluation pipeline
+### Train a generator and evaluate it
 
 ```bash
-uv run python src/main.py
+uv run python -m src.main run --dataset adult --generator ctgan --kwarg epochs=300
+uv run python -m src.main run --dataset heart --generator gaussian_copula
 ```
 
-### Run a quick smoke test on a single dataset
+### Re-evaluate a pre-trained generator without retraining
 
 ```bash
-uv run python -c "
-from data.loader import load_dataset
-from evaluation.utility import compute_utility_report
-from evaluation.privacy import compute_privacy_report
-import numpy as np, pandas as pd
-
-bundle = load_dataset('heart')
-# Replace with real synthetic data once generator is available
-synthetic = bundle.real.sample(frac=1.0, random_state=99).reset_index(drop=True)
-
-u = compute_utility_report(bundle.real, synthetic, bundle.target_col)
-p = compute_privacy_report(bundle.real, synthetic, bundle.target_col)
-print(u)
-print(p)
-"
+uv run python -m src.main evaluate --pretrained-run adult_ctgan_seed42_<hash>_<timestamp> \
+    --dataset adult --generator ctgan
 ```
+
+### Print the summary of a saved report
+
+```bash
+uv run python -m src.main show adult_ctgan_seed42_<hash>_<timestamp>
+```
+
+### Find a run without knowing its exact name
+
+```bash
+uv run python -m src.main find --dataset adult --generator ctgan --kwarg epochs=300
+```
+
+See [experiments.md](experiments.md) for the full CLI reference and how `run_name`/`index.jsonl` work.
 
 ---
 
@@ -118,7 +121,8 @@ See [metrics/utility.md](metrics/utility.md) and [metrics/privacy.md](metrics/pr
 |---------|---------|---------|
 | `numpy` | ≥2.5.2 | Numerical computation |
 | `pandas` | ≥3.0.5 | Data manipulation |
-| `scikit-learn` | ≥1.9.0 | Classifiers, nearest neighbors, preprocessing |
+| `scikit-learn` | ≥1.9.0 | Classifiers, nearest neighbors, preprocessing, train/test splitting |
 | `scipy` | ≥1.18.1 | Wasserstein distance (EMD) |
-| `torch` | ≥2.13.0 | Generator training (colleague's module) |
+| `torch` | ≥2.13.0 | Neural-network generator training (used internally by `sdv`) |
+| `sdv` | ≥1.17.0 | CTGAN/TVAE/GaussianCopula synthesizers, metadata detection |
 | `ucimlrepo` | ≥0.0.7 | Automatic UCI dataset fetching |
