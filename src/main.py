@@ -63,6 +63,7 @@ def main():
     run_p.add_argument("--num-samples", type=int, default=1000)
     run_p.add_argument("--kwarg", action="append", metavar="KEY=VALUE", help=_kwarg_help)
     run_p.add_argument("--seed", type=int, default=42)
+    run_p.add_argument("--test-size", type=float, default=0.2, help="fraction held out from training, used for evaluation")
     run_p.add_argument("--output-dir", default="experiments/results")
 
     eval_p = sub.add_parser(
@@ -79,6 +80,7 @@ def main():
     eval_p.add_argument("--generator", required=True, choices=_GENERATORS)
     eval_p.add_argument("--num-samples", type=int, default=1000)
     eval_p.add_argument("--seed", type=int, default=42)
+    eval_p.add_argument("--test-size", type=float, default=0.2, help="must match the value used for the original training run")
     eval_p.add_argument("--output-dir", default="experiments/results")
 
     show_p = sub.add_parser("show", help="Print the summary of a saved experiment report.")
@@ -93,6 +95,7 @@ def main():
             generator_name=args.generator,
             num_samples=args.num_samples,
             seed=args.seed,
+            test_size=args.test_size,
             generator_kwargs=_parse_kwargs(args.kwarg),
         )
         report = run_experiment(config, output_dir=args.output_dir)
@@ -104,6 +107,7 @@ def main():
             generator_name=args.generator,
             num_samples=args.num_samples,
             seed=args.seed,
+            test_size=args.test_size,
         )
         report = run_experiment(
             config,

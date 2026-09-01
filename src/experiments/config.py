@@ -16,6 +16,7 @@ class TrainingConfig:
     generator_name: str  # one of src.generators.registry.GENERATORS keys
     num_samples: int
     seed: int = 42
+    test_size: float = 0.2  # fraction held out from generator.fit(), used for evaluation
     generator_kwargs: dict[str, Any] = field(default_factory=dict)
 
     @property

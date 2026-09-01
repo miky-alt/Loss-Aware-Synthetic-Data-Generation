@@ -1,4 +1,4 @@
-"""Tests for _parse_kwargs and get_run_artifacts contract."""
+"""Tests for _parse_kwargs and get_training_diagnostics contract."""
 import pytest
 
 from src.generators.base import SyntheticGenerator
@@ -35,9 +35,9 @@ def test_parse_kwargs_missing_equals_raises():
         _parse_kwargs(["epochs"])
 
 
-# --- get_run_artifacts contract ---
+# --- get_training_diagnostics contract ---
 
-def test_default_get_run_artifacts_returns_empty_dict():
+def test_default_get_training_diagnostics_returns_empty_dict():
     class _MinimalGenerator(SyntheticGenerator):
         def fit(self, real_data):
             return self
@@ -45,15 +45,15 @@ def test_default_get_run_artifacts_returns_empty_dict():
             import pandas as pd
             return pd.DataFrame()
 
-    assert _MinimalGenerator().get_run_artifacts() == {}
+    assert _MinimalGenerator().get_training_diagnostics() == {}
 
 
-def test_gaussian_copula_artifacts_empty_before_fit():
+def test_gaussian_copula_diagnostics_empty_before_fit():
     gen = GaussianCopulaGenerator()
-    assert gen.get_run_artifacts() == {}
+    assert gen.get_training_diagnostics() == {}
 
 
-def test_ctgan_artifacts_empty_before_fit():
+def test_ctgan_diagnostics_empty_before_fit():
     gen = CTGANGenerator(epochs=1)
-    # baseline SDV generators don't override get_run_artifacts — returns {}
-    assert gen.get_run_artifacts() == {}
+    # baseline SDV generators don't override get_training_diagnostics — returns {}
+    assert gen.get_training_diagnostics() == {}

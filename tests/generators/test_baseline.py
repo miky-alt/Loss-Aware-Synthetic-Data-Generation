@@ -39,6 +39,11 @@ def test_build_generator_covers_all_registered():
         assert isinstance(build_generator(name), cls)
 
 
+@pytest.mark.parametrize("generator_cls", [CTGANGenerator, TVAEGenerator])
+def test_get_training_diagnostics_empty_before_fit(generator_cls):
+    assert generator_cls(epochs=1).get_training_diagnostics() == {}
+
+
 # epochs=1 keeps these fast, but they still train real torch models, so they
 # are marked slow and excluded by default (run with `pytest -m slow` to include them).
 @pytest.mark.slow
@@ -51,3 +56,16 @@ def test_fit_sample_roundtrip(generator_cls, tiny_real_data):
 
     assert list(synthetic.columns) == list(tiny_real_data.columns)
     assert len(synthetic) == 5
+
+
+@pytest.mark.slow
+@pytest.mark.parametrize("generator_cls", [CTGANGenerator, TVAEGenerator])
+def test_get_training_diagnostics_after_fit_contains_loss_values(generator_cls, tiny_real_data):
+    generator = generator_cls(epochs=1)
+    generator.fit(tiny_real_data)
+
+    diagnostics = generator.get_training_diagnostics()
+
+    assert "loss_values" in diagnostics
+    assert isinstance(diagnostics["loss_values"], list)
+    assert len(artifacts["loss_values"]) > 0

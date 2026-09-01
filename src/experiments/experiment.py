@@ -7,9 +7,9 @@ Each step is delegated to a single-responsibility module:
 - src/experiments/report.py   -> metrics + report persistence
 """
 
-from src.data.loader import load_dataset
+from src.data.loader import load_dataset, split_dataset
 from src.experiments.config import ExperimentMode, TrainingConfig
-from src.experiments.persistence import load_generator, save_generator
+from src.experiments.persistence import load_generator, save_generator, save_metadata
 from src.experiments.report import build_report, save_report
 from src.generators.registry import build_generator
 
@@ -21,6 +21,9 @@ def run_experiment(
     pretrained_run_name: str | None = None,
 ) -> dict:
     bundle = load_dataset(config.dataset_name)
+    # deterministic (test_size, seed) => identical split whether training now
+    # or re-evaluating a previously trained generator later
+    train_bundle, test_bundle = split_dataset(bundle, config.test_size, config.seed)
 
     if mode == ExperimentMode.EVALUATE_ONLY:
         if pretrained_run_name is None:
@@ -28,11 +31,12 @@ def run_experiment(
         generator = load_generator(pretrained_run_name, output_dir)
     else:
         generator = build_generator(config.generator_name, **config.generator_kwargs)
-        generator.fit(bundle.real)
+        generator.fit(train_bundle.real)
         save_generator(generator, config.run_name, output_dir)
+        save_metadata(train_bundle.real, config.run_name, output_dir)
 
     synthetic = generator.sample(config.num_samples)
-    report = build_report(config, bundle.real, synthetic, bundle.target_col, generator)
+    report = build_report(config, test_bundle.real, synthetic, bundle.target_col, generator)
     save_report(report, config.run_name, output_dir)
 
     return report

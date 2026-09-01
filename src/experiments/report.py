@@ -39,7 +39,7 @@ def build_report(
         "privacy": compute_privacy_report(real, synthetic, target_col),
     }
     if generator is not None:
-        artifacts = generator.get_run_artifacts()
+        artifacts = generator.get_training_diagnostics()
         if artifacts:
             report["artifacts"] = artifacts
     return report

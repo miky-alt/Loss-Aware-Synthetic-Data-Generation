@@ -2,7 +2,7 @@ import json
 import pytest
 
 from src.experiments.config import ExperimentMode, TrainingConfig
-from src.experiments.persistence import load_generator, load_report, save_generator
+from src.experiments.persistence import load_generator, load_report, save_generator, save_metadata
 from src.experiments.report import build_report, save_report, summarize_report
 
 
@@ -113,7 +113,7 @@ def test_build_report_includes_artifacts(tiny_frames):
     cfg = TrainingConfig(dataset_name="heart", generator_name="ctgan", num_samples=30)
 
     class _FakeGenerator:
-        def get_run_artifacts(self):
+        def get_training_diagnostics(self):
             return {"training_history": [{"epoch": 0, "loss": 1.2}]}
 
     report = build_report(cfg, real, synthetic, target_col="y", generator=_FakeGenerator())
@@ -153,3 +153,22 @@ def test_load_report_roundtrip(tmp_path):
     save_report(report, run_name="run_load", output_dir=str(tmp_path))
     loaded = load_report("run_load", output_dir=str(tmp_path))
     assert loaded == report
+
+
+# --- save_metadata ---
+
+def test_save_metadata_writes_file(tmp_path):
+    import pandas as pd
+    df = pd.DataFrame({"age": [23, 45, 31], "income": [2100.0, 5400.0, 3200.0]})
+    out = save_metadata(df, run_name="run_meta", output_dir=str(tmp_path))
+    assert out == tmp_path / "run_meta.metadata.json"
+    assert out.exists()
+
+
+def test_save_metadata_writes_valid_json(tmp_path):
+    import pandas as pd
+    df = pd.DataFrame({"age": [23, 45, 31], "job": ["a", "b", "a"]})
+    out = save_metadata(df, run_name="run_meta2", output_dir=str(tmp_path))
+    with open(out) as f:
+        loaded = json.load(f)
+    assert "tables" in loaded or "columns" in loaded

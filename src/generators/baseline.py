@@ -36,27 +36,43 @@ class _SDVSynthesizerGenerator(SyntheticGenerator):
 
 
 class CTGANGenerator(_SDVSynthesizerGenerator):
-    """Baseline generator using SDV's CTGAN synthesizer."""
+    """Baseline generator using SDV's CTGAN synthesizer.
+
+    Exposes per-epoch generator/discriminator loss via get_training_diagnostics().
+    """
 
     _synthesizer_cls = CTGANSynthesizer
 
+    def get_training_diagnostics(self) -> dict:
+        if self._synthesizer is None:
+            return {}
+        return {"loss_values": self._synthesizer.get_loss_values().to_dict(orient="records")}
+
 
 class TVAEGenerator(_SDVSynthesizerGenerator):
-    """Baseline generator using SDV's TVAE synthesizer."""
+    """Baseline generator using SDV's TVAE synthesizer.
+
+    Exposes per-epoch/batch loss via get_training_diagnostics() (no plot, unlike CTGAN).
+    """
 
     _synthesizer_cls = TVAESynthesizer
+
+    def get_training_diagnostics(self) -> dict:
+        if self._synthesizer is None:
+            return {}
+        return {"loss_values": self._synthesizer.get_loss_values().to_dict(orient="records")}
 
 
 class GaussianCopulaGenerator(_SDVSynthesizerGenerator):
     """Baseline generator using SDV's GaussianCopula synthesizer.
 
-    Exposes per-column learned distributions via get_run_artifacts().
+    Exposes per-column learned distributions via get_training_diagnostics().
     Does not accept an `epochs` parameter (statistical model, not neural network).
     """
 
     _synthesizer_cls = GaussianCopulaSynthesizer
 
-    def get_run_artifacts(self) -> dict:
+    def get_training_diagnostics(self) -> dict:
         if self._synthesizer is None:
             return {}
         return {"learned_distributions": self._synthesizer.get_learned_distributions()}
