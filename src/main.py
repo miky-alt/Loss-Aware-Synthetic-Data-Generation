@@ -1,4 +1,5 @@
 import argparse
+import json
 
 from src.experiments.config import ExperimentMode, TrainingConfig
 from src.experiments.experiment import run_experiment
@@ -30,6 +31,30 @@ def _parse_kwargs(kwarg_list: list[str] | None) -> dict:
     return result
 
 
+def _parse_kwargs_json(raw: str | None) -> dict:
+    """Parse a JSON object containing structured generator kwargs."""
+    if raw is None:
+        return {}
+    try:
+        value = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise ValueError(f"--kwargs-json must be valid JSON: {exc.msg}") from exc
+    if not isinstance(value, dict):
+        raise ValueError("--kwargs-json must be a JSON object.")
+    return value
+
+
+def _merge_kwargs(simple_kwargs: dict, json_kwargs: dict) -> dict:
+    """Merge CLI kwargs, rejecting duplicate keys instead of silently overriding."""
+    duplicate_keys = simple_kwargs.keys() & json_kwargs.keys()
+    if duplicate_keys:
+        raise ValueError(
+            "Duplicate kwargs supplied through --kwarg and --kwargs-json: "
+            f"{', '.join(sorted(duplicate_keys))}"
+        )
+    return simple_kwargs | json_kwargs
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="Loss-aware synthetic data experiments.",
@@ -59,12 +84,17 @@ def main():
         "e.g. --kwarg epochs=50 --kwarg batch_size=500. "
         "Not needed for gaussian_copula (statistical model)."
     )
+    _kwargs_json_help = (
+        "Generator kwargs as one JSON object; supports nested dicts/lists/bools. "
+        "e.g. --kwargs-json '{\"numerical_distributions\": {\"age\": \"norm\"}}'"
+    )
 
     run_p = sub.add_parser("run", help="Train a generator and evaluate it.")
     run_p.add_argument("--dataset", required=True, choices=_DATASETS)
     run_p.add_argument("--generator", required=True, choices=_GENERATORS)
     run_p.add_argument("--num-samples", type=int, default=1000)
     run_p.add_argument("--kwarg", action="append", metavar="KEY=VALUE", help=_kwarg_help)
+    run_p.add_argument("--kwargs-json", metavar="JSON", help=_kwargs_json_help)
     run_p.add_argument("--seed", type=int, default=42)
     run_p.add_argument("--test-size", type=float, default=0.2, help="fraction held out from training, used for evaluation")
     run_p.add_argument("--output-dir", default="experiments/results")
@@ -98,6 +128,7 @@ def main():
     find_p.add_argument("--code-version", help="short git commit hash, e.g. abcdef1")
     find_p.add_argument("--kwarg", action="append", metavar="KEY=VALUE",
                          help="match generator_kwargs entries (repeatable)")
+    find_p.add_argument("--kwargs-json", metavar="JSON", help="match structured generator_kwargs entries")
     find_p.add_argument("--output-dir", default="experiments/results")
 
     args = parser.parse_args()
@@ -109,7 +140,7 @@ def main():
             num_samples=args.num_samples,
             seed=args.seed,
             test_size=args.test_size,
-            generator_kwargs=_parse_kwargs(args.kwarg),
+            generator_kwargs=_merge_kwargs(_parse_kwargs(args.kwarg), _parse_kwargs_json(args.kwargs_json)),
         )
         report = run_experiment(config, output_dir=args.output_dir)
         print(summarize_report(report))
@@ -141,7 +172,7 @@ def main():
             seed=args.seed,
             test_size=args.test_size,
             code_version=args.code_version,
-            kwargs=_parse_kwargs(args.kwarg),
+            kwargs=_merge_kwargs(_parse_kwargs(args.kwarg), _parse_kwargs_json(args.kwargs_json)),
         )
         if not matches:
             print("No matching runs found.")
