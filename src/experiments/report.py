@@ -37,7 +37,8 @@ class _ReportEncoder(json.JSONEncoder):
 
 def build_report(
     config: TrainingConfig,
-    real: pd.DataFrame,
+    train_real: pd.DataFrame,
+    test_real: pd.DataFrame,
     synthetic: pd.DataFrame,
     target_col: str,
     generator=None,
@@ -45,10 +46,10 @@ def build_report(
     report = {
         "config": vars(config),
         "code_version": _get_code_version(),
-        "utility": compute_utility_report(real, synthetic, target_col),
+        "utility": compute_utility_report(train_real, test_real, synthetic, target_col),
         # target_col doubles as the sensitive attribute: none of the current
         # datasets define a separate one.
-        "privacy": compute_privacy_report(real, synthetic, target_col),
+        "privacy": compute_privacy_report(train_real, test_real, synthetic, target_col),
     }
     if generator is not None:
         artifacts = generator.get_training_diagnostics()

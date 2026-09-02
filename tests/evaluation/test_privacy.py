@@ -157,7 +157,7 @@ class TestComputeDisclosureProtection:
 
 class TestComputePrivacyReport:
     def test_returns_all_expected_keys(self, real, synthetic):
-        result = compute_privacy_report(real, synthetic, sensitive_col="target")
+        result = compute_privacy_report(real.iloc[:240], real.iloc[240:], synthetic, sensitive_col="target")
         for key in [
             "dcr_mean", "dcr_median", "dcr_min", "dcr_5th_percentile",
             "nndr_mean", "nndr_median", "nndr_5th_percentile",

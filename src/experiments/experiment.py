@@ -36,7 +36,14 @@ def run_experiment(
         save_metadata(train_bundle.real, config.run_name, output_dir)
 
     synthetic = generator.sample(config.num_samples)
-    report = build_report(config, test_bundle.real, synthetic, bundle.target_col, generator)
+    report = build_report(
+        config,
+        train_bundle.real,
+        test_bundle.real,
+        synthetic,
+        bundle.target_col,
+        generator,
+    )
     save_report(report, config.run_name, output_dir)
     append_to_index(report, config.run_name, output_dir)
 

@@ -1,10 +1,10 @@
 """
 Utility metrics for evaluating synthetic data quality.
 
-All functions take:
-- real: pd.DataFrame
-- synthetic: pd.DataFrame
-- target_col: str (column used for downstream classification)
+Distribution metrics compare held-out real test data against synthetic data.
+The F1 discrepancy additionally receives the real training split, so its real
+baseline classifier and synthetic-data classifier are evaluated on the same
+held-out test data.
 
 And return a float (lower = more utility loss) or a dict of floats.
 """
@@ -14,7 +14,6 @@ import pandas as pd
 from scipy.stats import wasserstein_distance
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import f1_score
-from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
 
@@ -101,10 +100,10 @@ def compute_emd(real: pd.DataFrame, synthetic: pd.DataFrame) -> dict[str, float]
 # ---------------------------------------------------------------------------
 
 def compute_f1_discrepancy(
-    real: pd.DataFrame,
+    train_real: pd.DataFrame,
+    test_real: pd.DataFrame,
     synthetic: pd.DataFrame,
     target_col: str,
-    test_size: float = 0.2,
     random_state: int = 42,
 ) -> dict[str, float]:
     """
@@ -112,25 +111,22 @@ def compute_f1_discrepancy(
     on synthetic data vs real data, evaluated on a held-out real test set.
 
     Protocol:
-    1. Split real data into train/test
-    2. Train classifier A on real train → evaluate on real test (F1_real)
-    3. Train classifier B on synthetic → evaluate on same real test (F1_synthetic)
-    4. Discrepancy = F1_real - F1_synthetic
+    1. Train classifier A on the supplied real train split → evaluate on real test
+    2. Train classifier B on synthetic data → evaluate on the same real test split
+    3. Discrepancy = F1_real - F1_synthetic
 
     Returns:
     - f1_real: baseline F1 on real data
     - f1_synthetic: F1 when trained on synthetic
     - f1_discrepancy: the gap (higher = more utility loss)
     """
-    cols = [c for c in real.columns if c != target_col]
-    cols = real[cols].select_dtypes(include="number").columns.tolist()
+    cols = [c for c in train_real.columns if c != target_col]
+    cols = train_real[cols].select_dtypes(include="number").columns.tolist()
 
-    X_real = real[cols].values
-    y_real = real[target_col].values
-
-    X_train_real, X_test, y_train_real, y_test = train_test_split(
-        X_real, y_real, test_size=test_size, random_state=random_state, stratify=y_real
-    )
+    X_train_real = train_real[cols].values
+    y_train_real = train_real[target_col].values
+    X_test = test_real[cols].values
+    y_test = test_real[target_col].values
 
     X_synthetic = synthetic[cols].values
     y_synthetic = synthetic[target_col].values
@@ -178,19 +174,24 @@ def compute_correlation_distance(real: pd.DataFrame, synthetic: pd.DataFrame) ->
 # ---------------------------------------------------------------------------
 
 def compute_utility_report(
-    real: pd.DataFrame,
+    train_real: pd.DataFrame,
+    test_real: pd.DataFrame,
     synthetic: pd.DataFrame,
     target_col: str,
 ) -> dict:
     """
     Run all utility metrics and return a single summary dict.
+
+    MMD, EMD, and correlation distance compare `test_real` to `synthetic`.
+    F1 discrepancy trains on `train_real` or synthetic data and evaluates on
+    the same held-out `test_real` split.
     """
-    emd = compute_emd(real, synthetic)
+    emd = compute_emd(test_real, synthetic)
 
     return {
-        "mmd": compute_mmd(real, synthetic),
+        "mmd": compute_mmd(test_real, synthetic),
         "mean_emd": emd["mean_emd"],
         "emd_per_feature": {k: v for k, v in emd.items() if k != "mean_emd"},
-        "correlation_distance": compute_correlation_distance(real, synthetic),
-        **compute_f1_discrepancy(real, synthetic, target_col),
+        "correlation_distance": compute_correlation_distance(test_real, synthetic),
+        **compute_f1_discrepancy(train_real, test_real, synthetic, target_col),
     }

@@ -184,14 +184,14 @@ def test_build_report_includes_artifacts(tiny_frames):
         def get_training_diagnostics(self):
             return {"training_history": [{"epoch": 0, "loss": 1.2}]}
 
-    report = build_report(cfg, real, synthetic, target_col="y", generator=_FakeGenerator())
+    report = build_report(cfg, real, synthetic, synthetic, target_col="y", generator=_FakeGenerator())
     assert report["artifacts"] == {"training_history": [{"epoch": 0, "loss": 1.2}]}
 
 
 def test_build_report_omits_artifacts_when_empty(tiny_frames):
     real, synthetic = tiny_frames
     cfg = TrainingConfig(dataset_name="heart", generator_name="ctgan", num_samples=30)
-    report = build_report(cfg, real, synthetic, target_col="y", generator=None)
+    report = build_report(cfg, real, synthetic, synthetic, target_col="y", generator=None)
     assert "artifacts" not in report
 
 
