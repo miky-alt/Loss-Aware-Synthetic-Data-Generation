@@ -81,11 +81,14 @@ load_dataset(config.dataset_name)
                             │       └─→ save_generator (.pkl) + save_metadata (.metadata.json)
                             ├─ [EVALUATE_ONLY]      load_generator (.pkl)
                             │
-                            └─→ generator.sample(config.num_samples)
+                                └─→ generator.sample(config.num_samples)
                                     │
-                                    └─→ build_report(..., test_bundle.real, ...)  ← evaluated against held-out data
-                                            ├─→ save_report()       ← {run_name}.json
-                                            └─→ append_to_index()   ← one line in index.jsonl
+                                    └─→ build_report(train_bundle.real, test_bundle.real, synthetic, ...)
+                                        ├─→ utility distribution metrics: test_bundle.real vs synthetic
+                                        ├─→ F1: train_bundle.real / synthetic → test_bundle.real
+                                        ├─→ privacy memorization metrics: train_bundle.real vs synthetic
+                                        ├─→ save_report()       ← {run_name}.json
+                                        └─→ append_to_index()   ← one line in index.jsonl
 ```
 
 `save_generator()` / `save_metadata()` are called **before** `build_report()` in the training path, so the model and its schema are persisted even if the evaluation step raises an error.
@@ -97,7 +100,9 @@ Earlier, `generator.fit()` saw the entire dataset, and `build_report()` evaluate
 - **Utility metrics** (MMD, EMD, correlation distance) measured how well the synthetic data resembled data the generator had already memorized, not how well it generalizes to unseen real data.
 - **`EVALUATE_ONLY` had no well-defined held-out set** to compare against on a re-run.
 
-`split_dataset()` (in `src/data/loader.py`) fixes this: `generator.fit()` only ever sees `train_bundle.real`; every metric in the report is computed against `test_bundle.real`, which the generator never saw. Because the split is deterministic — driven only by `(test_size, seed)`, both fixed in `TrainingConfig` — `EVALUATE_ONLY` reconstructs the **exact same** held-out set on every re-run, without ever retraining.
+`split_dataset()` (in `src/data/loader.py`) fixes this: `generator.fit()` only ever sees `train_bundle.real`. MMD, EMD, and correlation distance compare synthetic data with `test_bundle.real`, which the generator never saw. F1 trains its real-data baseline on `train_bundle.real` and evaluates both that model and the synthetic-trained model on the same held-out `test_bundle.real`.
+
+Privacy metrics answer a different question: DCR, NNDR, and disclosure protection compare synthetic records with `train_bundle.real`, because those are the records the generator could have memorized. Attribute inference trains on synthetic data and evaluates its attack on `test_bundle.real`. Because the split is deterministic — driven only by `(test_size, seed)`, both fixed in `TrainingConfig` — `EVALUATE_ONLY` reconstructs the **exact same** train/test split on every re-run, without ever retraining.
 
 ---
 
@@ -147,6 +152,22 @@ python -m src.main find      [--dataset DATASET] [--generator GEN] [--kwarg KEY=
 | `find` | Queries `index.jsonl` for runs matching given criteria — no report files opened |
 
 `--kwarg KEY=VALUE` (repeatable) replaces a hardcoded `--epochs` flag: values are auto-cast to `int`/`float` where possible (`_parse_kwargs()` in `main.py`), falling back to string. This is what lets `--kwarg epochs=50 --kwarg batch_size=500` reach the underlying `sdv` synthesizer unchanged, and lets `gaussian_copula` runs simply omit `--kwarg` entirely (it takes no `epochs`).
+
+The flag currently supports scalar values only. For a nested synthesizer parameter such as GaussianCopula's `numerical_distributions`, use the Python API described in [generators.md](generators.md#gaussiancopula-configuration); CLI support for structured JSON values has not yet been implemented.
+
+### Reproducing the default UCI Adult GaussianCopula baseline
+
+The preprocessed Adult dataset contains 47,621 rows. With the default `test_size=0.2`, the generator trains on 38,096 real records and evaluates against 9,525 held-out records. The following command generates the same number of synthetic records as the training split, with every GaussianCopula synthesizer option at SDV's default:
+
+```bash
+uv run python -m src.main run --dataset adult --generator gaussian_copula --num-samples 38096
+```
+
+The generated artifacts are ignored by Git. Use `find` afterwards instead of trying to reconstruct the collision-proof run name manually:
+
+```bash
+uv run python -m src.main find --dataset adult --generator gaussian_copula
+```
 
 The `show` subcommand is backed by `summarize_report()`, which skips per-feature breakdowns (`emd_per_feature`) and the full config dump, printing only aggregate metrics plus a one-line summary of `artifacts` (e.g. `artifacts.loss_values: 300 entries`).
 

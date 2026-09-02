@@ -60,9 +60,43 @@ This was named `get_training_diagnostics()` (not `get_run_artifacts()`, its orig
 
 The future loss-aware generator will override this method to expose its own per-epoch penalty terms (e.g. `{"epoch": e, "loss": total_loss, "mmd": mmd_val, "privacy_penalty": p}`), using the exact same integration point — no changes needed in `report.py` or `experiment.py`.
 
+### GaussianCopula configuration
+
+`GaussianCopulaSynthesizer` models each numerical column with a marginal distribution and then models their dependency structure with a Gaussian copula. Its useful configuration parameters include `default_distribution` (one shape applied to all numerical columns) and `numerical_distributions` (a per-column override). SDV supports the following distribution names: `norm`, `beta`, `truncnorm`, `uniform`, `gamma`, and `gaussian_kde`.
+
+The current command-line `--kwarg KEY=VALUE` interface accepts scalar values only (`int`, `float`, or string). It therefore supports a scalar GaussianCopula parameter such as:
+
+```bash
+uv run python -m src.main run --dataset adult --generator gaussian_copula \
+    --kwarg default_distribution=norm --num-samples 38096
+```
+
+It does **not** currently parse a nested dictionary supplied at the command line. To use `numerical_distributions` now while still running the full train/evaluate/persistence pipeline, create `TrainingConfig` programmatically:
+
+```python
+from src.experiments.config import TrainingConfig
+from src.experiments.experiment import run_experiment
+
+config = TrainingConfig(
+    dataset_name="adult",
+    generator_name="gaussian_copula",
+    num_samples=38096,
+    generator_kwargs={
+        "numerical_distributions": {
+            "age": "norm",
+            "capital-gain": "gamma",
+            "hours-per-week": "truncnorm",
+        }
+    },
+)
+report = run_experiment(config)
+```
+
+The corresponding CLI enhancement would be a separate feature: parsing a JSON object supplied to `--kwarg`, rather than treating it as a plain string. Until that exists, passing `--kwarg numerical_distributions={...}` would forward an invalid string to SDV and should not be used.
+
 ### Known limitations
 
-- No control yet over training duration from the calling code beyond `**synthesizer_kwargs` — acceptable for baselines, but the loss-aware generator will need explicit hooks into the training loop (epoch-level callbacks) that `sdv`'s synthesizers do not expose by default.
+- The generic `--kwarg KEY=VALUE` CLI supports scalar synthesizer parameters but not structured values such as `numerical_distributions`; see the previous section for the programmatic alternative.
 - `get_training_diagnostics()` for CTGAN/TVAE only exposes the numeric loss curve, not the interactive plotly figure that `sdv` can also generate (`get_loss_values_plot()`) — that returns a `plotly.graph_objects.Figure`, which isn't JSON-serializable and doesn't fit the current text-based report format. If needed later, it would be saved as a separate `.html` file via `persistence.py`, not embedded in the JSON report.
 
 ---
