@@ -1,9 +1,9 @@
 """
 Privacy metrics for evaluating synthetic data safety.
 
-All functions take:
-- real: pd.DataFrame
-- synthetic: pd.DataFrame
+Distance-based memorization metrics compare synthetic data with the real
+training split. Attribute inference trains on synthetic data and evaluates
+against a held-out real test split.
 
 And return a float or a dict of floats.
 
@@ -15,7 +15,6 @@ import numpy as np
 import pandas as pd
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.metrics import f1_score
-from sklearn.model_selection import train_test_split
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 
@@ -232,17 +231,22 @@ def compute_disclosure_protection(
 # ---------------------------------------------------------------------------
 
 def compute_privacy_report(
-    real: pd.DataFrame,
+    train_real: pd.DataFrame,
+    test_real: pd.DataFrame,
     synthetic: pd.DataFrame,
     sensitive_col: str,
     disclosure_threshold: float = 0.5,
 ) -> dict:
     """
     Run all privacy metrics and return a single summary dict.
+
+    DCR, NNDR, and disclosure protection compare synthetic records against the
+    training records the generator could have memorized. Inference risk trains
+    on synthetic data and evaluates the attack against held-out real records.
     """
     return {
-        **compute_dcr(real, synthetic),
-        **compute_nndr(real, synthetic),
-        **compute_inference_risk(real, synthetic, sensitive_col),
-        **compute_disclosure_protection(real, synthetic, disclosure_threshold),
+        **compute_dcr(train_real, synthetic),
+        **compute_nndr(train_real, synthetic),
+        **compute_inference_risk(test_real, synthetic, sensitive_col),
+        **compute_disclosure_protection(train_real, synthetic, disclosure_threshold),
     }

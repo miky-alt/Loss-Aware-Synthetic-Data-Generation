@@ -94,28 +94,28 @@ class TestComputeEMD:
 
 class TestComputeF1Discrepancy:
     def test_returns_expected_keys(self, real, synthetic):
-        result = compute_f1_discrepancy(real, synthetic, target_col="target")
+        result = compute_f1_discrepancy(real.iloc[:240], real.iloc[240:], synthetic, target_col="target")
         assert "f1_real" in result
         assert "f1_synthetic" in result
         assert "f1_discrepancy" in result
 
     def test_f1_values_in_unit_interval(self, real, synthetic):
-        result = compute_f1_discrepancy(real, synthetic, target_col="target")
+        result = compute_f1_discrepancy(real.iloc[:240], real.iloc[240:], synthetic, target_col="target")
         assert 0.0 <= result["f1_real"] <= 1.0
         assert 0.0 <= result["f1_synthetic"] <= 1.0
 
     def test_discrepancy_equals_difference(self, real, synthetic):
-        result = compute_f1_discrepancy(real, synthetic, target_col="target")
+        result = compute_f1_discrepancy(real.iloc[:240], real.iloc[240:], synthetic, target_col="target")
         assert abs(result["f1_discrepancy"] - (result["f1_real"] - result["f1_synthetic"])) < 1e-6
 
     def test_similar_data_lower_discrepancy_than_random(self, real, synthetic, random_synthetic):
-        close = compute_f1_discrepancy(real, synthetic, target_col="target")["f1_discrepancy"]
-        far = compute_f1_discrepancy(real, random_synthetic, target_col="target")["f1_discrepancy"]
+        close = compute_f1_discrepancy(real.iloc[:240], real.iloc[240:], synthetic, target_col="target")["f1_discrepancy"]
+        far = compute_f1_discrepancy(real.iloc[:240], real.iloc[240:], random_synthetic, target_col="target")["f1_discrepancy"]
         assert close < far
 
     def test_raises_on_missing_target_col(self, real, synthetic):
         with pytest.raises(Exception):
-            compute_f1_discrepancy(real, synthetic, target_col="nonexistent")
+            compute_f1_discrepancy(real.iloc[:240], real.iloc[240:], synthetic, target_col="nonexistent")
 
 
 # ---------------------------------------------------------------------------
@@ -142,11 +142,11 @@ class TestComputeCorrelationDistance:
 
 class TestComputeUtilityReport:
     def test_returns_all_expected_keys(self, real, synthetic):
-        result = compute_utility_report(real, synthetic, target_col="target")
+        result = compute_utility_report(real.iloc[:240], real.iloc[240:], synthetic, target_col="target")
         for key in ["mmd", "mean_emd", "emd_per_feature", "correlation_distance",
                     "f1_real", "f1_synthetic", "f1_discrepancy"]:
             assert key in result
 
     def test_emd_per_feature_is_dict(self, real, synthetic):
-        result = compute_utility_report(real, synthetic, target_col="target")
+        result = compute_utility_report(real.iloc[:240], real.iloc[240:], synthetic, target_col="target")
         assert isinstance(result["emd_per_feature"], dict)
