@@ -68,4 +68,4 @@ def test_get_training_diagnostics_after_fit_contains_loss_values(generator_cls, 
 
     assert "loss_values" in diagnostics
     assert isinstance(diagnostics["loss_values"], list)
-    assert len(artifacts["loss_values"]) > 0
+    assert len(diagnostics["loss_values"]) > 0
