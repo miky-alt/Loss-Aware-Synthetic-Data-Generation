@@ -1,4 +1,5 @@
 import json
+from types import SimpleNamespace
 
 import numpy as np
 import pandas as pd
@@ -6,7 +7,7 @@ import pytest
 
 from src.data import analyze
 from src.data.analyze import describe_dataset, plot_distributions, save_analysis, save_sdv_metadata
-from src.data.loader import DatasetBundle, split_dataset
+from src.data.loader import DatasetBundle, load_uci_adult, split_dataset
 
 
 @pytest.fixture
@@ -48,6 +49,26 @@ def test_split_dataset_different_seed_gives_different_split(bundle):
     train1, _ = split_dataset(bundle, test_size=0.2, seed=1)
     train2, _ = split_dataset(bundle, test_size=0.2, seed=2)
     assert not train1.real.equals(train2.real)
+
+
+def test_adult_loader_preserves_categorical_values_for_sdv(monkeypatch):
+    features = pd.DataFrame(
+        {
+            "workclass": ["Private", "State-gov"],
+            "education": ["Bachelors", "HS-grad"],
+            "occupation": ["Tech-support", "Exec-managerial"],
+        }
+    )
+    targets = pd.DataFrame({"income": ["<=50K", ">50K"]})
+    dataset = SimpleNamespace(data=SimpleNamespace(features=features, targets=targets))
+    monkeypatch.setattr("src.data.loader.fetch_ucirepo", lambda id: dataset)
+
+    bundle = load_uci_adult()
+
+    for column in ("workclass", "education", "occupation"):
+        assert pd.api.types.is_string_dtype(bundle.real[column])
+    assert bundle.real["education"].tolist() == ["Bachelors", "HS-grad"]
+    assert bundle.real["income"].tolist() == [0, 1]
 
 
 def test_describe_dataset_includes_head_and_summary(bundle):
