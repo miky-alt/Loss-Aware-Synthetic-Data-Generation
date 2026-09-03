@@ -52,6 +52,7 @@ def load_uci_adult() -> DatasetBundle:
     target_col = "income"
     df[target_col] = df[target_col].astype(str).str.strip().str.replace(".", "", regex=False)
     df[target_col] = df[target_col].str.contains(">50K")
+    df["sex"] = df["sex"].astype(str).str.strip().str.lower().eq("male")
 
     df = df.dropna().reset_index(drop=True)
 
