@@ -121,7 +121,7 @@ All four are excluded from version control via `.gitignore` — they are reprodu
 
 ### Why `save_metadata` takes the dataset, not the generator
 
-Dataset schema (which columns are numerical/categorical/etc.) is a property of the **data**, not of whichever generator happens to be fit on it — two different generators trained on the same dataset would produce identical metadata. `save_metadata(real_data, run_name, output_dir)` therefore re-detects `Metadata.detect_from_dataframe(real_data)` directly from `train_bundle.real`, independent of the generator instance. This costs one extra (cheap, schema-only) detection pass but keeps the concept correctly decoupled — the generator no longer needs to expose a `get_metadata()` method at all.
+Dataset schema (which columns are numerical/categorical/etc.) is a property of the **data**, not of whichever generator happens to be fit on it — two different generators trained on the same dataset would produce identical metadata. `save_metadata(real_data, run_name, output_dir)` therefore calls the shared `build_sdv_metadata(real_data)` helper from `src.data.loader`, independent of the generator instance. The helper detects the schema and explicitly preserves pandas boolean columns as SDV `boolean` columns. This costs one extra (cheap, schema-only) detection pass but keeps metadata construction consistent across dataset analysis, generator fitting, and persisted experiment results.
 
 ### `code_version`
 

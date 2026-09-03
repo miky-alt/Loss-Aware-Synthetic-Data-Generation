@@ -3,9 +3,9 @@ single-table synthesizers behind the project's `SyntheticGenerator` interface.
 """
 
 import pandas as pd
-from sdv.metadata import Metadata
 from sdv.single_table import CTGANSynthesizer, GaussianCopulaSynthesizer, TVAESynthesizer
 
+from src.data.loader import build_sdv_metadata
 from src.generators.base import SyntheticGenerator
 
 
@@ -24,11 +24,7 @@ class _SDVSynthesizerGenerator(SyntheticGenerator):
         self._synthesizer = None
 
     def fit(self, real_data: pd.DataFrame) -> "SyntheticGenerator":
-        metadata = Metadata.detect_from_dataframe(real_data)
-        boolean_columns = real_data.select_dtypes(include="bool").columns
-        metadata.update_columns_metadata(
-            {column: {"sdtype": "boolean"} for column in boolean_columns}
-        )
+        metadata = build_sdv_metadata(real_data)
         self._synthesizer = self._synthesizer_cls(metadata, **self._synthesizer_kwargs)
         self._synthesizer.fit(real_data)
         return self

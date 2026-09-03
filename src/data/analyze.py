@@ -5,9 +5,8 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
-from sdv.metadata import Metadata
 
-from src.data.loader import LOADERS, DatasetBundle, load_dataset
+from src.data.loader import LOADERS, DatasetBundle, build_sdv_metadata, load_dataset
 
 
 def describe_dataset(bundle: DatasetBundle, head_rows: int = 5) -> str:
@@ -59,11 +58,7 @@ def save_sdv_metadata(
     output_dir: str = "metadata",
 ) -> Path:
     """Detect SDV metadata from a preprocessed dataset and save it as JSON."""
-    metadata = Metadata.detect_from_dataframe(bundle.real)
-    boolean_columns = bundle.real.select_dtypes(include="bool").columns
-    metadata.update_columns_metadata(
-        {column: {"sdtype": "boolean"} for column in boolean_columns}
-    )
+    metadata = build_sdv_metadata(bundle.real)
     metadata_dir = Path(output_dir)
     metadata_dir.mkdir(parents=True, exist_ok=True)
     metadata_path = metadata_dir / f"{bundle.name.lower().replace(' ', '_')}_metadata.json"
