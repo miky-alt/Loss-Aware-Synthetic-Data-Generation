@@ -52,9 +52,11 @@ class SyntheticGenerator(ABC):
 
 | Generator | `get_training_diagnostics()` returns |
 |---|---|
-| `CTGANGenerator` | `{"loss_values": [...]}` — per-epoch generator/discriminator loss (`CTGANSynthesizer.get_loss_values()`) |
-| `TVAEGenerator` | `{"loss_values": [...]}` — per-epoch/batch loss, no discriminator (`TVAESynthesizer.get_loss_values()`) |
-| `GaussianCopulaGenerator` | `{"learned_distributions": {...}}` — per-column fitted distribution + parameters (`get_learned_distributions()`) |
+| `CTGANGenerator` | `{"loss_values": [...], "preprocessing_transformers": {...}}` — per-epoch generator/discriminator loss plus the SDV transformer used for each column (`get_transformers()`) |
+| `TVAEGenerator` | `{"loss_values": [...], "preprocessing_transformers": {...}}` — per-epoch/batch loss plus the SDV transformer used for each column (`get_transformers()`) |
+| `GaussianCopulaGenerator` | `{"learned_distributions": {...}, "preprocessing_transformers": {...}}` — fitted distributions plus the SDV transformer used for each column (`get_transformers()`) |
+
+`preprocessing_transformers` is stored in each JSON report under `artifacts`. Each column entry contains the transformer's class, module, and readable parameter representation. This makes the preprocessing applied by SDV inspectable alongside the utility and privacy results.
 
 This was named `get_training_diagnostics()` (not `get_run_artifacts()`, its original name) because "artifacts" is ambiguous with model/data artifacts elsewhere in the pipeline, while "training diagnostics" precisely describes *what kind* of information this method returns. `build_report()` includes the result under the `"artifacts"` key in the JSON report only if the dict is non-empty, so baseline reports without meaningful diagnostics stay clean.
 
