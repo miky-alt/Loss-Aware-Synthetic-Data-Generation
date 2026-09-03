@@ -11,6 +11,7 @@ Each loader returns a unified DatasetBundle with:
 from dataclasses import dataclass
 
 import pandas as pd
+from sdv.metadata import Metadata
 from sklearn.model_selection import train_test_split
 from ucimlrepo import fetch_ucirepo
 
@@ -21,6 +22,16 @@ class DatasetBundle:
     target_col: str
     name: str
     domain: str
+
+
+def build_sdv_metadata(data: pd.DataFrame) -> Metadata:
+    """Detect SDV metadata while preserving pandas boolean semantics."""
+    metadata = Metadata.detect_from_dataframe(data)
+    boolean_columns = data.select_dtypes(include="bool").columns
+    metadata.update_columns_metadata(
+        {column: {"sdtype": "boolean"} for column in boolean_columns}
+    )
+    return metadata
 
 
 def load_uci_adult() -> DatasetBundle:

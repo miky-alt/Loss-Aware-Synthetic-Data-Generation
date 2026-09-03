@@ -240,3 +240,15 @@ def test_save_metadata_writes_valid_json(tmp_path):
     with open(out) as f:
         loaded = json.load(f)
     assert "tables" in loaded or "columns" in loaded
+
+
+def test_save_metadata_marks_boolean_columns(tmp_path):
+    import pandas as pd
+
+    df = pd.DataFrame({"age": [23, 45, 31], "income": [True, False, True]})
+    out = save_metadata(df, run_name="run_bool_meta", output_dir=str(tmp_path))
+    with open(out) as f:
+        loaded = json.load(f)
+
+    columns = loaded["tables"]["table"]["columns"]
+    assert columns["income"]["sdtype"] == "boolean"

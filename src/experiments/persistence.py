@@ -5,7 +5,7 @@ import pickle
 from pathlib import Path
 
 import pandas as pd
-from sdv.metadata import Metadata
+from src.data.loader import build_sdv_metadata
 
 
 def save_generator(generator, run_name: str, output_dir: str = "experiments/results") -> Path:
@@ -25,7 +25,7 @@ def load_generator(run_name: str, output_dir: str = "experiments/results"):
 
 def save_metadata(real_data: pd.DataFrame, run_name: str, output_dir: str = "experiments/results") -> Path:
     """Detect and save the dataset's schema (sdtypes) — a property of the data, not the generator."""
-    metadata = Metadata.detect_from_dataframe(real_data)
+    metadata = build_sdv_metadata(real_data)
     out_dir = Path(output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)
     out_path = out_dir / f"{run_name}.metadata.json"
