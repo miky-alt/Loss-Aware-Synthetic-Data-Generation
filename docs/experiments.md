@@ -153,7 +153,29 @@ python -m src.main find      [--dataset DATASET] [--generator GEN] [--kwarg KEY=
 
 `--kwarg KEY=VALUE` (repeatable) replaces a hardcoded `--epochs` flag: values are auto-cast to `int`/`float` where possible (`_parse_kwargs()` in `main.py`), falling back to string. This is what lets `--kwarg epochs=50 --kwarg batch_size=500` reach the underlying `sdv` synthesizer unchanged, and lets `gaussian_copula` runs simply omit `--kwarg` entirely (it takes no `epochs`).
 
-The flag currently supports scalar values only. For a nested synthesizer parameter such as GaussianCopula's `numerical_distributions`, use the Python API described in [generators.md](generators.md#gaussiancopula-configuration); CLI support for structured JSON values has not yet been implemented.
+### PowerShell usage
+
+The examples above use Bash line continuation. In PowerShell, use a backtick at the end of each continued line. For structured JSON passed to `--kwargs-json`, escape the JSON double quotes with backslashes:
+
+```powershell
+uv run python -m src.main run `
+    --dataset adult `
+    --generator gaussian_copula `
+    --num-samples 38096 `
+    --kwargs-json '{\"numerical_distributions\":{\"age\":\"gamma\",\"fnlwgt\":\"gamma\",\"education-num\":\"truncnorm\",\"capital-gain\":\"gamma\",\"capital-loss\":\"gamma\",\"hours-per-week\":\"truncnorm\"}}'
+```
+
+If `uv` is not available in `PATH`, use the full executable path:
+
+```powershell
+& "$env:USERPROFILE\.local\bin\uv.exe" run python -m src.main find `
+    --dataset adult `
+    --generator gaussian_copula
+```
+
+The same quoting rule applies to structured JSON passed to `find`. Use `show RUN_NAME` after `find` to inspect a saved report.
+
+`--kwarg KEY=VALUE` supports scalar values. For nested synthesizer parameters such as GaussianCopula's `numerical_distributions`, use `--kwargs-json` as shown above. The Python API described in [generators.md](generators.md#gaussiancopula-configuration) remains available when configuration needs to be assembled programmatically.
 
 ### Reproducing the default UCI Adult GaussianCopula baseline
 
