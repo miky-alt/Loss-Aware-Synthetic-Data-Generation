@@ -37,10 +37,10 @@ def load_uci_adult() -> DatasetBundle:
     df = pd.concat([X, y], axis=1)
     df.columns = [c.strip() for c in df.columns]
 
-    # Normalize target to binary 0/1
+    # Normalize target to a boolean so SDV detects its semantic type correctly.
     target_col = "income"
     df[target_col] = df[target_col].astype(str).str.strip().str.replace(".", "", regex=False)
-    df[target_col] = (df[target_col].str.contains(">50K")).astype(int)
+    df[target_col] = df[target_col].str.contains(">50K")
 
     df = df.dropna().reset_index(drop=True)
 
@@ -66,9 +66,9 @@ def load_diabetes_130() -> DatasetBundle:
     df = pd.concat([X, y], axis=1)
     df.columns = [c.strip() for c in df.columns]
 
-    # Normalize target: "<30" → 1 (readmitted early), else → 0
+    # Normalize target to a boolean: early readmission or not.
     target_col = "readmitted"
-    df[target_col] = (df[target_col].astype(str).str.strip() == "<30").astype(int)
+    df[target_col] = df[target_col].astype(str).str.strip() == "<30"
 
     # Drop columns with too many missing values
     df = df.replace("?", pd.NA)
@@ -98,9 +98,9 @@ def load_heart_disease() -> DatasetBundle:
     df = pd.concat([X, y], axis=1)
     df.columns = [c.strip() for c in df.columns]
 
-    # Normalize target: 0 → no disease, 1-4 → disease present
+    # Normalize target to a boolean: disease absent or present.
     target_col = "num"
-    df[target_col] = (df[target_col] > 0).astype(int)
+    df[target_col] = df[target_col] > 0
 
     df = df.dropna().reset_index(drop=True)
 

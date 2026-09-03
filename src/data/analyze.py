@@ -60,6 +60,10 @@ def save_sdv_metadata(
 ) -> Path:
     """Detect SDV metadata from a preprocessed dataset and save it as JSON."""
     metadata = Metadata.detect_from_dataframe(bundle.real)
+    boolean_columns = bundle.real.select_dtypes(include="bool").columns
+    metadata.update_columns_metadata(
+        {column: {"sdtype": "boolean"} for column in boolean_columns}
+    )
     metadata_dir = Path(output_dir)
     metadata_dir.mkdir(parents=True, exist_ok=True)
     metadata_path = metadata_dir / f"{bundle.name.lower().replace(' ', '_')}_metadata.json"
