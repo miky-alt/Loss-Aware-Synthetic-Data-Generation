@@ -1,6 +1,7 @@
 .venv/
 venv/
 plots/
+metadata/
 analysis/
 
 __pycache__/

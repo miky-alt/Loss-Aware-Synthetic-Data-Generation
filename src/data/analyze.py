@@ -5,6 +5,7 @@ from pathlib import Path
 
 import matplotlib.pyplot as plt
 import pandas as pd
+from sdv.metadata import Metadata
 
 from src.data.loader import LOADERS, DatasetBundle, load_dataset
 
@@ -51,6 +52,21 @@ def save_analysis(
     analysis_path = analysis_dir / f"{_dataset_stem(bundle)}.txt"
     analysis_path.write_text(description + "\n", encoding="utf-8")
     return analysis_path
+
+
+def save_sdv_metadata(
+    bundle: DatasetBundle,
+    output_dir: str = "metadata",
+) -> Path:
+    """Detect SDV metadata from a preprocessed dataset and save it as JSON."""
+    metadata = Metadata.detect_from_dataframe(bundle.real)
+    metadata_dir = Path(output_dir)
+    metadata_dir.mkdir(parents=True, exist_ok=True)
+    metadata_path = metadata_dir / f"{bundle.name.lower().replace(' ', '_')}_metadata.json"
+    if metadata_path.exists():
+        metadata_path.unlink()
+    metadata.save_to_json(str(metadata_path))
+    return metadata_path
 
 
 def plot_distributions(
@@ -104,6 +120,7 @@ def main() -> None:
     parser.add_argument("--bins", type=int, default=30, help="number of bins for continuous-column histograms")
     parser.add_argument("--plot-dir", default="plots", help="directory for distribution PNG files")
     parser.add_argument("--analysis-dir", default="analysis", help="directory for readable analysis text files")
+    parser.add_argument("--metadata-dir", default="metadata", help="directory for SDV metadata JSON files")
     parser.add_argument("--no-plot", action="store_true", help="print the text analysis without saving plots")
     args = parser.parse_args()
 
@@ -121,6 +138,7 @@ def main() -> None:
         description = describe_dataset(bundle, head_rows=args.head)
         print(description)
         print(f"Analysis file: {save_analysis(bundle, description, args.analysis_dir)}")
+        print(f"SDV metadata: {save_sdv_metadata(bundle, args.metadata_dir)}")
         if not args.no_plot:
             print(f"Distribution plot: {plot_distributions(bundle, args.plot_dir, args.bins)}")
 
