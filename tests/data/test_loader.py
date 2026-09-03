@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from src.data.analyze import describe_dataset, plot_distributions
 from src.data.loader import DatasetBundle, split_dataset
 
 
@@ -44,3 +45,19 @@ def test_split_dataset_different_seed_gives_different_split(bundle):
     train1, _ = split_dataset(bundle, test_size=0.2, seed=1)
     train2, _ = split_dataset(bundle, test_size=0.2, seed=2)
     assert not train1.real.equals(train2.real)
+
+
+def test_describe_dataset_includes_head_and_summary(bundle):
+    description = describe_dataset(bundle, head_rows=2)
+
+    assert "Dataset: fake" in description
+    assert "Head (2 rows):" in description
+    assert "Target distribution:" in description
+    assert "Numeric summary:" in description
+
+
+def test_plot_distributions_creates_png(bundle, tmp_path):
+    plot_path = plot_distributions(bundle, output_dir=str(tmp_path))
+
+    assert plot_path.exists()
+    assert plot_path.suffix == ".png"
