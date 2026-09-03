@@ -17,7 +17,7 @@ makes it the fair baseline for the loss-aware variants.
 import numpy as np
 import pandas as pd
 import torch
-from torch.nn.functional import gumbel_softmax, relu, softmax
+from torch.nn.functional import one_hot, relu, softmax
 from torch.optim import Adam
 from torch.utils.data import DataLoader, TensorDataset
 from tqdm import tqdm
@@ -53,6 +53,19 @@ def _corr_matrix(x: torch.Tensor, eps: float = 1e-8) -> torch.Tensor:
 def corr_loss(fake: torch.Tensor, real: torch.Tensor) -> torch.Tensor:
     """Frobenius norm of the correlation-matrix gap. Differentiable w.r.t. `fake`."""
     return torch.linalg.norm(_corr_matrix(fake) - _corr_matrix(real), ord="fro")
+
+
+def straight_through_onehot(logits: torch.Tensor) -> torch.Tensor:
+    """Hard one-hot in the forward pass, softmax gradient in the backward pass.
+
+    Deterministic straight-through estimator. We deliberately avoid
+    `F.gumbel_softmax(hard=True)`: its Gumbel noise is -log(Exponential()),
+    which is inf when the exponential draw is exactly 0; two infs in a span
+    give a NaN softmax and a garbage argmax, and the one-hot scatter then
+    fails ("index -1 is out of bounds"). Rare on CPU, common on MPS."""
+    y_soft = softmax(logits, dim=-1)
+    y_hard = one_hot(y_soft.argmax(dim=-1), num_classes=logits.size(-1)).to(y_soft.dtype)
+    return y_hard - y_soft.detach() + y_soft
 
 
 def privacy_hinge(
@@ -113,6 +126,7 @@ class LossAwareTVAE(TVAE):
         self.mmd_gamma = mmd_gamma
         self.effective_dcr_margin: float | None = None  # set during fit
         self.real_nn_median: float | None = None        # set during fit
+        self.skipped_steps: int = 0                     # non-finite losses skipped
 
     @staticmethod
     def _real_nn_median(x: torch.Tensor, max_rows: int = 2000) -> float:
@@ -131,8 +145,8 @@ class LossAwareTVAE(TVAE):
 
         hard=False: soft probabilities on discrete spans. Good for MMD and
                     correlation (smooth, low variance).
-        hard=True:  straight-through Gumbel-softmax — forward pass is a true
-                    one-hot like the real rows, backward pass uses the soft
+        hard=True:  straight-through one-hot — forward pass is a true one-hot
+                    like the real rows, backward pass uses the softmax
                     gradient. Required for any distance-to-real comparison."""
         out = []
         st = 0
@@ -141,7 +155,7 @@ class LossAwareTVAE(TVAE):
                 ed = st + span.dim
                 if span.activation_fn == "softmax":
                     if hard:
-                        out.append(gumbel_softmax(raw[:, st:ed], tau=1.0, hard=True, dim=-1))
+                        out.append(straight_through_onehot(raw[:, st:ed]))
                     else:
                         out.append(softmax(raw[:, st:ed], dim=-1))
                 else:
@@ -219,6 +233,11 @@ class LossAwareTVAE(TVAE):
                         + self.lambda_priv * l_priv
                     )
                 # -------------------------------------------------------------
+
+                if not torch.isfinite(loss):
+                    # Skip the step rather than poison the weights with NaN/inf.
+                    self.skipped_steps += 1
+                    continue
 
                 loss.backward()
                 optimizerAE.step()
@@ -302,6 +321,7 @@ class LossAwareTVAEGenerator(SyntheticGenerator):
             return {}
         return {
             "loss_values": self._model.loss_values.to_dict(orient="records"),
+            "skipped_steps": self._model.skipped_steps,
             "lambdas": {
                 "mmd": self._model.lambda_mmd,
                 "corr": self._model.lambda_corr,
