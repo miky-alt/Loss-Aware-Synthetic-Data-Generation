@@ -83,7 +83,7 @@ See [experiments.md](experiments.md) for the full CLI reference and how `run_nam
 
 ```bash
 uv run python -m src.data.analyze adult --head 5
-uv run python -m src.data.analyze all --head 3 --plot-dir experiments/plots
+uv run python -m src.data.analyze all --head 3 --plot-dir plots
 ```
 
 The analysis command uses the same preprocessing as the experiment pipeline. It prints the dataset head, shape, dtypes, missing values, target distribution, and numeric summary, then saves one PNG grid per dataset. Low-cardinality columns are shown as bar charts; continuous columns are shown as histograms. Use `--no-plot` when only the textual analysis is needed.

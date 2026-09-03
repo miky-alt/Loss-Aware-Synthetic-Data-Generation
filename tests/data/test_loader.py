@@ -2,6 +2,7 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from src.data import analyze
 from src.data.analyze import describe_dataset, plot_distributions
 from src.data.loader import DatasetBundle, split_dataset
 
@@ -61,3 +62,29 @@ def test_plot_distributions_creates_png(bundle, tmp_path):
 
     assert plot_path.exists()
     assert plot_path.suffix == ".png"
+
+
+def test_analyze_all_skips_dataset_connection_errors(monkeypatch, capsys):
+    loaded = DatasetBundle(
+        real=pd.DataFrame({"feature": [1, 2], "target": [0, 1]}),
+        target_col="target",
+        name="fake",
+        domain="test",
+    )
+
+    def load_dataset(name):
+        if name == "diabetes":
+            raise ConnectionError("offline")
+        return loaded
+
+    monkeypatch.setattr(analyze, "LOADERS", {"adult": object(), "diabetes": object()})
+    monkeypatch.setattr(analyze, "load_dataset", load_dataset)
+    monkeypatch.setattr(analyze, "describe_dataset", lambda bundle, head_rows: bundle.name)
+    monkeypatch.setattr(analyze, "plot_distributions", lambda *args: None)
+    monkeypatch.setattr("sys.argv", ["analyze", "all", "--no-plot"])
+
+    analyze.main()
+
+    output = capsys.readouterr().out
+    assert "fake" in output
+    assert "Could not load diabetes: offline" in output

@@ -38,7 +38,7 @@ def describe_dataset(bundle: DatasetBundle, head_rows: int = 5) -> str:
 
 def plot_distributions(
     bundle: DatasetBundle,
-    output_dir: str = "experiments/plots",
+    output_dir: str = "plots",
     bins: int = 30,
 ) -> Path:
     """Save one grid plot of every column distribution and return its path."""
@@ -85,7 +85,7 @@ def main() -> None:
     )
     parser.add_argument("--head", type=int, default=5, help="number of initial rows to display")
     parser.add_argument("--bins", type=int, default=30, help="number of bins for continuous-column histograms")
-    parser.add_argument("--plot-dir", default="experiments/plots", help="directory for distribution PNG files")
+    parser.add_argument("--plot-dir", default="plots", help="directory for distribution PNG files")
     parser.add_argument("--no-plot", action="store_true", help="print the text analysis without saving plots")
     args = parser.parse_args()
 
@@ -93,7 +93,13 @@ def main() -> None:
     for index, name in enumerate(names):
         if index:
             print("\n" + "=" * 80 + "\n")
-        bundle = load_dataset(name)
+        try:
+            bundle = load_dataset(name)
+        except ConnectionError as error:
+            if args.dataset != "all":
+                raise
+            print(f"Could not load {name}: {error}")
+            continue
         print(describe_dataset(bundle, head_rows=args.head))
         if not args.no_plot:
             print(f"Distribution plot: {plot_distributions(bundle, args.plot_dir, args.bins)}")
