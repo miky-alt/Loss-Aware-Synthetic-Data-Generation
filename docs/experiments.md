@@ -177,6 +177,20 @@ The same quoting rule applies to structured JSON passed to `find`. Use `show RUN
 
 `--kwarg KEY=VALUE` supports scalar values. For nested synthesizer parameters such as GaussianCopula's `numerical_distributions`, use `--kwargs-json` as shown above. The Python API described in [generators.md](generators.md#gaussiancopula-configuration) remains available when configuration needs to be assembled programmatically.
 
+### Custom RDT transformers
+
+Dataset runner scripts can configure RDT preprocessing per experiment with `transformer_specs`. The spec names a transformer from the installed RDT library and optionally supplies constructor kwargs:
+
+```python
+{
+    "transformer_specs": {
+        "fnlwgt": {"name": "LogScaler", "kwargs": {}},
+    }
+}
+```
+
+The runner resolves the class, calls `synthesizer.update_transformers(...)`, and then calls `fit()`. The selected transformer configuration is included in the report and in `index.jsonl`, so runs with different preprocessing remain distinguishable. The available transformer names are defined by the installed RDT version; examples include `LogScaler`, `GaussianNormalizer`, `ClusterBasedNormalizer`, `FloatFormatter`, `UniformEncoder`, `LabelEncoder`, and `BinaryEncoder`.
+
 ### Reproducing the default UCI Adult GaussianCopula baseline
 
 The preprocessed Adult dataset contains 47,621 rows. With the default `test_size=0.2`, the generator trains on 38,096 real records and evaluates against 9,525 held-out records. The following command generates the same number of synthetic records as the training split, with every GaussianCopula synthesizer option at SDV's default:

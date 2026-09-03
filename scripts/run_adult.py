@@ -37,6 +37,15 @@ EXPERIMENTS = [
                 "hours-per-week": "truncnorm",
             }
         },
+        "transformer_specs": {},
+    },
+    {
+        "name": "gaussian_copula_log_fnlwgt",
+        "generator_name": "gaussian_copula",
+        "generator_kwargs": {},
+        "transformer_specs": {
+            "fnlwgt": {"name": "LogScaler", "kwargs": {}},
+        },
     },
     {
         "name": "ctgan",
@@ -66,6 +75,7 @@ def main() -> None:
             seed=SEED,
             test_size=TEST_SIZE,
             generator_kwargs=experiment["generator_kwargs"],
+            transformer_specs=experiment.get("transformer_specs", {}),
         )
         report = run_experiment(config, output_dir=OUTPUT_DIR)
         print(f"\n=== {experiment['name']} ({config.run_name}) ===")

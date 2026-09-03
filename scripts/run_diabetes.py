@@ -49,6 +49,7 @@ def main() -> None:
             seed=SEED,
             test_size=TEST_SIZE,
             generator_kwargs=experiment["generator_kwargs"],
+            transformer_specs=experiment.get("transformer_specs", {}),
         )
         report = run_experiment(config, output_dir=OUTPUT_DIR)
         print(f"\n=== {experiment['name']} ({config.run_name}) ===")

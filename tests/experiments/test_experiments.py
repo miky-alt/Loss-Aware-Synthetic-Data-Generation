@@ -33,6 +33,17 @@ def test_run_name_differs_with_different_test_size():
     assert cfg1.run_name != cfg2.run_name
 
 
+def test_run_name_differs_with_different_transformer_specs():
+    cfg1 = TrainingConfig(dataset_name="adult", generator_name="ctgan", num_samples=100)
+    cfg2 = TrainingConfig(
+        dataset_name="adult",
+        generator_name="ctgan",
+        num_samples=100,
+        transformer_specs={"fnlwgt": {"name": "LogScaler", "kwargs": {}}},
+    )
+    assert cfg1.run_name != cfg2.run_name
+
+
 def test_run_name_unique_even_with_identical_config():
     # random suffix in created_at: two instances with the exact same
     # hyperparameters still never collide (e.g. rerunning after a code change)

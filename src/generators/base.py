@@ -23,6 +23,11 @@ class SyntheticGenerator(ABC):
         """Draw `num_rows` synthetic records from the fitted generator."""
         raise NotImplementedError
 
+    def update_transformers(self, transformer_specs: dict) -> None:
+        """Configure preprocessing transformers before fitting, when supported."""
+        if transformer_specs:
+            raise NotImplementedError("this generator does not support custom transformers")
+
     def get_training_diagnostics(self) -> dict:
         """Generator-specific post-fit artifacts included in the experiment report.
 

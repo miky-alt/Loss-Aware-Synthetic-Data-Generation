@@ -55,6 +55,7 @@ def build_report(
         artifacts = generator.get_training_diagnostics()
         if artifacts:
             report["artifacts"] = artifacts
+    report["transformer_specs"] = config.transformer_specs
     return report
 
 
@@ -82,6 +83,7 @@ def append_to_index(report: dict, run_name: str, output_dir: str = "experiments/
         "test_size": config.get("test_size"),
         "num_samples": config.get("num_samples"),
         "generator_kwargs": config.get("generator_kwargs"),
+        "transformer_specs": config.get("transformer_specs"),
     }
     out_dir = Path(output_dir)
     out_dir.mkdir(parents=True, exist_ok=True)

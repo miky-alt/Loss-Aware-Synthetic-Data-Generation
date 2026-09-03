@@ -66,6 +66,23 @@ def test_diagnostics_include_preprocessing_transformers():
     assert "FakeTransformer" in transformer["parameters"]
 
 
+def test_custom_transformer_is_applied_before_fit(tiny_real_data):
+    generator = GaussianCopulaGenerator()
+    generator.update_transformers({"income": {"name": "LogScaler", "kwargs": {}}})
+    generator.fit(tiny_real_data)
+
+    transformers = generator._synthesizer.get_transformers()
+    assert type(transformers["income"]).__name__ == "LogScaler"
+
+
+def test_unknown_custom_transformer_raises_before_fit(tiny_real_data):
+    generator = GaussianCopulaGenerator()
+    generator.update_transformers({"income": {"name": "MissingTransformer", "kwargs": {}}})
+
+    with pytest.raises(ValueError, match="Unknown RDT transformer"):
+        generator.fit(tiny_real_data)
+
+
 # epochs=1 keeps these fast, but they still train real torch models, so they
 # are marked slow and excluded by default (run with `pytest -m slow` to include them).
 @pytest.mark.slow
