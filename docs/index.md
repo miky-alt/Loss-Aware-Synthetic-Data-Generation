@@ -86,7 +86,7 @@ uv run python -m src.data.analyze adult --head 5
 uv run python -m src.data.analyze all --head 3 --plot-dir plots --analysis-dir analysis
 ```
 
-The analysis command uses the same preprocessing as the experiment pipeline. It prints the dataset head, shape, dtypes, missing values, target distribution, and numeric summary, then saves one readable TXT analysis and one PNG grid per dataset. Matching filenames make each text report easy to associate with its plot: `analysis/<dataset>_distributions.txt` and `plots/<dataset>_distributions.png`. Low-cardinality columns are shown as bar charts; continuous columns are shown as histograms. Use `--no-plot` when only the textual analysis and TXT files are needed.
+The analysis command uses the same preprocessing as the experiment pipeline. It prints the dataset head, shape, dtypes, missing values, target distribution, and numeric summary, then detects the SDV metadata with `Metadata.detect_from_dataframe` and saves one metadata JSON per dataset. Text analyses are saved in `analysis/`, distribution plots in `plots/`, and SDV metadata in `metadata/`. Use `--metadata-dir` to change the metadata destination and `--no-plot` when only the textual analysis and metadata are needed.
 
 In PowerShell, use backticks for multiline commands:
 
