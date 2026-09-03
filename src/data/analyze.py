@@ -36,6 +36,23 @@ def describe_dataset(bundle: DatasetBundle, head_rows: int = 5) -> str:
     return "\n".join(lines)
 
 
+def _dataset_stem(bundle: DatasetBundle) -> str:
+    return f"{bundle.name.lower().replace(' ', '_')}_distributions"
+
+
+def save_analysis(
+    bundle: DatasetBundle,
+    description: str,
+    output_dir: str = "analysis",
+) -> Path:
+    """Save the readable dataset analysis and return its path."""
+    analysis_dir = Path(output_dir)
+    analysis_dir.mkdir(parents=True, exist_ok=True)
+    analysis_path = analysis_dir / f"{_dataset_stem(bundle)}.txt"
+    analysis_path.write_text(description + "\n", encoding="utf-8")
+    return analysis_path
+
+
 def plot_distributions(
     bundle: DatasetBundle,
     output_dir: str = "plots",
@@ -68,7 +85,7 @@ def plot_distributions(
 
     plot_dir = Path(output_dir)
     plot_dir.mkdir(parents=True, exist_ok=True)
-    plot_path = plot_dir / f"{bundle.name.lower().replace(' ', '_')}_distributions.png"
+    plot_path = plot_dir / f"{_dataset_stem(bundle)}.png"
     figure.savefig(plot_path, dpi=150)
     plt.close(figure)
     return plot_path
@@ -86,6 +103,7 @@ def main() -> None:
     parser.add_argument("--head", type=int, default=5, help="number of initial rows to display")
     parser.add_argument("--bins", type=int, default=30, help="number of bins for continuous-column histograms")
     parser.add_argument("--plot-dir", default="plots", help="directory for distribution PNG files")
+    parser.add_argument("--analysis-dir", default="analysis", help="directory for readable analysis text files")
     parser.add_argument("--no-plot", action="store_true", help="print the text analysis without saving plots")
     args = parser.parse_args()
 
@@ -100,7 +118,9 @@ def main() -> None:
                 raise
             print(f"Could not load {name}: {error}")
             continue
-        print(describe_dataset(bundle, head_rows=args.head))
+        description = describe_dataset(bundle, head_rows=args.head)
+        print(description)
+        print(f"Analysis file: {save_analysis(bundle, description, args.analysis_dir)}")
         if not args.no_plot:
             print(f"Distribution plot: {plot_distributions(bundle, args.plot_dir, args.bins)}")
 

@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 
 from src.data import analyze
-from src.data.analyze import describe_dataset, plot_distributions
+from src.data.analyze import describe_dataset, plot_distributions, save_analysis
 from src.data.loader import DatasetBundle, split_dataset
 
 
@@ -62,6 +62,16 @@ def test_plot_distributions_creates_png(bundle, tmp_path):
 
     assert plot_path.exists()
     assert plot_path.suffix == ".png"
+
+
+def test_save_analysis_creates_readable_text_file(bundle, tmp_path):
+    description = describe_dataset(bundle, head_rows=2)
+
+    analysis_path = save_analysis(bundle, description, output_dir=str(tmp_path))
+
+    assert analysis_path.exists()
+    assert analysis_path.suffix == ".txt"
+    assert analysis_path.read_text(encoding="utf-8").strip() == description
 
 
 def test_analyze_all_skips_dataset_connection_errors(monkeypatch, capsys):
