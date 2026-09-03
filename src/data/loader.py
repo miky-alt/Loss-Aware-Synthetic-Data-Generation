@@ -2,7 +2,7 @@
 Data loaders for all datasets used in the project.
 
 Each loader returns a unified DatasetBundle with:
-- real: pd.DataFrame (preprocessed, ready for evaluation)
+- real: pd.DataFrame (cleaned, with categorical values preserved for SDV)
 - target_col: str (column name to use for downstream classification)
 - name: str (human-readable dataset name)
 - domain: str (e.g. "medical", "socioeconomic")
@@ -21,13 +21,6 @@ class DatasetBundle:
     target_col: str
     name: str
     domain: str
-
-
-def _encode_categoricals(df: pd.DataFrame) -> pd.DataFrame:
-    """Label-encode all object/category columns in place."""
-    for col in df.select_dtypes(include=["object", "category"]).columns:
-        df[col] = df[col].astype("category").cat.codes
-    return df
 
 
 def load_uci_adult() -> DatasetBundle:
@@ -50,7 +43,6 @@ def load_uci_adult() -> DatasetBundle:
     df[target_col] = (df[target_col].str.contains(">50K")).astype(int)
 
     df = df.dropna().reset_index(drop=True)
-    df = _encode_categoricals(df)
 
     return DatasetBundle(
         real=df,
@@ -83,7 +75,6 @@ def load_diabetes_130() -> DatasetBundle:
     missing_threshold = 0.4
     df = df.dropna(thresh=int(len(df) * (1 - missing_threshold)), axis=1)
     df = df.dropna().reset_index(drop=True)
-    df = _encode_categoricals(df)
 
     return DatasetBundle(
         real=df,
@@ -112,7 +103,6 @@ def load_heart_disease() -> DatasetBundle:
     df[target_col] = (df[target_col] > 0).astype(int)
 
     df = df.dropna().reset_index(drop=True)
-    df = _encode_categoricals(df)
 
     return DatasetBundle(
         real=df,
