@@ -44,6 +44,28 @@ def test_get_training_diagnostics_empty_before_fit(generator_cls):
     assert generator_cls(epochs=1).get_training_diagnostics() == {}
 
 
+def test_diagnostics_include_preprocessing_transformers():
+    class FakeTransformer:
+        pass
+
+    class FakeSynthesizer:
+        def get_transformers(self):
+            return {"age": FakeTransformer()}
+
+        def get_learned_distributions(self):
+            return {}
+
+    generator = GaussianCopulaGenerator()
+    generator._synthesizer = FakeSynthesizer()
+
+    diagnostics = generator.get_training_diagnostics()
+
+    transformer = diagnostics["preprocessing_transformers"]["age"]
+    assert transformer["class"] == "FakeTransformer"
+    assert transformer["module"] == __name__
+    assert "FakeTransformer" in transformer["parameters"]
+
+
 # epochs=1 keeps these fast, but they still train real torch models, so they
 # are marked slow and excluded by default (run with `pytest -m slow` to include them).
 @pytest.mark.slow
