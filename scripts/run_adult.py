@@ -1,5 +1,12 @@
 """Run the configured Gaussian Copula experiments for UCI Adult."""
 
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
 from src.experiments.config import TrainingConfig
 from src.experiments.experiment import run_experiment
 from src.experiments.report import summarize_report
@@ -29,6 +36,22 @@ EXPERIMENTS = [
                 # gaussian_kde is quadratic in the number of training rows.
                 "hours-per-week": "truncnorm",
             }
+        },
+    },
+    {
+        "name": "ctgan",
+        "generator_name": "ctgan",
+        "generator_kwargs": {
+            "epochs": 500,
+            "verbose": True,
+        },
+    },
+    {
+        "name": "tvae",
+        "generator_name": "tvae",
+        "generator_kwargs": {
+            "epochs": 500,
+            "verbose": True,
         },
     },
 ]
