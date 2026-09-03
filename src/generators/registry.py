@@ -6,11 +6,13 @@ one line here — nothing in `training/` needs to change.
 
 from src.generators.base import SyntheticGenerator
 from src.generators.baseline import CTGANGenerator, GaussianCopulaGenerator, TVAEGenerator
+from src.generators.loss_aware import LossAwareTVAEGenerator
 
 GENERATORS: dict[str, type[SyntheticGenerator]] = {
     "ctgan": CTGANGenerator,
     "tvae": TVAEGenerator,
     "gaussian_copula": GaussianCopulaGenerator,
+    "tvae_loss_aware": LossAwareTVAEGenerator,
 }
 
 
