@@ -57,6 +57,7 @@ def test_adult_loader_preserves_categorical_values_for_sdv(monkeypatch):
             "workclass": ["Private", "State-gov"],
             "education": ["Bachelors", "HS-grad"],
             "occupation": ["Tech-support", "Exec-managerial"],
+            "sex": ["Male", "Female"],
         }
     )
     targets = pd.DataFrame({"income": ["<=50K", ">50K"]})
@@ -68,6 +69,8 @@ def test_adult_loader_preserves_categorical_values_for_sdv(monkeypatch):
     for column in ("workclass", "education", "occupation"):
         assert pd.api.types.is_string_dtype(bundle.real[column])
     assert bundle.real["education"].tolist() == ["Bachelors", "HS-grad"]
+    assert pd.api.types.is_bool_dtype(bundle.real["sex"])
+    assert bundle.real["sex"].tolist() == [True, False]
     assert pd.api.types.is_bool_dtype(bundle.real["income"])
     assert bundle.real["income"].tolist() == [False, True]
 
