@@ -88,6 +88,20 @@ def test_plot_distributions_creates_png(bundle, tmp_path):
     assert plot_path.suffix == ".png"
 
 
+def test_plot_distributions_handles_high_cardinality_categoricals(tmp_path):
+    data = pd.DataFrame(
+        {
+            "category": [f"value-{index}" for index in range(25)],
+            "target": [False, True] * 12 + [False],
+        }
+    )
+    bundle = DatasetBundle(real=data, target_col="target", name="categorical", domain="test")
+
+    plot_path = plot_distributions(bundle, output_dir=str(tmp_path))
+
+    assert plot_path.exists()
+
+
 def test_save_analysis_creates_readable_text_file(bundle, tmp_path):
     description = describe_dataset(bundle, head_rows=2)
 

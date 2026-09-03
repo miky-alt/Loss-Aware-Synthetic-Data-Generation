@@ -83,7 +83,7 @@ def plot_distributions(
 
     for axis, column in zip(axes, columns):
         values = data[column].dropna()
-        if values.nunique() <= 20:
+        if not pd.api.types.is_numeric_dtype(values) or values.nunique() <= 20:
             values.value_counts().sort_index().plot.bar(ax=axis)
             axis.set_xlabel(column)
             axis.set_ylabel("Count")
