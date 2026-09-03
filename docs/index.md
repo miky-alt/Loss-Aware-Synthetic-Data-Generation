@@ -79,6 +79,18 @@ uv run python -m src.main find --dataset adult --generator ctgan --kwarg epochs=
 
 See [experiments.md](experiments.md) for the full CLI reference and how `run_name`/`index.jsonl` work.
 
+### Run configured experiments by dataset
+
+The `scripts/` directory contains one editable runner per dataset. Each runner executes the two current Gaussian Copula configurations in `EXPERIMENTS`: the SDV default and a custom numerical-distribution configuration.
+
+```powershell
+uv run python scripts/run_adult.py
+uv run python scripts/run_diabetes.py
+uv run python scripts/run_heart.py
+```
+
+Edit `NUM_SAMPLES`, `SEED`, `TEST_SIZE`, `OUTPUT_DIR`, or the `EXPERIMENTS` list at the top of the relevant script to add generators or change their kwargs. Every configuration is trained, evaluated, and saved sequentially in `experiments/results/`. The Adult script uses `truncnorm` for `hours-per-week`; `gaussian_kde` is intentionally not the default there because its fit requires quadratic memory in the number of training rows.
+
 ### Inspect a dataset and plot its distributions
 
 ```bash
