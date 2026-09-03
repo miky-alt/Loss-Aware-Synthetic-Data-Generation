@@ -25,6 +25,10 @@ class _SDVSynthesizerGenerator(SyntheticGenerator):
 
     def fit(self, real_data: pd.DataFrame) -> "SyntheticGenerator":
         metadata = Metadata.detect_from_dataframe(real_data)
+        boolean_columns = real_data.select_dtypes(include="bool").columns
+        metadata.update_columns_metadata(
+            {column: {"sdtype": "boolean"} for column in boolean_columns}
+        )
         self._synthesizer = self._synthesizer_cls(metadata, **self._synthesizer_kwargs)
         self._synthesizer.fit(real_data)
         return self

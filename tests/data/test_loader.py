@@ -68,7 +68,8 @@ def test_adult_loader_preserves_categorical_values_for_sdv(monkeypatch):
     for column in ("workclass", "education", "occupation"):
         assert pd.api.types.is_string_dtype(bundle.real[column])
     assert bundle.real["education"].tolist() == ["Bachelors", "HS-grad"]
-    assert bundle.real["income"].tolist() == [0, 1]
+    assert pd.api.types.is_bool_dtype(bundle.real["income"])
+    assert bundle.real["income"].tolist() == [False, True]
 
 
 def test_describe_dataset_includes_head_and_summary(bundle):
@@ -105,6 +106,20 @@ def test_save_sdv_metadata_creates_json(bundle, tmp_path):
     metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
     assert "columns" in metadata["tables"]["table"]
     assert metadata["tables"]["table"]["columns"]["x"]["sdtype"] == "numerical"
+
+
+def test_save_sdv_metadata_marks_boolean_columns(bundle, tmp_path):
+    boolean_bundle = DatasetBundle(
+        real=bundle.real.assign(flag=bundle.real["y"].astype(bool)),
+        target_col="y",
+        name="boolean-data",
+        domain="test",
+    )
+
+    metadata_path = save_sdv_metadata(boolean_bundle, output_dir=str(tmp_path))
+    metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
+
+    assert metadata["tables"]["table"]["columns"]["flag"]["sdtype"] == "boolean"
 
 
 def test_analyze_all_skips_dataset_connection_errors(monkeypatch, capsys):
