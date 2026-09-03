@@ -91,6 +91,14 @@ uv run python scripts/run_heart.py
 
 Edit `NUM_SAMPLES`, `SEED`, `TEST_SIZE`, `OUTPUT_DIR`, or the `EXPERIMENTS` list at the top of the relevant script to add generators or change their kwargs. Every configuration is trained, evaluated, and saved sequentially in `experiments/results/`. The Adult script uses `truncnorm` for `hours-per-week`; `gaussian_kde` is intentionally not the default there because its fit requires quadratic memory in the number of training rows.
 
+For the complete Adult preprocessing comparison matrix, use:
+
+```powershell
+uv run python scripts/run_adult_preprocessing.py
+```
+
+This runs seven configurations: default and modified-distribution Gaussian Copula, default and `LogScaler(fnlwgt)` Gaussian Copula, and default plus `LogScaler(fnlwgt)` variants for CTGAN and TVAE. All runs use the same seed, train/test split, and sample count.
+
 ### Inspect a dataset and plot its distributions
 
 ```bash
