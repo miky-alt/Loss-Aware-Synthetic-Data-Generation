@@ -31,6 +31,7 @@ def run_experiment(
         generator = load_generator(pretrained_run_name, output_dir)
     else:
         generator = build_generator(config.generator_name, **config.generator_kwargs)
+        generator.update_transformers(config.transformer_specs)
         generator.fit(train_bundle.real)
         save_generator(generator, config.run_name, output_dir)
         save_metadata(train_bundle.real, config.run_name, output_dir)

@@ -22,6 +22,7 @@ class TrainingConfig:
     seed: int = 42
     test_size: float = 0.2  # fraction held out from generator.fit(), used for evaluation
     generator_kwargs: dict[str, Any] = field(default_factory=dict)
+    transformer_specs: dict[str, Any] = field(default_factory=dict)
     # random suffix guarantees run_name uniqueness even if two configs with
     # identical hyperparameters are created within the same second
     created_at: str = field(
@@ -36,7 +37,7 @@ class TrainingConfig:
         run_name, even before created_at is considered.
         """
         payload = json.dumps(
-            {"generator_kwargs": self.generator_kwargs, "test_size": self.test_size},
+            {"generator_kwargs": self.generator_kwargs, "test_size": self.test_size, "transformer_specs": self.transformer_specs},
             sort_keys=True,
         )
         return hashlib.sha256(payload.encode()).hexdigest()[:6]
