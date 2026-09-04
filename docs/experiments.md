@@ -151,9 +151,9 @@ Heart experiment matrices.
 ### Runtime trade-off
 
 Repeated training increases cost linearly with the number of seeds. The current
-matrices contain approximately 5 Adult, 8 Diabetes, and 2 Heart configurations.
-With five seeds this becomes about 75 complete trainings instead of 15; with
-three seeds it becomes about 45. Gaussian Copula runs are relatively cheap,
+matrices contain approximately 8 Adult, 8 Diabetes, and 2 Heart configurations.
+With five seeds this becomes about 90 complete trainings instead of 18; with
+three seeds it becomes about 54. Gaussian Copula runs are relatively cheap,
 while CTGAN and TVAE at 500 epochs dominate the runtime, especially on
 Diabetes. A practical protocol is therefore:
 
