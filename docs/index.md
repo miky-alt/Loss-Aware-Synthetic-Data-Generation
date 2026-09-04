@@ -93,14 +93,6 @@ uv run python scripts/run_heart.py
 
 Edit `NUM_SAMPLES`, `SEEDS`, `TEST_SIZE`, `OUTPUT_DIR`, or the `EXPERIMENTS` list at the top of the relevant script to add generators or change their kwargs. Each configuration now runs with the common default seeds `(1, 2, 3, 4, 5)`; individual reports are saved in `experiments/results/`, confidence-interval aggregates in `experiments/results/aggregates/`, and utility/privacy CI plots in `experiments/results/figures/`. The Adult script uses `truncnorm` for `hours-per-week`; `gaussian_kde` is intentionally not the default there because its fit requires quadratic memory in the number of training rows.
 
-For the complete Adult preprocessing comparison matrix, use:
-
-```powershell
-uv run python scripts/run_adult_preprocessing.py
-```
-
-This runs eight configurations: default, modified-distribution, `LogScaler(fnlwgt)`, and combined modified-distribution plus `LogScaler(fnlwgt)` Gaussian Copula, and default plus `LogScaler(fnlwgt)` variants for CTGAN and TVAE. All runs use the same seed, train/test split, and sample count.
-
 `scripts/run_diabetes.py` runs the equivalent eight-configuration matrix for Diabetes 130-US Hospitals, using `LogScaler(time_in_hospital, num_medications)` and `ClusterBasedNormalizer` for the zero-inflated utilization counts. The two LogScaler columns are positive and right-skewed; the three utilization counts contain many zeros, so a plain LogScaler is not valid for them.
 
 `scripts/run_heart.py` runs an eight-configuration matrix for Heart Disease:
