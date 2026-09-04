@@ -48,6 +48,23 @@ EXPERIMENTS = [
         },
     },
     {
+        "name": "gaussian_copula_modified_log_fnlwgt",
+        "generator_name": "gaussian_copula",
+        "generator_kwargs": {
+            "numerical_distributions": {
+                "age": "gamma",
+                "fnlwgt": "gamma",
+                "education-num": "truncnorm",
+                "capital-gain": "gamma",
+                "capital-loss": "gamma",
+                "hours-per-week": "truncnorm",
+            }
+        },
+        "transformer_specs": {
+            "fnlwgt": {"name": "LogScaler", "kwargs": {}},
+        },
+    },
+    {
         "name": "ctgan_default",
         "generator_name": "ctgan",
         "generator_kwargs": {"epochs": 500, "verbose": True},

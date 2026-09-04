@@ -38,10 +38,29 @@ EXPERIMENTS = [
         },
     },
     {
-        "name": "gaussian_copula_log_num_medications",
+        "name": "gaussian_copula_log_positive_counts",
         "generator_name": "gaussian_copula",
         "generator_kwargs": {},
         "transformer_specs": {
+            "time_in_hospital": {"name": "LogScaler", "kwargs": {}},
+            "num_medications": {"name": "LogScaler", "kwargs": {}},
+        },
+    },
+    {
+        "name": "gaussian_copula_modified_log_positive_counts",
+        "generator_name": "gaussian_copula",
+        "generator_kwargs": {
+            "numerical_distributions": {
+                "time_in_hospital": "gamma",
+                "num_lab_procedures": "truncnorm",
+                "num_medications": "gamma",
+                "number_outpatient": "gamma",
+                "number_emergency": "gamma",
+                "number_inpatient": "gamma",
+            }
+        },
+        "transformer_specs": {
+            "time_in_hospital": {"name": "LogScaler", "kwargs": {}},
             "num_medications": {"name": "LogScaler", "kwargs": {}},
         },
     },
@@ -52,10 +71,11 @@ EXPERIMENTS = [
         "transformer_specs": {},
     },
     {
-        "name": "ctgan_log_num_medications",
+        "name": "ctgan_log_positive_counts",
         "generator_name": "ctgan",
         "generator_kwargs": {"epochs": 500, "verbose": True},
         "transformer_specs": {
+            "time_in_hospital": {"name": "LogScaler", "kwargs": {}},
             "num_medications": {"name": "LogScaler", "kwargs": {}},
         },
     },
@@ -66,10 +86,11 @@ EXPERIMENTS = [
         "transformer_specs": {},
     },
     {
-        "name": "tvae_log_num_medications",
+        "name": "tvae_log_positive_counts",
         "generator_name": "tvae",
         "generator_kwargs": {"epochs": 500, "verbose": True},
         "transformer_specs": {
+            "time_in_hospital": {"name": "LogScaler", "kwargs": {}},
             "num_medications": {"name": "LogScaler", "kwargs": {}},
         },
     },
