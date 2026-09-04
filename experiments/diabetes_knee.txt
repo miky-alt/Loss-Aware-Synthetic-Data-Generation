@@ -1,0 +1,144 @@
+=== seed=1 lambda_priv=2 ===
+config: diabetes / tvae_loss_aware
+utility.mmd: 0.0015019339014985345
+utility.mean_emd: 2.2817571644911827
+utility.correlation_distance: 2.4434331566138066
+utility.f1_real: 0.8425176684196884
+utility.f1_synthetic: 0.8379404704683374
+utility.f1_discrepancy: 0.004577197951351031
+privacy.dcr_mean: 3.3801672252848594
+privacy.dcr_median: 3.283751007549277
+privacy.dcr_min: 0.992499955635519
+privacy.dcr_5th_percentile: 2.0374835992422566
+privacy.nndr_mean: 0.9118050132050975
+privacy.nndr_median: 0.9356843577729617
+privacy.nndr_5th_percentile: 0.7372536872698395
+privacy.inference_f1: 0.8379404704683374
+privacy.baseline_f1: 0.8379404704683374
+privacy.inference_risk_delta: 0.0
+privacy.disclosure_rate: 0.0
+privacy.n_at_risk: 0
+privacy.threshold_used: 0.5
+artifacts.loss_values: 9500 entries
+artifacts.skipped_steps: present
+artifacts.lambdas: present
+=== seed=1 lambda_priv=5 ===
+config: diabetes / tvae_loss_aware
+utility.mmd: 0.00150777671466867
+utility.mean_emd: 3.3775910782097998
+utility.correlation_distance: 3.1873825792408583
+utility.f1_real: 0.8425176684196884
+utility.f1_synthetic: 0.7809537050495248
+utility.f1_discrepancy: 0.06156396337016368
+privacy.dcr_mean: 7.000847299895744
+privacy.dcr_median: 7.299448035215406
+privacy.dcr_min: 1.1708671156363808
+privacy.dcr_5th_percentile: 3.735393714657854
+privacy.nndr_mean: 0.9602975762002546
+privacy.nndr_median: 0.9775497784292029
+privacy.nndr_5th_percentile: 0.8673172925134214
+privacy.inference_f1: 0.7809537050495248
+privacy.baseline_f1: 0.8379404704683374
+privacy.inference_risk_delta: -0.056986765418812646
+privacy.disclosure_rate: 0.0
+privacy.n_at_risk: 0
+privacy.threshold_used: 0.5
+artifacts.loss_values: 9500 entries
+artifacts.skipped_steps: present
+artifacts.lambdas: present
+=== seed=2 lambda_priv=2 ===
+config: diabetes / tvae_loss_aware
+utility.mmd: 0.0015033728180430634
+utility.mean_emd: 0.9479727910766723
+utility.correlation_distance: 2.7465417203600935
+utility.f1_real: 0.8416863894500642
+utility.f1_synthetic: 0.8384741022656109
+utility.f1_discrepancy: 0.003212287184453322
+privacy.dcr_mean: 3.3683356775327704
+privacy.dcr_median: 3.296325478219956
+privacy.dcr_min: 1.245594332174029
+privacy.dcr_5th_percentile: 1.9781491886145872
+privacy.nndr_mean: 0.9159139187173164
+privacy.nndr_median: 0.940624996014493
+privacy.nndr_5th_percentile: 0.7440225659713343
+privacy.inference_f1: 0.8384741022656109
+privacy.baseline_f1: 0.8379404704683374
+privacy.inference_risk_delta: 0.0005336317972735038
+privacy.disclosure_rate: 0.0
+privacy.n_at_risk: 0
+privacy.threshold_used: 0.5
+artifacts.loss_values: 9500 entries
+artifacts.skipped_steps: present
+artifacts.lambdas: present
+=== seed=2 lambda_priv=5 ===
+config: diabetes / tvae_loss_aware
+utility.mmd: 0.00150760993199317
+utility.mean_emd: 4.041948076656981
+utility.correlation_distance: 3.531681218178852
+utility.f1_real: 0.8416863894500642
+utility.f1_synthetic: 0.7880721597990138
+utility.f1_discrepancy: 0.05361422965105045
+privacy.dcr_mean: 7.062919434433898
+privacy.dcr_median: 7.418231194459765
+privacy.dcr_min: 1.574417236167726
+privacy.dcr_5th_percentile: 4.019478542485945
+privacy.nndr_mean: 0.9684853280654505
+privacy.nndr_median: 0.9783057549307648
+privacy.nndr_5th_percentile: 0.9049697552946399
+privacy.inference_f1: 0.7880721597990138
+privacy.baseline_f1: 0.8379404704683374
+privacy.inference_risk_delta: -0.04986831066932362
+privacy.disclosure_rate: 0.0
+privacy.n_at_risk: 0
+privacy.threshold_used: 0.5
+artifacts.loss_values: 9500 entries
+artifacts.skipped_steps: present
+artifacts.lambdas: present
+=== seed=3 lambda_priv=2 ===
+config: diabetes / tvae_loss_aware
+utility.mmd: 0.00150353917058763
+utility.mean_emd: 1.73905647417862
+utility.correlation_distance: 2.7622402908240153
+utility.f1_real: 0.8416805942136085
+utility.f1_synthetic: 0.8372568411816458
+utility.f1_discrepancy: 0.0044237530319627405
+privacy.dcr_mean: 3.308271682562876
+privacy.dcr_median: 3.2255653196934877
+privacy.dcr_min: 1.2735113381844472
+privacy.dcr_5th_percentile: 1.9312401103017758
+privacy.nndr_mean: 0.9142414935391057
+privacy.nndr_median: 0.9414310694277832
+privacy.nndr_5th_percentile: 0.7508522291303878
+privacy.inference_f1: 0.8372568411816458
+privacy.baseline_f1: 0.8379404704683374
+privacy.inference_risk_delta: -0.0006836292866916338
+privacy.disclosure_rate: 0.0
+privacy.n_at_risk: 0
+privacy.threshold_used: 0.5
+artifacts.loss_values: 9500 entries
+artifacts.skipped_steps: present
+artifacts.lambdas: present
+=== seed=3 lambda_priv=5 ===
+config: diabetes / tvae_loss_aware
+utility.mmd: 0.0015071108553328812
+utility.mean_emd: 3.1378792683301824
+utility.correlation_distance: 3.159079948958085
+utility.f1_real: 0.8416805942136085
+utility.f1_synthetic: 0.8124296840615626
+utility.f1_discrepancy: 0.02925091015204595
+privacy.dcr_mean: 7.899738713480981
+privacy.dcr_median: 8.194547936261639
+privacy.dcr_min: 1.722934993877777
+privacy.dcr_5th_percentile: 3.81819603781326
+privacy.nndr_mean: 0.9567711051299604
+privacy.nndr_median: 0.9712055202856378
+privacy.nndr_5th_percentile: 0.875257443283013
+privacy.inference_f1: 0.8124296840615626
+privacy.baseline_f1: 0.8379404704683374
+privacy.inference_risk_delta: -0.025510786406774844
+privacy.disclosure_rate: 0.0
+privacy.n_at_risk: 0
+privacy.threshold_used: 0.5
+artifacts.loss_values: 9500 entries
+artifacts.skipped_steps: present
+artifacts.lambdas: present
