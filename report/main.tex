@@ -591,9 +591,8 @@ seed, test fraction and generator keyword arguments. The seed controls the
 train/test split, the initialization and the sampling. Each run writes a full
 JSON report (all metrics, per-batch loss components, effective margin, code
 version) and appends a summary line to a queryable index, so that every number
-in this report can be reproduced from disk. \todo{colleague: one paragraph on
-the experiment framework (registry, persistence, CLI) if you want it here
-rather than in the repository docs.}
+in this report can be reproduced from disk. \todo{miky: one paragraph on
+the experiment framework (registry, persistence, CLI)}
 
 Heart Disease runs use \texttt{batch\_size=32} and 300 epochs; Adult and
 Diabetes use \texttt{batch\_size=500} and 100 epochs. The utility weights are
@@ -1528,7 +1527,7 @@ and
 \end{itemize}
 
 \paragraph{Environment.} Python 3.12, \texttt{torch} 2.13, \texttt{ctgan} 0.11.1,
-\texttt{sdv} \todo{version}, \texttt{scikit-learn} 1.9, on Apple silicon (MPS).
+\texttt{sdv} 1.32.1, \texttt{scikit-learn} 1.9, on Apple silicon (MPS).
 Seeds control the train/test split, model initialization and sampling. MPS
 kernels are not bitwise deterministic, so re-running reproduces the tables up
 to seed noise rather than exactly.
