@@ -20,6 +20,7 @@ src/
   generators/         # Synthetic data generators: interface + CTGAN/TVAE/GaussianCopula baselines
     base.py           # SyntheticGenerator interface (fit/sample/get_training_diagnostics contract)
     baseline.py       # CTGANGenerator, TVAEGenerator, GaussianCopulaGenerator (sdv-backed)
+    loss_aware.py     # LossAwareTVAE: ctgan TVAE + MMD/correlation/DCR-hinge penalties
     registry.py       # GENERATORS dict + build_generator() — single extension point
   experiments/        # Experiment orchestration layer
     config.py         # TrainingConfig + ExperimentMode
@@ -36,6 +37,7 @@ docs/
   generators.md       # Generator interface and CTGAN/TVAE/GaussianCopula baseline design decisions
   experiments.md      # Experiment pipeline, config, persistence, run indexing, and CLI
   design-exploration.md  # sdv features investigated but not integrated, and why
+  loss_aware_training.md # Loss-aware TVAE: objective, penalty terms (with math), fixes, first results
   metrics/
     utility.md        # Theory and implementation of utility metrics
     privacy.md        # Theory and implementation of privacy metrics

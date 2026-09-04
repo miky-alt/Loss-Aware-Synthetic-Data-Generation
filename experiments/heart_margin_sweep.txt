@@ -1,0 +1,392 @@
+=== seed=1 margin=0.5 priv-only ===
+config: heart / tvae_loss_aware
+utility.mmd: 0.01995670482425186
+utility.mean_emd: 1.1150183094201316
+utility.correlation_distance: 2.6664377785179205
+utility.f1_real: 0.8662177328843995
+utility.f1_synthetic: 0.8327721661054994
+utility.f1_discrepancy: 0.03344556677890009
+privacy.dcr_mean: 1.712007263597806
+privacy.dcr_median: 1.6989490990473781
+privacy.dcr_min: 0.18652602222929468
+privacy.dcr_5th_percentile: 0.7522941876885394
+privacy.nndr_mean: 0.8316711047176241
+privacy.nndr_median: 0.8798612751173385
+privacy.nndr_5th_percentile: 0.4952417294635668
+privacy.inference_f1: 0.8327721661054994
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.46175767335187623
+privacy.disclosure_rate: 0.015
+privacy.n_at_risk: 15
+privacy.threshold_used: 0.5
+artifacts.loss_values: 2400 entries
+artifacts.lambdas: present
+=== seed=1 margin=0.5 both ===
+config: heart / tvae_loss_aware
+utility.mmd: 0.017912053211816742
+utility.mean_emd: 1.446855033759224
+utility.correlation_distance: 2.331577862193022
+utility.f1_real: 0.8662177328843995
+utility.f1_synthetic: 0.8168194868945078
+utility.f1_discrepancy: 0.04939824598989173
+privacy.dcr_mean: 1.9551684988459266
+privacy.dcr_median: 1.9841847740179532
+privacy.dcr_min: 0.33609747158072895
+privacy.dcr_5th_percentile: 0.9708960927035659
+privacy.nndr_mean: 0.8522482158275243
+privacy.nndr_median: 0.8938525042209006
+privacy.nndr_5th_percentile: 0.566546640821585
+privacy.inference_f1: 0.8168194868945078
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.4458049941408846
+privacy.disclosure_rate: 0.002
+privacy.n_at_risk: 2
+privacy.threshold_used: 0.5
+artifacts.loss_values: 2400 entries
+artifacts.lambdas: present
+=== seed=1 margin=1.0 priv-only ===
+config: heart / tvae_loss_aware
+utility.mmd: 0.01916472102437078
+utility.mean_emd: 1.2585664920676365
+utility.correlation_distance: 2.365345017429347
+utility.f1_real: 0.8662177328843995
+utility.f1_synthetic: 0.8327721661054994
+utility.f1_discrepancy: 0.03344556677890009
+privacy.dcr_mean: 1.7984111828530027
+privacy.dcr_median: 1.7773789658232597
+privacy.dcr_min: 0.11514107159789802
+privacy.dcr_5th_percentile: 0.7746636367448225
+privacy.nndr_mean: 0.841025047797269
+privacy.nndr_median: 0.8819286842094262
+privacy.nndr_5th_percentile: 0.52177399806247
+privacy.inference_f1: 0.8327721661054994
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.46175767335187623
+privacy.disclosure_rate: 0.012
+privacy.n_at_risk: 12
+privacy.threshold_used: 0.5
+artifacts.loss_values: 2400 entries
+artifacts.lambdas: present
+=== seed=1 margin=1.0 both ===
+config: heart / tvae_loss_aware
+utility.mmd: 0.018021605813988494
+utility.mean_emd: 1.2452668066665493
+utility.correlation_distance: 2.3520770657503074
+utility.f1_real: 0.8662177328843995
+utility.f1_synthetic: 0.8996632996632996
+utility.f1_discrepancy: -0.03344556677890009
+privacy.dcr_mean: 2.026553032554264
+privacy.dcr_median: 2.036293665990754
+privacy.dcr_min: 0.2547213582072116
+privacy.dcr_5th_percentile: 1.0177101153181927
+privacy.nndr_mean: 0.8523717968488762
+privacy.nndr_median: 0.899333625785351
+privacy.nndr_5th_percentile: 0.5686411153803229
+privacy.inference_f1: 0.8996632996632996
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.5286488069096764
+privacy.disclosure_rate: 0.003
+privacy.n_at_risk: 3
+privacy.threshold_used: 0.5
+artifacts.loss_values: 2400 entries
+artifacts.lambdas: present
+=== seed=1 margin=1.5 priv-only ===
+config: heart / tvae_loss_aware
+utility.mmd: 0.019430443129957637
+utility.mean_emd: 1.3318687236477953
+utility.correlation_distance: 2.5691394158722916
+utility.f1_real: 0.8662177328843995
+utility.f1_synthetic: 0.8497902097902099
+utility.f1_discrepancy: 0.0164275230941896
+privacy.dcr_mean: 1.7462214773392968
+privacy.dcr_median: 1.7064303322237364
+privacy.dcr_min: 0.33992677439847985
+privacy.dcr_5th_percentile: 0.7981748294659871
+privacy.nndr_mean: 0.8392965783775571
+privacy.nndr_median: 0.879059383032781
+privacy.nndr_5th_percentile: 0.5618650793215525
+privacy.inference_f1: 0.8497902097902099
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.4787757170365867
+privacy.disclosure_rate: 0.008
+privacy.n_at_risk: 8
+privacy.threshold_used: 0.5
+artifacts.loss_values: 2400 entries
+artifacts.lambdas: present
+=== seed=1 margin=1.5 both ===
+config: heart / tvae_loss_aware
+utility.mmd: 0.017954568660256166
+utility.mean_emd: 1.1982370568642489
+utility.correlation_distance: 2.372337778022393
+utility.f1_real: 0.8662177328843995
+utility.f1_synthetic: 0.9161738477424201
+utility.f1_discrepancy: -0.04995611485802054
+privacy.dcr_mean: 2.053170417060962
+privacy.dcr_median: 2.0742290330331024
+privacy.dcr_min: 0.36014668655074417
+privacy.dcr_5th_percentile: 1.0484085184409566
+privacy.nndr_mean: 0.8570293416771656
+privacy.nndr_median: 0.899778927211029
+privacy.nndr_5th_percentile: 0.5885599203646735
+privacy.inference_f1: 0.9161738477424201
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.5451593549887969
+privacy.disclosure_rate: 0.003
+privacy.n_at_risk: 3
+privacy.threshold_used: 0.5
+artifacts.loss_values: 2400 entries
+artifacts.lambdas: present
+=== seed=2 margin=0.5 priv-only ===
+config: heart / tvae_loss_aware
+utility.mmd: 0.018907265573562104
+utility.mean_emd: 1.610171975953198
+utility.correlation_distance: 2.1634848964921125
+utility.f1_real: 0.816819827346143
+utility.f1_synthetic: 0.7835143414090783
+utility.f1_discrepancy: 0.03330548593706473
+privacy.dcr_mean: 1.7763999767713945
+privacy.dcr_median: 1.722964953658939
+privacy.dcr_min: 0.3326083357897765
+privacy.dcr_5th_percentile: 0.8301792228051657
+privacy.nndr_mean: 0.8455459822578689
+privacy.nndr_median: 0.8879120058869464
+privacy.nndr_5th_percentile: 0.568884542708868
+privacy.inference_f1: 0.7835143414090783
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.4124998486554551
+privacy.disclosure_rate: 0.008
+privacy.n_at_risk: 8
+privacy.threshold_used: 0.5
+artifacts.loss_values: 2400 entries
+artifacts.lambdas: present
+=== seed=2 margin=0.5 both ===
+config: heart / tvae_loss_aware
+utility.mmd: 0.017722684213232955
+utility.mean_emd: 1.1267264019985945
+utility.correlation_distance: 1.8230144190892903
+utility.f1_real: 0.816819827346143
+utility.f1_synthetic: 0.815582465033324
+utility.f1_discrepancy: 0.0012373623128190125
+privacy.dcr_mean: 2.0156355366197416
+privacy.dcr_median: 2.026985554703821
+privacy.dcr_min: 0.4940081430583391
+privacy.dcr_5th_percentile: 1.0008623076089094
+privacy.nndr_mean: 0.8507708817978665
+privacy.nndr_median: 0.8943195435085491
+privacy.nndr_5th_percentile: 0.5567526337305261
+privacy.inference_f1: 0.815582465033324
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.4445679722797008
+privacy.disclosure_rate: 0.001
+privacy.n_at_risk: 1
+privacy.threshold_used: 0.5
+artifacts.loss_values: 2400 entries
+artifacts.lambdas: present
+=== seed=2 margin=1.0 priv-only ===
+config: heart / tvae_loss_aware
+utility.mmd: 0.01875341832113334
+utility.mean_emd: 1.2534595963643438
+utility.correlation_distance: 2.482838348238987
+utility.f1_real: 0.816819827346143
+utility.f1_synthetic: 0.8333333333333334
+utility.f1_discrepancy: -0.01651350598719037
+privacy.dcr_mean: 1.7127174224993238
+privacy.dcr_median: 1.6795938142918807
+privacy.dcr_min: 0.2708248757986334
+privacy.dcr_5th_percentile: 0.8309505931380579
+privacy.nndr_mean: 0.8464552905422063
+privacy.nndr_median: 0.8889331293719688
+privacy.nndr_5th_percentile: 0.5609464139441243
+privacy.inference_f1: 0.8333333333333334
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.4623188405797102
+privacy.disclosure_rate: 0.01
+privacy.n_at_risk: 10
+privacy.threshold_used: 0.5
+artifacts.loss_values: 2400 entries
+artifacts.lambdas: present
+=== seed=2 margin=1.0 both ===
+config: heart / tvae_loss_aware
+utility.mmd: 0.017863097970780523
+utility.mean_emd: 1.1217460495321554
+utility.correlation_distance: 1.7296619637799244
+utility.f1_real: 0.816819827346143
+utility.f1_synthetic: 0.8497916087802168
+utility.f1_discrepancy: -0.032971781434073755
+privacy.dcr_mean: 2.0245119971615844
+privacy.dcr_median: 2.051224385075142
+privacy.dcr_min: 0.17464096913161645
+privacy.dcr_5th_percentile: 0.9734957741634427
+privacy.nndr_mean: 0.8501225362321917
+privacy.nndr_median: 0.8912408368660021
+privacy.nndr_5th_percentile: 0.5782327149423192
+privacy.inference_f1: 0.8497916087802168
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.47877711602659356
+privacy.disclosure_rate: 0.006
+privacy.n_at_risk: 6
+privacy.threshold_used: 0.5
+artifacts.loss_values: 2400 entries
+artifacts.lambdas: present
+=== seed=2 margin=1.5 priv-only ===
+config: heart / tvae_loss_aware
+utility.mmd: 0.018347534134622603
+utility.mean_emd: 1.1591143714639018
+utility.correlation_distance: 2.239799919215126
+utility.f1_real: 0.816819827346143
+utility.f1_synthetic: 0.8834307992202729
+utility.f1_discrepancy: -0.0666109718741299
+privacy.dcr_mean: 1.7631249044823358
+privacy.dcr_median: 1.7367328714224333
+privacy.dcr_min: 0.09826585206558366
+privacy.dcr_5th_percentile: 0.8618541432983953
+privacy.nndr_mean: 0.8432765978914801
+privacy.nndr_median: 0.8807709786625678
+privacy.nndr_5th_percentile: 0.558641324518383
+privacy.inference_f1: 0.8834307992202729
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.5124163064666497
+privacy.disclosure_rate: 0.008
+privacy.n_at_risk: 8
+privacy.threshold_used: 0.5
+artifacts.loss_values: 2400 entries
+artifacts.lambdas: present
+=== seed=2 margin=1.5 both ===
+config: heart / tvae_loss_aware
+utility.mmd: 0.018033048210592525
+utility.mean_emd: 1.246661939437004
+utility.correlation_distance: 1.7316411408374721
+utility.f1_real: 0.816819827346143
+utility.f1_synthetic: 0.8168194868945078
+utility.f1_discrepancy: 3.4045163521678745e-07
+privacy.dcr_mean: 2.0339990662997303
+privacy.dcr_median: 2.011465954481343
+privacy.dcr_min: 0.5429167370090652
+privacy.dcr_5th_percentile: 1.072298131045893
+privacy.nndr_mean: 0.856072173718177
+privacy.nndr_median: 0.8900386128369306
+privacy.nndr_5th_percentile: 0.6028298135214093
+privacy.inference_f1: 0.8168194868945078
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.4458049941408846
+privacy.disclosure_rate: 0.0
+privacy.n_at_risk: 0
+privacy.threshold_used: 0.5
+artifacts.loss_values: 2400 entries
+artifacts.lambdas: present
+=== seed=3 margin=0.5 priv-only ===
+config: heart / tvae_loss_aware
+utility.mmd: 0.01969985213695456
+utility.mean_emd: 1.5070697234465853
+utility.correlation_distance: 2.652747667825153
+utility.f1_real: 0.8
+utility.f1_synthetic: 0.850125313283208
+utility.f1_discrepancy: -0.050125313283207906
+privacy.dcr_mean: 1.7355662472386975
+privacy.dcr_median: 1.7176388636149431
+privacy.dcr_min: 0.3418274478315699
+privacy.dcr_5th_percentile: 0.7484670453702499
+privacy.nndr_mean: 0.8529474084013279
+privacy.nndr_median: 0.8911439644568666
+privacy.nndr_5th_percentile: 0.5546084602788812
+privacy.inference_f1: 0.850125313283208
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.47911082052958476
+privacy.disclosure_rate: 0.01
+privacy.n_at_risk: 10
+privacy.threshold_used: 0.5
+artifacts.loss_values: 2400 entries
+artifacts.lambdas: present
+=== seed=3 margin=0.5 both ===
+=== seed=3 margin=1.0 priv-only ===
+config: heart / tvae_loss_aware
+utility.mmd: 0.01915491983052704
+utility.mean_emd: 1.292180091691261
+utility.correlation_distance: 2.208292521993454
+utility.f1_real: 0.8
+utility.f1_synthetic: 0.8168194868945078
+utility.f1_discrepancy: -0.01681948689450774
+privacy.dcr_mean: 1.7836708888560824
+privacy.dcr_median: 1.769389370973427
+privacy.dcr_min: 0.20008790263166137
+privacy.dcr_5th_percentile: 0.7847387288724756
+privacy.nndr_mean: 0.8520070594884074
+privacy.nndr_median: 0.8917336538807568
+privacy.nndr_5th_percentile: 0.570270662664243
+privacy.inference_f1: 0.8168194868945078
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.4458049941408846
+privacy.disclosure_rate: 0.009
+privacy.n_at_risk: 9
+privacy.threshold_used: 0.5
+artifacts.loss_values: 2400 entries
+artifacts.lambdas: present
+=== seed=3 margin=1.0 both ===
+config: heart / tvae_loss_aware
+utility.mmd: 0.017642917603506333
+utility.mean_emd: 1.2804763131555976
+utility.correlation_distance: 1.7385229451579232
+utility.f1_real: 0.8
+utility.f1_synthetic: 0.8335187245087134
+utility.f1_discrepancy: -0.033518724508713404
+privacy.dcr_mean: 2.0202630115666054
+privacy.dcr_median: 2.0689244201040844
+privacy.dcr_min: 0.32501375010420397
+privacy.dcr_5th_percentile: 0.9503061548605445
+privacy.nndr_mean: 0.8512460773117744
+privacy.nndr_median: 0.8961626759626939
+privacy.nndr_5th_percentile: 0.5506043845275587
+privacy.inference_f1: 0.8335187245087134
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.46250423175509026
+privacy.disclosure_rate: 0.004
+privacy.n_at_risk: 4
+privacy.threshold_used: 0.5
+artifacts.loss_values: 2400 entries
+artifacts.lambdas: present
+=== seed=3 margin=1.5 priv-only ===
+config: heart / tvae_loss_aware
+utility.mmd: 0.01922830642457693
+utility.mean_emd: 1.62723410875365
+utility.correlation_distance: 2.150596469720227
+utility.f1_real: 0.8
+utility.f1_synthetic: 0.816819827346143
+utility.f1_discrepancy: -0.016819827346142957
+privacy.dcr_mean: 1.7901557249689415
+privacy.dcr_median: 1.785926224220693
+privacy.dcr_min: 0.2546702247365313
+privacy.dcr_5th_percentile: 0.8207440028710405
+privacy.nndr_mean: 0.8445742762043044
+privacy.nndr_median: 0.8918836475463492
+privacy.nndr_5th_percentile: 0.5391606169626515
+privacy.inference_f1: 0.816819827346143
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.4458053345925198
+privacy.disclosure_rate: 0.006
+privacy.n_at_risk: 6
+privacy.threshold_used: 0.5
+artifacts.loss_values: 2400 entries
+artifacts.lambdas: present
+=== seed=3 margin=1.5 both ===
+config: heart / tvae_loss_aware
+utility.mmd: 0.01759555160159475
+utility.mean_emd: 1.1964015052196886
+utility.correlation_distance: 1.6491429163133025
+utility.f1_real: 0.8
+utility.f1_synthetic: 0.8
+utility.f1_discrepancy: 0.0
+privacy.dcr_mean: 2.037742624435243
+privacy.dcr_median: 2.0523878190486493
+privacy.dcr_min: 0.2043573809879699
+privacy.dcr_5th_percentile: 1.0032257393107378
+privacy.nndr_mean: 0.8516272020882223
+privacy.nndr_median: 0.895629793063089
+privacy.nndr_5th_percentile: 0.5683467067566902
+privacy.inference_f1: 0.8
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.42898550724637685
+privacy.disclosure_rate: 0.004
+privacy.n_at_risk: 4
+privacy.threshold_used: 0.5
+artifacts.loss_values: 2400 entries
+artifacts.lambdas: present

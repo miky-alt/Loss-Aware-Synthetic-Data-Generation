@@ -84,6 +84,8 @@ NNDR close to 0 → first nearest neighbor is much closer than second → synthe
 
 On small datasets (Heart Disease, ~300 rows), NNDR is expected to be lower because the generator has fewer examples to generalize from. This is a known failure mode of generative models in low-data regimes and is one reason we include the Heart Disease dataset explicitly.
 
+**NNDR must be read jointly with DCR.** A ratio near 1 has two very different causes. If DCR is moderate, the synthetic row sits in a dense region of real data with several real neighbours at similar distances — generalization. If DCR is very high, the row is far from *every* real record, so its first and second nearest neighbours are equidistant trivially — the sample is off the data manifold. We observed the second case directly: in the loss-aware collapse regime (see [loss_aware_training.md](../loss_aware_training.md#7c-weight-sweep-finding-the-trade-off-heart-disease-3-seeds-means)) NNDR rose to 0.95 while mean DCR tripled and EMD grew twenty-fold. High NNDR is only good news when DCR is in a plausible range.
+
 ---
 
 ## 3. Inference Risk
