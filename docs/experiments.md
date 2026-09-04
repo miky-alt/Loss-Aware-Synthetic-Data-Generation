@@ -159,8 +159,8 @@ three seeds it becomes about 54. Gaussian Copula runs are relatively cheap,
 while CTGAN and TVAE at 500 epochs dominate the runtime, especially on
 Diabetes. A practical protocol is therefore:
 
-1. use the default three common seeds for a fast exploratory sweep;
-2. change `SEEDS` to five or more seeds for the final comparison and narrower confidence intervals;
+1. use three common seeds for a fast exploratory sweep;
+2. use the default five seeds for the final comparison and narrower confidence intervals;
 3. run configurations and seeds in parallel where memory allows;
 4. keep the same `num_samples`, split fraction, and metric implementation for
      every seed.

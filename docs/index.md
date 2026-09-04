@@ -91,7 +91,7 @@ uv run python scripts/run_diabetes.py
 uv run python scripts/run_heart.py
 ```
 
-Edit `NUM_SAMPLES`, `SEEDS`, `TEST_SIZE`, `OUTPUT_DIR`, or the `EXPERIMENTS` list at the top of the relevant script to add generators or change their kwargs. Each configuration now runs with the common default seeds `(1, 2, 3)`; individual reports are saved in `experiments/results/`, confidence-interval aggregates in `experiments/results/aggregates/`, and utility/privacy CI plots in `experiments/results/figures/`. The Adult script uses `truncnorm` for `hours-per-week`; `gaussian_kde` is intentionally not the default there because its fit requires quadratic memory in the number of training rows.
+Edit `NUM_SAMPLES`, `SEEDS`, `TEST_SIZE`, `OUTPUT_DIR`, or the `EXPERIMENTS` list at the top of the relevant script to add generators or change their kwargs. Each configuration now runs with the common default seeds `(1, 2, 3, 4, 5)`; individual reports are saved in `experiments/results/`, confidence-interval aggregates in `experiments/results/aggregates/`, and utility/privacy CI plots in `experiments/results/figures/`. The Adult script uses `truncnorm` for `hours-per-week`; `gaussian_kde` is intentionally not the default there because its fit requires quadratic memory in the number of training rows.
 
 For the complete Adult preprocessing comparison matrix, use:
 
