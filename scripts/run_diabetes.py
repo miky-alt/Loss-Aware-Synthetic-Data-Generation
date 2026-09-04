@@ -37,6 +37,42 @@ EXPERIMENTS = [
             }
         },
     },
+    {
+        "name": "gaussian_copula_log_num_medications",
+        "generator_name": "gaussian_copula",
+        "generator_kwargs": {},
+        "transformer_specs": {
+            "num_medications": {"name": "LogScaler", "kwargs": {}},
+        },
+    },
+    {
+        "name": "ctgan_default",
+        "generator_name": "ctgan",
+        "generator_kwargs": {"epochs": 500, "verbose": True},
+        "transformer_specs": {},
+    },
+    {
+        "name": "ctgan_log_num_medications",
+        "generator_name": "ctgan",
+        "generator_kwargs": {"epochs": 500, "verbose": True},
+        "transformer_specs": {
+            "num_medications": {"name": "LogScaler", "kwargs": {}},
+        },
+    },
+    {
+        "name": "tvae_default",
+        "generator_name": "tvae",
+        "generator_kwargs": {"epochs": 500, "verbose": True},
+        "transformer_specs": {},
+    },
+    {
+        "name": "tvae_log_num_medications",
+        "generator_name": "tvae",
+        "generator_kwargs": {"epochs": 500, "verbose": True},
+        "transformer_specs": {
+            "num_medications": {"name": "LogScaler", "kwargs": {}},
+        },
+    },
 ]
 
 

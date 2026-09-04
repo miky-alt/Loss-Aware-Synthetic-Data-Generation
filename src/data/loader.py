@@ -82,6 +82,11 @@ def load_diabetes_130() -> DatasetBundle:
     target_col = "readmitted"
     df[target_col] = df[target_col].astype(str).str.strip() == "<30"
 
+    # Normalize other binary columns to booleans so SDV detects their semantic type correctly.
+    df["gender"] = df["gender"].astype(str).str.strip().str.lower().eq("male")
+    df["change"] = df["change"].astype(str).str.strip().eq("Ch")
+    df["diabetesMed"] = df["diabetesMed"].astype(str).str.strip().eq("Yes")
+
     # Drop columns with too many missing values
     df = df.replace("?", pd.NA)
     missing_threshold = 0.4

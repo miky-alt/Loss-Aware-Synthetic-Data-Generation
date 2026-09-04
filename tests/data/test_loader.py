@@ -7,7 +7,7 @@ import pytest
 
 from src.data import analyze
 from src.data.analyze import describe_dataset, plot_distributions, save_analysis, save_sdv_metadata
-from src.data.loader import DatasetBundle, load_uci_adult, split_dataset
+from src.data.loader import DatasetBundle, load_diabetes_130, load_uci_adult, split_dataset
 
 
 @pytest.fixture
@@ -73,6 +73,29 @@ def test_adult_loader_preserves_categorical_values_for_sdv(monkeypatch):
     assert bundle.real["sex"].tolist() == [True, False]
     assert pd.api.types.is_bool_dtype(bundle.real["income"])
     assert bundle.real["income"].tolist() == [False, True]
+
+
+def test_diabetes_loader_normalizes_binary_columns_to_boolean(monkeypatch):
+    features = pd.DataFrame(
+        {
+            "race": ["Caucasian", "AfricanAmerican"],
+            "gender": ["Male", "Female"],
+            "change": ["Ch", "No"],
+            "diabetesMed": ["Yes", "No"],
+        }
+    )
+    targets = pd.DataFrame({"readmitted": ["<30", "NO"]})
+    dataset = SimpleNamespace(data=SimpleNamespace(features=features, targets=targets))
+    monkeypatch.setattr("src.data.loader.fetch_ucirepo", lambda id: dataset)
+
+    bundle = load_diabetes_130()
+
+    assert pd.api.types.is_string_dtype(bundle.real["race"])
+    for column in ("gender", "change", "diabetesMed", "readmitted"):
+        assert pd.api.types.is_bool_dtype(bundle.real[column])
+    assert bundle.real["gender"].tolist() == [True, False]
+    assert bundle.real["change"].tolist() == [True, False]
+    assert bundle.real["diabetesMed"].tolist() == [True, False]
 
 
 def test_describe_dataset_includes_head_and_summary(bundle):
