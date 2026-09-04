@@ -266,6 +266,46 @@ class LossAwareTVAE(TVAE):
 
 
 # ---------------------------------------------------------------------------
+# Shared helpers for the project wrappers
+# ---------------------------------------------------------------------------
+
+def infer_discrete_columns(df: pd.DataFrame, max_unique: int = 20) -> list[str]:
+    """Columns ctgan's DataTransformer should one-hot rather than mode-normalize.
+
+    A column is discrete if it is bool/object/category, or if it is numeric
+    with at most `max_unique` distinct values all of which are whole numbers.
+    The dtype-only rule ("is integer") that this replaces missed bool targets
+    and float-typed categoricals such as Heart's `ca` and `thal`; a bool
+    column modelled as continuous comes back as all-True after ctgan casts
+    the sampled floats to the original dtype."""
+    out = []
+    for c in df.columns:
+        s = df[c]
+        if pd.api.types.is_bool_dtype(s) or s.dtype == object or isinstance(s.dtype, pd.CategoricalDtype):
+            out.append(c)
+            continue
+        if pd.api.types.is_numeric_dtype(s) and s.nunique() <= max_unique:
+            vals = s.dropna().to_numpy()
+            if np.all(np.isclose(vals, np.round(vals))):
+                out.append(c)
+    return out
+
+
+def restore_dtypes(synthetic: pd.DataFrame, dtypes: pd.Series) -> pd.DataFrame:
+    """Cast sampled columns back to the real data's dtypes safely."""
+    for col, dtype in dtypes.items():
+        if col not in synthetic.columns:
+            continue
+        if pd.api.types.is_bool_dtype(dtype):
+            v = pd.to_numeric(synthetic[col], errors="coerce")
+            synthetic[col] = (v > 0.5).astype(bool)
+        elif pd.api.types.is_integer_dtype(dtype):
+            v = pd.to_numeric(synthetic[col], errors="coerce")
+            synthetic[col] = np.rint(v).astype(dtype)
+    return synthetic
+
+
+# ---------------------------------------------------------------------------
 # Project wrapper
 # ---------------------------------------------------------------------------
 
@@ -293,10 +333,7 @@ class LossAwareTVAEGenerator(SyntheticGenerator):
     def _infer_discrete(self, df: pd.DataFrame) -> list[str]:
         if self._discrete_columns is not None:
             return list(self._discrete_columns)
-        return [
-            c for c in df.columns
-            if pd.api.types.is_integer_dtype(df[c]) and df[c].nunique() <= self._discrete_max_unique
-        ]
+        return infer_discrete_columns(df, self._discrete_max_unique)
 
     def fit(self, real_data: pd.DataFrame) -> "SyntheticGenerator":
         self._dtypes = real_data.dtypes
@@ -310,11 +347,7 @@ class LossAwareTVAEGenerator(SyntheticGenerator):
         synthetic = self._model.sample(num_rows)
         if not isinstance(synthetic, pd.DataFrame):
             synthetic = pd.DataFrame(synthetic, columns=self._dtypes.index)
-        # inverse_transform may return floats for label-encoded ints; restore dtypes
-        for col, dtype in self._dtypes.items():
-            if pd.api.types.is_integer_dtype(dtype):
-                synthetic[col] = np.rint(synthetic[col]).astype(dtype)
-        return synthetic
+        return restore_dtypes(synthetic, self._dtypes)
 
     def get_training_diagnostics(self) -> dict:
         if self._model is None:
