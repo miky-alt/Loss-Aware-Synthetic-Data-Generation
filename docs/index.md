@@ -15,7 +15,7 @@ src/
   data/
     loader.py         # Dataset loading, preprocessing, and train/test splitting (3 datasets)
   evaluation/
-    utility.py        # Utility metrics: MMD, EMD, F1 discrepancy, correlation distance
+    utility.py        # Utility metrics: MMD, EMD, categorical TVD, F1 discrepancy, correlation distance
     privacy.py        # Privacy metrics: DCR, NNDR, Inference Risk, Disclosure Protection
   generators/         # Synthetic data generators: interface + CTGAN/TVAE/GaussianCopula baselines
     base.py           # SyntheticGenerator interface (fit/sample/get_training_diagnostics contract)
@@ -144,6 +144,7 @@ See [datasets.md](datasets.md) for full rationale.
 |--------|-----------------|
 | MMD | Overall distributional divergence |
 | EMD | Per-feature distributional distance |
+| Categorical TVD | Per-feature category-frequency distance for categorical and boolean columns |
 | F1 Discrepancy | Downstream predictive performance gap |
 | Correlation Distance | Feature relationship preservation |
 

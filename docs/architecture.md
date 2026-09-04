@@ -59,6 +59,13 @@ load_dataset(name)
 
 The generator only ever sees `train_bundle.real`; every metric is computed against `test_bundle.real`, which it never saw during training. See [experiments.md](experiments.md#why-the-traintest-split-matters) for why this split was introduced.
 
+The utility report evaluates numeric marginals with EMD, categorical and
+boolean marginals with total variation distance, joint numeric structure with
+MMD and correlation distance, and downstream predictive utility with F1
+discrepancy. The categorical distance is reported both as a mean score and as
+a per-feature breakdown, so rare-category failures are not hidden by aggregate
+numeric metrics.
+
 The only shared data structure between modules is `pd.DataFrame`. No module imports from another — the orchestration layer (`src/experiments/experiment.py`) is the only place that connects them. This makes each module independently testable with dummy data, which we verified during development.
 
 ---

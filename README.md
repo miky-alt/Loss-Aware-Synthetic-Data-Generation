@@ -12,7 +12,7 @@ Synthetic data promises to share the statistical value of a sensitive dataset wi
 
 The project has three parts:
 
-1. **Evaluation framework** (`src/evaluation/`): eight metrics covering distributional fidelity (MMD, EMD), structural fidelity (correlation distance), downstream utility (F1 discrepancy) and empirical privacy (DCR, NNDR, inference risk, disclosure rate).
+1. **Evaluation framework** (`src/evaluation/`): nine metrics covering distributional fidelity (MMD, EMD, and categorical total variation distance), structural fidelity (correlation distance), downstream utility (F1 discrepancy) and empirical privacy (DCR, NNDR, inference risk, disclosure rate).
 2. **Baseline comparison** (`src/generators/baseline.py`): CTGAN, TVAE and GaussianCopula from `sdv`, run through the framework on three datasets.
 3. **Loss-aware generator** (`src/generators/loss_aware.py`): TVAE with three differentiable penalty terms added to the training loss, an MMD term, a correlation term and a distance-to-closest-record hinge, with a self-calibrating privacy margin. With all weights at zero it is exactly the stock model.
 

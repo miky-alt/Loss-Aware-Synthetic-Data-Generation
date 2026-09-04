@@ -97,10 +97,10 @@ load_dataset(config.dataset_name)
 
 Earlier, `generator.fit()` saw the entire dataset, and `build_report()` evaluated the synthetic data against that same full dataset. This is methodologically weak in two ways:
 
-- **Utility metrics** (MMD, EMD, correlation distance) measured how well the synthetic data resembled data the generator had already memorized, not how well it generalizes to unseen real data.
+- **Utility metrics** (MMD, EMD, categorical total variation distance, and correlation distance) measured how well the synthetic data resembled data the generator had already memorized, not how well it generalizes to unseen real data.
 - **`EVALUATE_ONLY` had no well-defined held-out set** to compare against on a re-run.
 
-`split_dataset()` (in `src/data/loader.py`) fixes this: `generator.fit()` only ever sees `train_bundle.real`. MMD, EMD, and correlation distance compare synthetic data with `test_bundle.real`, which the generator never saw. F1 trains its real-data baseline on `train_bundle.real` and evaluates both that model and the synthetic-trained model on the same held-out `test_bundle.real`.
+`split_dataset()` (in `src/data/loader.py`) fixes this: `generator.fit()` only ever sees `train_bundle.real`. MMD, EMD, categorical total variation distance, and correlation distance compare synthetic data with `test_bundle.real`, which the generator never saw. F1 trains its real-data baseline on `train_bundle.real` and evaluates both that model and the synthetic-trained model on the same held-out `test_bundle.real`.
 
 Privacy metrics answer a different question: DCR, NNDR, and disclosure protection compare synthetic records with `train_bundle.real`, because those are the records the generator could have memorized. Attribute inference trains on synthetic data and evaluates its attack on `test_bundle.real`. Because the split is deterministic — driven only by `(test_size, seed)`, both fixed in `TrainingConfig` — `EVALUATE_ONLY` reconstructs the **exact same** train/test split on every re-run, without ever retraining.
 
