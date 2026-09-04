@@ -17,6 +17,28 @@ from sklearn.metrics import f1_score
 from sklearn.preprocessing import StandardScaler
 
 
+def _numeric(df: pd.DataFrame) -> pd.DataFrame:
+    """Numeric view of a frame with bool columns cast to int.
+
+    The loaders keep binary columns (targets, sex, ...) as bool so that sdv's
+    metadata detection treats them as categorical. pandas does not count bool
+    as a number, so a plain select_dtypes("number") would silently drop them
+    from every distance-based metric. Casting to int here keeps them in and
+    reproduces exactly what the metrics computed when those columns were int.
+    """
+    out = df.copy()
+    for c in out.columns:
+        if pd.api.types.is_bool_dtype(out[c]):
+            out[c] = out[c].astype(int)
+    return out.select_dtypes(include="number")
+
+
+def _shared_numeric(real: pd.DataFrame, synthetic: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
+    r, s = _numeric(real), _numeric(synthetic)
+    cols = r.columns.intersection(s.columns)
+    return r[cols], s[cols]
+
+
 # ---------------------------------------------------------------------------
 # MMD — Maximum Mean Discrepancy
 # ---------------------------------------------------------------------------
@@ -38,12 +60,10 @@ def compute_mmd(real: pd.DataFrame, synthetic: pd.DataFrame, gamma: float = 1.0)
 
     Returns a float >= 0. Closer to 0 = distributions are more similar.
     """
-    # Use only numeric columns present in both
-    cols = real.select_dtypes(include="number").columns.intersection(
-        synthetic.select_dtypes(include="number").columns
-    )
-    X = real[cols].values.astype(float)
-    Y = synthetic[cols].values.astype(float)
+    # Use only numeric columns present in both (bool cast to int)
+    R, S = _shared_numeric(real, synthetic)
+    X = R.values.astype(float)
+    Y = S.values.astype(float)
 
     # Subsample for performance if datasets are large
     max_samples = 2000
@@ -80,15 +100,13 @@ def compute_emd(real: pd.DataFrame, synthetic: pd.DataFrame) -> dict[str, float]
 
     Lower = synthetic feature distribution is closer to real.
     """
-    cols = real.select_dtypes(include="number").columns.intersection(
-        synthetic.select_dtypes(include="number").columns
-    )
+    R, S = _shared_numeric(real, synthetic)
 
     scores: dict[str, float] = {}
-    for col in cols:
+    for col in R.columns:
         scores[col] = wasserstein_distance(
-            real[col].dropna().values,
-            synthetic[col].dropna().values,
+            R[col].dropna().values,
+            S[col].dropna().values,
         )
 
     scores["mean_emd"] = float(np.mean(list(scores.values()))) if scores else 0.0
@@ -163,16 +181,16 @@ def compute_f1_discrepancy(
     - f1_synthetic: F1 when trained on synthetic
     - f1_discrepancy: the gap (higher = more utility loss)
     """
-    cols = [c for c in train_real.columns if c != target_col]
-    cols = train_real[cols].select_dtypes(include="number").columns.tolist()
+    features = [c for c in _numeric(train_real).columns if c != target_col]
+    features = [c for c in features if c in synthetic.columns]
 
-    X_train_real = train_real[cols].values
-    y_train_real = train_real[target_col].values
-    X_test = test_real[cols].values
-    y_test = test_real[target_col].values
+    X_train_real = _numeric(train_real)[features].values
+    y_train_real = train_real[target_col].astype(int).values
+    X_test = _numeric(test_real)[features].values
+    y_test = test_real[target_col].astype(int).values
 
-    X_synthetic = synthetic[cols].values
-    y_synthetic = synthetic[target_col].values
+    X_synthetic = _numeric(synthetic)[features].values
+    y_synthetic = synthetic[target_col].astype(int).values
 
     # Classifier A: trained on real
     clf_real = RandomForestClassifier(n_estimators=100, random_state=random_state)
@@ -202,12 +220,10 @@ def compute_correlation_distance(real: pd.DataFrame, synthetic: pd.DataFrame) ->
     Measures how well feature relationships are preserved.
     Lower = better correlation preservation.
     """
-    cols = real.select_dtypes(include="number").columns.intersection(
-        synthetic.select_dtypes(include="number").columns
-    )
+    R, S = _shared_numeric(real, synthetic)
 
-    corr_real = real[cols].corr().fillna(0).values
-    corr_syn = synthetic[cols].corr().fillna(0).values
+    corr_real = R.corr().fillna(0).values
+    corr_syn = S.corr().fillna(0).values
 
     return float(np.linalg.norm(corr_real - corr_syn, ord="fro"))
 
