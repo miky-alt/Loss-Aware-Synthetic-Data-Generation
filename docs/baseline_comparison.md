@@ -25,7 +25,10 @@ Raw output: `experiments/baselines.txt`. Full reports: `experiments/results/`.
 † Undertrained. `sdv`'s default `batch_size=500` exceeds Heart's 237-row
 training set, so each epoch is one gradient step. This is the same artefact
 documented in [loss_aware_training.md §4.3](loss_aware_training.md) and should
-not be read as an architecture property.
+not be read as an architecture property. With `batch_size=50` and 2000 epochs
+(see [loss_aware_training.md §7h](loss_aware_training.md)) CTGAN on Heart
+reaches F1 discrepancy 0.01, EMD 2.57, correlation distance 2.14 and DCR 2.59:
+more private than TVAE with comparable utility.
 
 ## Observations
 
