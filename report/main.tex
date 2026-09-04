@@ -74,9 +74,11 @@ disclosure rate). We then extend a tabular variational autoencoder with three
 differentiable penalty terms (an MMD term, a correlation term and a
 distance-to-closest-record hinge) and test the model on three public datasets
 of very different size. We report three main findings. First, regularizing
-for distributional fidelity also improves privacy: on all three datasets it
-increased the distance between synthetic and real records by 17 to 26\% while
-also improving utility. Second, whether an explicit privacy penalty costs
+for distributional fidelity also improves privacy when the generator
+memorizes: on the tabular VAE it increased the distance between synthetic and
+real records by 17 to 26\% on all three datasets while also improving utility,
+and on a CTGAN that does not memorize the same terms gave no privacy gain.
+Second, whether an explicit privacy penalty costs
 utility depends on how densely the real data fills the generator's feature
 space, and when a cost appears it falls on the least populated parts of each
 column, that is minority classes, rare categories and the target rate. Third,
@@ -668,7 +670,9 @@ side.
 everywhere and less useful on Adult. On Diabetes its DCR mean ($5.8$) is far
 above its median ($3.8$), which indicates a long tail of samples far from any
 real record. This is the off-manifold minority that appears again in
-\S\ref{sec:results:collapse}.
+\S\ref{sec:results:collapse}. Its Heart row is not usable as reported; with a
+tuned training budget (\S\ref{sec:results:ctgan}) CTGAN reaches F1
+discrepancy $0.01$ on Heart while keeping DCR $2.6$.
 
 \paragraph{The stock model matches our baseline.} \texttt{sdv}'s TVAE is
 within seed noise of our $\lambda = 0$ subclass on all three datasets (Heart:
@@ -1054,6 +1058,77 @@ $\lpriv \le 5$ on Heart most ratios are below one. The free-lunch region of
 \S\ref{sec:results:heart-curve} exists, but it is narrower than the aggregate
 metrics suggested, and on Adult it does not extend to $\lpriv = 10$.
 
+\subsection{Does the effect depend on the generator? Loss-aware CTGAN on Heart}
+\label{sec:results:ctgan}
+
+The baseline comparison (\S\ref{sec:results:baselines}) showed TVAE to be the
+least private of the three architectures, which raised the possibility that
+the privacy gain from the utility terms was a TVAE property rather than a
+general one. To test this we added the same three penalty terms to the
+generator objective of CTGAN (the discriminator is unchanged) and ran the
+three main configurations on Heart Disease with \texttt{batch\_size=50} and
+2{,}000 epochs, about 8{,}000 generator steps, which is where the stock model
+converges on this dataset. The implementation is in
+\texttt{src/generators/loss\_aware\_ctgan.py}.
+
+\begin{table}[htbp]
+\caption{Loss-aware CTGAN on Heart Disease, 3 seeds, $\mu = 1.5$. $\pm$ is
+the 95\% CI half-width. TVAE rows from Tables~\ref{tab:heart-ablation} and
+\ref{tab:heart-sweep} for comparison.}
+\label{tab:ctgan-lossaware}
+\centering\small
+\begin{adjustbox}{max width=\textwidth}
+\begin{tabular}{@{}llrrrrrr@{}}
+\toprule
+generator & configuration & F1 disc & mean EMD & corr.\ dist & DCR mean & DCR 5th & NNDR \\
+\midrule
+CTGAN & baseline      & $0.012 \pm 0.082$ & $2.57 \pm 0.46$ & $2.14 \pm 0.78$ & $2.59 \pm 0.25$ & 1.37 & 0.89 \\
+CTGAN & utility only  & $0.005 \pm 0.048$ & $3.14 \pm 0.75$ & $1.88 \pm 0.45$ & $2.54 \pm 0.08$ & 1.34 & 0.88 \\
+CTGAN & both ($\lpriv = 10$) & $0.044 \pm 0.068$ & $17.3 \pm 4.1$ & $2.38 \pm 0.97$ & $5.03 \pm 0.42$ & 3.61 & 0.94 \\
+\midrule
+TVAE  & baseline      & $-0.03 \pm 0.09$ & $1.36 \pm 0.44$ & $2.66 \pm 0.55$ & $1.72 \pm 0.13$ & 0.74 & 0.83 \\
+TVAE  & utility only  & $-0.01 \pm 0.06$ & $1.25 \pm 0.54$ & $1.91 \pm 0.74$ & $2.02 \pm 0.10$ & 1.01 & 0.85 \\
+TVAE  & both ($\lpriv = 10$) & $0.07 \pm 0.08$ & $2.46 \pm 0.62$ & $2.28 \pm 0.32$ & $2.73 \pm 0.23$ & 1.45 & 0.88 \\
+\bottomrule
+\end{tabular}
+\end{adjustbox}
+\end{table}
+
+\paragraph{The utility terms do not improve privacy on CTGAN.} Mean DCR goes
+from $2.59$ to $2.54$, with overlapping intervals. Correlation distance
+improves, as it should since the term is in the loss, and MMD moves slightly,
+but there is no privacy gain. This settles the question raised in
+\S\ref{sec:results:baselines}: the effect is specific to TVAE, and the reason
+is visible in the table. A properly trained CTGAN starts at DCR $2.59$, which
+is already above the level the utility terms lifted TVAE to ($2.02$). TVAE at
+$1.72$ was partially memorizing its training rows; the utility terms corrected
+that; CTGAN did not have the problem in the first place. The memorization
+hypothesis we set aside in \S\ref{sec:results:adult} therefore returns in a
+more precise form: fidelity regularization acts as a privacy mechanism for
+generators that memorize, and its effect is bounded by how far below the
+non-memorizing level the baseline sits. On TVAE it was 17--26\% on all three
+datasets; on CTGAN it is zero.
+
+\paragraph{The hinge works on CTGAN, and lands harder.} At $\lpriv = 10$ mean
+DCR nearly doubles ($2.59 \to 5.03$), the 5th percentile goes from $1.37$ to
+$3.61$, and NNDR reaches $0.94$, the off-manifold signature of
+\S\ref{sec:results:collapse}. Mean EMD rises seven-fold while F1 discrepancy
+barely moves ($0.012 \to 0.044$, interval including zero). This is the
+collapse pattern that TVAE showed at $\lpriv = 10$, $\mu = 2$, arriving one
+step earlier, and it is consistent with the hinge-scale confound in
+\S\ref{sec:limitations}: the WGAN generator loss has a different scale from a
+VAE reconstruction loss, so the same numeric $\lpriv$ is a stronger penalty
+here. A sweep at $\lpriv \in \{2, 5\}$ would locate CTGAN's knee; we did not
+have time to run it.
+
+\paragraph{A properly trained CTGAN is a good Heart baseline.} With a batch
+size that gives several steps per epoch and a budget of 8{,}000 steps, CTGAN
+reaches F1 discrepancy $0.01$ and correlation distance $2.14$ (better than
+TVAE's $2.66$) at DCR $2.59$ (much more private than TVAE's $1.72$), at the
+cost of a worse EMD ($2.57$ against $1.36$). The $\dagger$ row of
+Table~\ref{tab:baselines} was an artefact of the library default batch size
+and should be read against this one.
+
 \subsection{Synthesis}
 
 \begin{table}[htbp]
@@ -1093,16 +1168,20 @@ runs.
 
 \paragraph{Privacy versus utility is an incomplete framing.}
 Regime I shows that on every dataset a term designed only to improve
-distributional fidelity also improved every privacy indicator, by 17 to 26\%
-in mean DCR. Regularizing towards population-level statistics spreads
+distributional fidelity also improved every privacy indicator on TVAE, by 17
+to 26\% in mean DCR. Regularizing towards population-level statistics spreads
 generated samples across the distribution instead of clustering them on
 training records, and better generalization turns out to be better privacy.
-The common picture of two quantities on opposite ends of a dial misses this.
-There is a region in which both improve, and a practitioner who does not look
-for it will not find it. The per-feature analysis makes this region narrower
-(on Adult it does not reach $\lpriv = 10$) but does not remove it: at
-$\lpriv = 2$ on Diabetes the diagnosis codes, the gender marginal and the
-privacy indicators all improved together.
+The loss-aware CTGAN experiment (\S\ref{sec:results:ctgan}) shows the limit of
+this: on a generator that does not memorize to begin with, the same terms give
+no privacy gain. The mechanism is a correction of memorization, and it does
+as much good as there is memorization to correct. The common picture of two
+quantities on opposite ends of a dial still misses this region, which exists
+for the most widely used tabular VAE on all three datasets we tried.
+The per-feature analysis makes the region narrower (on Adult it does not
+reach $\lpriv = 10$) but does not remove it: at $\lpriv = 2$ on Diabetes the
+diagnosis codes, the gender marginal and the privacy indicators all improved
+together.
 
 \paragraph{Aggregate utility metrics are blind to the distortions that matter
 most.}
@@ -1198,6 +1277,18 @@ would have hidden all four.
         marginal shifts in \S\ref{sec:results:features} are large relative to
         their baselines, so the main claims stand; the finer utility
         comparisons would need more seeds.
+  \item \textbf{Two float-typed categoricals were modelled as continuous.}
+        On Heart Disease, \texttt{ca} (4 values) and \texttt{thal} (3 values)
+        are stored as floats, and the discrete-column inference used in the
+        TVAE experiments only declared integer columns discrete. Both were
+        therefore passed through mode-specific normalization rather than
+        one-hot encoding, and the generator could emit non-integer values for
+        them. The inference rule has since been corrected (bool, object and
+        low-cardinality whole-number columns are all treated as discrete); the
+        TVAE results in this report predate the fix. The effect is limited to
+        two of Heart's thirteen features and applies equally to every
+        configuration, so it does not change the comparisons, but it is a
+        real fidelity loss on those columns.
   \item \textbf{No formal guarantee.} Our privacy indicators simulate specific
         attacks and measure their empirical success. They are not
         differential-privacy bounds, they do not compose, and they would not
@@ -1241,12 +1332,14 @@ would have hidden all four.
         75 points while every aggregate utility metric improved or stayed
         flat. Marginal checks on protected attributes belong in the evaluation
         framework rather than in future work.
-  \item \textbf{Three datasets, one loss-aware generator family.} The density
-        claim rests on three points on one axis. The baseline comparison
-        covers three families, but the penalties were added only to TVAE,
-        which Table~\ref{tab:baselines} shows to be the least private starting
-        point. The free-lunch effect should be tested on CTGAN and the copula
-        before being called general.
+  \item \textbf{Three datasets; loss-aware penalties on two generators, one
+        of them on one dataset only.} The density claim rests on three points
+        on one axis, all from TVAE. The loss-aware CTGAN experiment
+        (\S\ref{sec:results:ctgan}) covers Heart only, at a single
+        $\lpriv$ that turned out to be past CTGAN's knee, so it establishes
+        that the utility-term privacy gain is TVAE-specific but does not
+        locate CTGAN's own trade-off curve. The Gaussian copula has no
+        gradient-based training and cannot be made loss-aware in this sense.
   \item \textbf{Baseline training budgets were library defaults.} CTGAN's
         Heart result is an artefact of \texttt{batch\_size=500} on 237 rows,
         not a property of the architecture. A fair comparison would tune the
