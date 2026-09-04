@@ -32,8 +32,62 @@ EXPERIMENTS = [
                 "trestbps": "truncnorm",
                 "chol": "gamma",
                 "thalach": "truncnorm",
-                "oldpeak": "gamma",
             }
+        },
+    },
+    {
+        "name": "gaussian_copula_log_chol",
+        "generator_name": "gaussian_copula",
+        "generator_kwargs": {},
+        "transformer_specs": {
+            "chol": {"name": "LogScaler", "kwargs": {}},
+            "oldpeak": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
+        },
+    },
+    {
+        "name": "gaussian_copula_modified_log_chol",
+        "generator_name": "gaussian_copula",
+        "generator_kwargs": {
+            "numerical_distributions": {
+                "age": "gamma",
+                "trestbps": "truncnorm",
+                "chol": "gamma",
+                "thalach": "truncnorm",
+            }
+        },
+        "transformer_specs": {
+            "chol": {"name": "LogScaler", "kwargs": {}},
+            "oldpeak": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
+        },
+    },
+    {
+        "name": "ctgan_default",
+        "generator_name": "ctgan",
+        "generator_kwargs": {"epochs": 500, "verbose": True},
+        "transformer_specs": {},
+    },
+    {
+        "name": "ctgan_log_chol",
+        "generator_name": "ctgan",
+        "generator_kwargs": {"epochs": 500, "verbose": True},
+        "transformer_specs": {
+            "chol": {"name": "LogScaler", "kwargs": {}},
+            "oldpeak": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
+        },
+    },
+    {
+        "name": "tvae_default",
+        "generator_name": "tvae",
+        "generator_kwargs": {"epochs": 500, "verbose": True},
+        "transformer_specs": {},
+    },
+    {
+        "name": "tvae_log_chol",
+        "generator_name": "tvae",
+        "generator_kwargs": {"epochs": 500, "verbose": True},
+        "transformer_specs": {
+            "chol": {"name": "LogScaler", "kwargs": {}},
+            "oldpeak": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
         },
     },
 ]

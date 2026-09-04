@@ -31,10 +31,12 @@ EXPERIMENTS = [
                 "time_in_hospital": "gamma",
                 "num_lab_procedures": "truncnorm",
                 "num_medications": "gamma",
-                "number_outpatient": "gamma",
-                "number_emergency": "gamma",
-                "number_inpatient": "gamma",
             }
+        },
+        "transformer_specs": {
+            "number_outpatient": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
+            "number_emergency": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
+            "number_inpatient": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
         },
     },
     {
@@ -44,6 +46,9 @@ EXPERIMENTS = [
         "transformer_specs": {
             "time_in_hospital": {"name": "LogScaler", "kwargs": {}},
             "num_medications": {"name": "LogScaler", "kwargs": {}},
+            "number_outpatient": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
+            "number_emergency": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
+            "number_inpatient": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
         },
     },
     {
@@ -54,14 +59,14 @@ EXPERIMENTS = [
                 "time_in_hospital": "gamma",
                 "num_lab_procedures": "truncnorm",
                 "num_medications": "gamma",
-                "number_outpatient": "gamma",
-                "number_emergency": "gamma",
-                "number_inpatient": "gamma",
             }
         },
         "transformer_specs": {
             "time_in_hospital": {"name": "LogScaler", "kwargs": {}},
             "num_medications": {"name": "LogScaler", "kwargs": {}},
+            "number_outpatient": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
+            "number_emergency": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
+            "number_inpatient": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
         },
     },
     {
@@ -77,6 +82,9 @@ EXPERIMENTS = [
         "transformer_specs": {
             "time_in_hospital": {"name": "LogScaler", "kwargs": {}},
             "num_medications": {"name": "LogScaler", "kwargs": {}},
+            "number_outpatient": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
+            "number_emergency": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
+            "number_inpatient": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
         },
     },
     {
@@ -92,6 +100,9 @@ EXPERIMENTS = [
         "transformer_specs": {
             "time_in_hospital": {"name": "LogScaler", "kwargs": {}},
             "num_medications": {"name": "LogScaler", "kwargs": {}},
+            "number_outpatient": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
+            "number_emergency": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
+            "number_inpatient": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
         },
     },
 ]

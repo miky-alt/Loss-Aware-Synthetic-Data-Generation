@@ -7,7 +7,13 @@ import pytest
 
 from src.data import analyze
 from src.data.analyze import describe_dataset, plot_distributions, save_analysis, save_sdv_metadata
-from src.data.loader import DatasetBundle, load_diabetes_130, load_uci_adult, split_dataset
+from src.data.loader import (
+    DatasetBundle,
+    load_diabetes_130,
+    load_heart_disease,
+    load_uci_adult,
+    split_dataset,
+)
 
 
 @pytest.fixture
@@ -80,6 +86,9 @@ def test_diabetes_loader_normalizes_binary_columns_to_boolean(monkeypatch):
         {
             "race": ["Caucasian", "AfricanAmerican"],
             "gender": ["Male", "Female"],
+            "admission_type_id": [1, 2],
+            "discharge_disposition_id": [22, 1],
+            "admission_source_id": [7, 1],
             "change": ["Ch", "No"],
             "diabetesMed": ["Yes", "No"],
         }
@@ -91,11 +100,43 @@ def test_diabetes_loader_normalizes_binary_columns_to_boolean(monkeypatch):
     bundle = load_diabetes_130()
 
     assert pd.api.types.is_string_dtype(bundle.real["race"])
+    for column in ("admission_type_id", "discharge_disposition_id", "admission_source_id"):
+        assert isinstance(bundle.real[column].dtype, pd.CategoricalDtype)
     for column in ("gender", "change", "diabetesMed", "readmitted"):
         assert pd.api.types.is_bool_dtype(bundle.real[column])
     assert bundle.real["gender"].tolist() == [True, False]
     assert bundle.real["change"].tolist() == [True, False]
     assert bundle.real["diabetesMed"].tolist() == [True, False]
+
+
+def test_heart_loader_preserves_binary_and_categorical_semantics(monkeypatch):
+    features = pd.DataFrame(
+        {
+            "age": [63, 67],
+            "sex": [1, 0],
+            "cp": [1, 4],
+            "trestbps": [145, 160],
+            "chol": [233, 286],
+            "fbs": [1, 0],
+            "restecg": [2, 0],
+            "thalach": [150, 108],
+            "exang": [0, 1],
+            "oldpeak": [2.3, 1.5],
+            "slope": [3, 2],
+            "ca": [0.0, 3.0],
+            "thal": [6.0, 3.0],
+        }
+    )
+    targets = pd.DataFrame({"num": [0, 1]})
+    dataset = SimpleNamespace(data=SimpleNamespace(features=features, targets=targets))
+    monkeypatch.setattr("src.data.loader.fetch_ucirepo", lambda id: dataset)
+
+    bundle = load_heart_disease()
+
+    for column in ("sex", "fbs", "exang", "num"):
+        assert pd.api.types.is_bool_dtype(bundle.real[column])
+    for column in ("cp", "restecg", "slope", "ca", "thal"):
+        assert isinstance(bundle.real[column].dtype, pd.CategoricalDtype)
 
 
 def test_describe_dataset_includes_head_and_summary(bundle):

@@ -146,7 +146,9 @@ The three dataset runners now execute every configuration for the configured
 available in the normal results directory, so a failed seed can be inspected
 or rerun independently. The existing loss-aware trade-off aggregation is a
 separate post-processing tool and is not required by the Adult, Diabetes, and
-Heart experiment matrices.
+Heart experiment matrices. At the end of each matrix, the runner automatically
+creates utility and privacy plots with 95% CI error bars under
+`experiments/results/figures/` using `src/experiments/plot_matrix.py`.
 
 ### Runtime trade-off
 

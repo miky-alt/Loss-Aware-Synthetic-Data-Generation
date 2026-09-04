@@ -93,6 +93,11 @@ def load_diabetes_130() -> DatasetBundle:
     df = df.dropna(thresh=int(len(df) * (1 - missing_threshold)), axis=1)
     df = df.dropna().reset_index(drop=True)
 
+    # ID columns are codes for categories, not continuous measurements.
+    for column in ("admission_type_id", "discharge_disposition_id", "admission_source_id"):
+        if column in df:
+            df[column] = df[column].astype("category")
+
     return DatasetBundle(
         real=df,
         target_col=target_col,
@@ -120,6 +125,12 @@ def load_heart_disease() -> DatasetBundle:
     df[target_col] = df[target_col] > 0
 
     df = df.dropna().reset_index(drop=True)
+
+    # Preserve the semantic types of encoded categorical features for SDV.
+    for column in ("sex", "fbs", "exang"):
+        df[column] = df[column].astype(bool)
+    for column in ("cp", "restecg", "slope", "ca", "thal"):
+        df[column] = df[column].astype("category")
 
     return DatasetBundle(
         real=df,
