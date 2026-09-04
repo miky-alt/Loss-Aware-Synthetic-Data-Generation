@@ -96,6 +96,49 @@ def compute_emd(real: pd.DataFrame, synthetic: pd.DataFrame) -> dict[str, float]
 
 
 # ---------------------------------------------------------------------------
+# Categorical distribution distance
+# ---------------------------------------------------------------------------
+
+def compute_categorical_distance(real: pd.DataFrame, synthetic: pd.DataFrame) -> dict[str, float]:
+    """Compare categorical feature distributions with total variation distance.
+
+    The score for each feature is half the L1 distance between the real and
+    synthetic category-frequency distributions. It ranges from 0 (identical)
+    to 1 (disjoint distributions), and includes categories present in only
+    one of the two dataframes.
+    """
+    def categorical_columns(data: pd.DataFrame) -> list[str]:
+        return [
+            column
+            for column in data.columns
+            if (
+                pd.api.types.is_object_dtype(data[column])
+                or pd.api.types.is_string_dtype(data[column])
+                or isinstance(data[column].dtype, pd.CategoricalDtype)
+                or pd.api.types.is_bool_dtype(data[column])
+            )
+        ]
+
+    real_cols = categorical_columns(real)
+    synthetic_cols = categorical_columns(synthetic)
+    cols = [column for column in real_cols if column in synthetic_cols]
+
+    scores: dict[str, float] = {}
+    for col in cols:
+        real_distribution = real[col].value_counts(normalize=True, dropna=False)
+        synthetic_distribution = synthetic[col].value_counts(normalize=True, dropna=False)
+        categories = real_distribution.index.union(synthetic_distribution.index)
+        real_values = real_distribution.reindex(categories, fill_value=0.0)
+        synthetic_values = synthetic_distribution.reindex(categories, fill_value=0.0)
+        scores[col] = float(0.5 * (real_values - synthetic_values).abs().sum())
+
+    scores["mean_categorical_distance"] = (
+        float(np.mean(list(scores.values()))) if scores else 0.0
+    )
+    return scores
+
+
+# ---------------------------------------------------------------------------
 # F1 Discrepancy — downstream predictive performance gap
 # ---------------------------------------------------------------------------
 
@@ -187,11 +230,16 @@ def compute_utility_report(
     the same held-out `test_real` split.
     """
     emd = compute_emd(test_real, synthetic)
+    categorical_distance = compute_categorical_distance(test_real, synthetic)
 
     return {
         "mmd": compute_mmd(test_real, synthetic),
         "mean_emd": emd["mean_emd"],
         "emd_per_feature": {k: v for k, v in emd.items() if k != "mean_emd"},
+        "mean_categorical_distance": categorical_distance["mean_categorical_distance"],
+        "categorical_distance_per_feature": {
+            k: v for k, v in categorical_distance.items() if k != "mean_categorical_distance"
+        },
         "correlation_distance": compute_correlation_distance(test_real, synthetic),
         **compute_f1_discrepancy(train_real, test_real, synthetic, target_col),
     }

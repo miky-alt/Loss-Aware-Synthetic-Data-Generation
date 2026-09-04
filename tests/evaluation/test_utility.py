@@ -3,6 +3,7 @@ import pandas as pd
 import pytest
 
 from src.evaluation.utility import (
+    compute_categorical_distance,
     compute_correlation_distance,
     compute_emd,
     compute_f1_discrepancy,
@@ -89,6 +90,35 @@ class TestComputeEMD:
 
 
 # ---------------------------------------------------------------------------
+# Categorical distribution distance
+# ---------------------------------------------------------------------------
+
+class TestComputeCategoricalDistance:
+    def test_identical_data_gives_zero(self):
+        real = pd.DataFrame({"city": ["rome", "rome", "milan", "naples"]})
+
+        result = compute_categorical_distance(real, real.copy())
+
+        assert result["city"] == 0.0
+        assert result["mean_categorical_distance"] == 0.0
+
+    def test_penalizes_frequency_and_category_mismatches(self):
+        real = pd.DataFrame({"city": ["rome", "rome", "milan", "naples"]})
+        synthetic = pd.DataFrame({"city": ["rome", "milan", "milan", "turin"]})
+
+        result = compute_categorical_distance(real, synthetic)
+
+        assert 0.0 < result["city"] <= 1.0
+        assert result["mean_categorical_distance"] == result["city"]
+
+    def test_includes_boolean_columns(self):
+        real = pd.DataFrame({"flag": [True, True, False, False]})
+        synthetic = pd.DataFrame({"flag": [True, True, True, False]})
+
+        assert compute_categorical_distance(real, synthetic)["flag"] == 0.25
+
+
+# ---------------------------------------------------------------------------
 # F1 Discrepancy
 # ---------------------------------------------------------------------------
 
@@ -144,7 +174,8 @@ class TestComputeUtilityReport:
     def test_returns_all_expected_keys(self, real, synthetic):
         result = compute_utility_report(real.iloc[:240], real.iloc[240:], synthetic, target_col="target")
         for key in ["mmd", "mean_emd", "emd_per_feature", "correlation_distance",
-                    "f1_real", "f1_synthetic", "f1_discrepancy"]:
+                "mean_categorical_distance", "categorical_distance_per_feature",
+                "f1_real", "f1_synthetic", "f1_discrepancy"]:
             assert key in result
 
     def test_emd_per_feature_is_dict(self, real, synthetic):
