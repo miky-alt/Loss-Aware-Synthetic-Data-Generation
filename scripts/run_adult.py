@@ -11,7 +11,7 @@ from src.experiments.multiseed import run_experiment_matrix
 
 
 NUM_SAMPLES = 38_096
-SEEDS = (1, 2, 3)
+SEEDS = (1, 2, 3, 4, 5)
 SEED = SEEDS[0]
 TEST_SIZE = 0.2
 OUTPUT_DIR = "experiments/results"
