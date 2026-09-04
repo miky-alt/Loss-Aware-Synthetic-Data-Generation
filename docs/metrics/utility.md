@@ -41,6 +41,8 @@ where expectations are over independent draws from each set. This is estimated a
 
 These thresholds are approximate and depend on the dataset and kernel bandwidth.
 
+**Saturation.** With a fixed bandwidth, MMD stops being informative once the two distributions no longer overlap: every cross-kernel term goes to zero and MMD² flattens to the constant E[k(x,x')] + E[k(y,y')]. It can therefore distinguish "close" from "far" but not "far" from "very far". We saw this in the loss-aware collapse regime, where MMD moved from 0.018 to 0.032 while mean EMD moved from 1 to 25 (see [loss_aware_training.md](../loss_aware_training.md#7c-weight-sweep-finding-the-trade-off-heart-disease-3-seeds-means)). MMD should be read together with EMD, which has no such ceiling; a multi-scale kernel (sum over several γ) would reduce the problem and is left as future work.
+
 ---
 
 ## 2. Earth Mover's Distance (EMD)
