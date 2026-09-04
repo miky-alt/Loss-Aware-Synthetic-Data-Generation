@@ -1,0 +1,234 @@
+=== seed=1 baseline ===
+config: heart / ctgan_loss_aware
+utility.mmd: 0.018164752127370017
+utility.mean_emd: 2.430833063583889
+utility.mean_categorical_distance: 0.05933333333333335
+utility.categorical_distance_per_feature: {'num': 0.05933333333333335}
+utility.correlation_distance: 2.43678021115854
+utility.f1_real: 0.8662177328843995
+utility.f1_synthetic: 0.816819827346143
+utility.f1_discrepancy: 0.049397905538256515
+privacy.dcr_mean: 2.512874406981391
+privacy.dcr_median: 2.51652048810859
+privacy.dcr_min: 0.5180868473968542
+privacy.dcr_5th_percentile: 1.3590584248665842
+privacy.nndr_mean: 0.8837650663706629
+privacy.nndr_median: 0.9191689858976791
+privacy.nndr_5th_percentile: 0.6484699035458713
+privacy.inference_f1: 0.816819827346143
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.4458053345925198
+privacy.disclosure_rate: 0.0
+privacy.n_at_risk: 0
+privacy.threshold_used: 0.5
+artifacts.loss_values: 8000 entries
+artifacts.skipped_steps: present
+artifacts.lambdas: present
+=== seed=1 utility-only ===
+config: heart / ctgan_loss_aware
+utility.mmd: 0.01810593677385024
+utility.mean_emd: 2.833815840523802
+utility.mean_categorical_distance: 0.05833333333333335
+utility.categorical_distance_per_feature: {'num': 0.05833333333333335}
+utility.correlation_distance: 2.087760212114404
+utility.f1_real: 0.8662177328843995
+utility.f1_synthetic: 0.85012503473187
+utility.f1_discrepancy: 0.01609269815252956
+privacy.dcr_mean: 2.575342924911435
+privacy.dcr_median: 2.587631511817389
+privacy.dcr_min: 0.5195820033099781
+privacy.dcr_5th_percentile: 1.244694208557223
+privacy.nndr_mean: 0.8799760346312566
+privacy.nndr_median: 0.9173791008537882
+privacy.nndr_5th_percentile: 0.6508187207396087
+privacy.inference_f1: 0.85012503473187
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.47911054197824676
+privacy.disclosure_rate: 0.0
+privacy.n_at_risk: 0
+privacy.threshold_used: 0.5
+artifacts.loss_values: 8000 entries
+artifacts.skipped_steps: present
+artifacts.lambdas: present
+=== seed=1 both lambda_priv=10 ===
+config: heart / ctgan_loss_aware
+utility.mmd: 0.01844670645606871
+utility.mean_emd: 17.046273058418173
+utility.mean_categorical_distance: 0.012666666666666687
+utility.categorical_distance_per_feature: {'num': 0.012666666666666687}
+utility.correlation_distance: 2.233343785577335
+utility.f1_real: 0.8662177328843995
+utility.f1_synthetic: 0.849112925936356
+utility.f1_discrepancy: 0.017104806948043505
+privacy.dcr_mean: 4.926005647126241
+privacy.dcr_median: 4.882988293041299
+privacy.dcr_min: 1.9496157277617934
+privacy.dcr_5th_percentile: 3.5238727327309354
+privacy.nndr_mean: 0.9422886429071489
+privacy.nndr_median: 0.95583650620449
+privacy.nndr_5th_percentile: 0.8412031188676576
+privacy.inference_f1: 0.849112925936356
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.4780984331827328
+privacy.disclosure_rate: 0.0
+privacy.n_at_risk: 0
+privacy.threshold_used: 0.5
+artifacts.loss_values: 8000 entries
+artifacts.skipped_steps: present
+artifacts.lambdas: present
+=== seed=2 baseline ===
+config: heart / ctgan_loss_aware
+utility.mmd: 0.01809880751209955
+utility.mean_emd: 2.7799693297474186
+utility.mean_categorical_distance: 0.05133333333333334
+utility.categorical_distance_per_feature: {'num': 0.05133333333333334}
+utility.correlation_distance: 1.8109172309276678
+utility.f1_real: 0.816819827346143
+utility.f1_synthetic: 0.8143222506393861
+utility.f1_discrepancy: 0.0024975767067568766
+privacy.dcr_mean: 2.7063436228856923
+privacy.dcr_median: 2.698837269002685
+privacy.dcr_min: 0.6975725093630732
+privacy.dcr_5th_percentile: 1.4180277908319667
+privacy.nndr_mean: 0.8902805913083442
+privacy.nndr_median: 0.9261970669000895
+privacy.nndr_5th_percentile: 0.684853080235287
+privacy.inference_f1: 0.8143222506393861
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.44330775788576293
+privacy.disclosure_rate: 0.0
+privacy.n_at_risk: 0
+privacy.threshold_used: 0.5
+artifacts.loss_values: 8000 entries
+artifacts.skipped_steps: present
+artifacts.lambdas: present
+=== seed=2 utility-only ===
+config: heart / ctgan_loss_aware
+utility.mmd: 0.017940504573262194
+utility.mean_emd: 3.145790618230387
+utility.mean_categorical_distance: 0.06433333333333335
+utility.categorical_distance_per_feature: {'num': 0.06433333333333335}
+utility.correlation_distance: 1.7896345630311168
+utility.f1_real: 0.816819827346143
+utility.f1_synthetic: 0.8
+utility.f1_discrepancy: 0.016819827346142957
+privacy.dcr_mean: 2.5200999232067014
+privacy.dcr_median: 2.534452410143799
+privacy.dcr_min: 0.6097093664599628
+privacy.dcr_5th_percentile: 1.365102425572313
+privacy.nndr_mean: 0.8804101443257917
+privacy.nndr_median: 0.9153535634842045
+privacy.nndr_5th_percentile: 0.6455531694056132
+privacy.inference_f1: 0.8
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.42898550724637685
+privacy.disclosure_rate: 0.0
+privacy.n_at_risk: 0
+privacy.threshold_used: 0.5
+artifacts.loss_values: 8000 entries
+artifacts.skipped_steps: present
+artifacts.lambdas: present
+=== seed=2 both lambda_priv=10 ===
+config: heart / ctgan_loss_aware
+utility.mmd: 0.018339298551344228
+utility.mean_emd: 15.799120309033865
+utility.mean_categorical_distance: 0.13066666666666668
+utility.categorical_distance_per_feature: {'num': 0.13066666666666668}
+utility.correlation_distance: 2.82411842564593
+utility.f1_real: 0.816819827346143
+utility.f1_synthetic: 0.7727407407407407
+utility.f1_discrepancy: 0.04407908660540227
+privacy.dcr_mean: 4.935472875009777
+privacy.dcr_median: 4.909263994617288
+privacy.dcr_min: 2.3750976615994404
+privacy.dcr_5th_percentile: 3.616493417246703
+privacy.nndr_mean: 0.9427737884396196
+privacy.nndr_median: 0.9597764479153148
+privacy.nndr_5th_percentile: 0.8272033879492464
+privacy.inference_f1: 0.7727407407407407
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.40172624798711754
+privacy.disclosure_rate: 0.0
+privacy.n_at_risk: 0
+privacy.threshold_used: 0.5
+artifacts.loss_values: 8000 entries
+artifacts.skipped_steps: present
+artifacts.lambdas: present
+=== seed=3 baseline ===
+config: heart / ctgan_loss_aware
+utility.mmd: 0.01777659764552087
+utility.mean_emd: 2.5011681284163485
+utility.mean_categorical_distance: 0.03366666666666665
+utility.categorical_distance_per_feature: {'num': 0.03366666666666665}
+utility.correlation_distance: 2.1636450684720785
+utility.f1_real: 0.8
+utility.f1_synthetic: 0.8143222506393861
+utility.f1_discrepancy: -0.01432225063938608
+privacy.dcr_mean: 2.557838535707483
+privacy.dcr_median: 2.566221849747593
+privacy.dcr_min: 0.4243084724721738
+privacy.dcr_5th_percentile: 1.3359450473159256
+privacy.nndr_mean: 0.8910828789546342
+privacy.nndr_median: 0.925995210181106
+privacy.nndr_5th_percentile: 0.6596635822530346
+privacy.inference_f1: 0.8143222506393861
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.44330775788576293
+privacy.disclosure_rate: 0.002
+privacy.n_at_risk: 2
+privacy.threshold_used: 0.5
+artifacts.loss_values: 8000 entries
+artifacts.skipped_steps: present
+artifacts.lambdas: present
+=== seed=3 utility-only ===
+config: heart / ctgan_loss_aware
+utility.mmd: 0.017721725359776987
+utility.mean_emd: 3.433630696131878
+utility.mean_categorical_distance: 0.08233333333333334
+utility.categorical_distance_per_feature: {'num': 0.08233333333333334}
+utility.correlation_distance: 1.7654275244157527
+utility.f1_real: 0.8
+utility.f1_synthetic: 0.8168194868945078
+utility.f1_discrepancy: -0.01681948689450774
+privacy.dcr_mean: 2.5153225277697886
+privacy.dcr_median: 2.5098414601200956
+privacy.dcr_min: 0.6022980014086002
+privacy.dcr_5th_percentile: 1.4029260692930674
+privacy.nndr_mean: 0.8864639206130773
+privacy.nndr_median: 0.9200107205632131
+privacy.nndr_5th_percentile: 0.6576136084037062
+privacy.inference_f1: 0.8168194868945078
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.4458049941408846
+privacy.disclosure_rate: 0.0
+privacy.n_at_risk: 0
+privacy.threshold_used: 0.5
+artifacts.loss_values: 8000 entries
+artifacts.skipped_steps: present
+artifacts.lambdas: present
+=== seed=3 both lambda_priv=10 ===
+config: heart / ctgan_loss_aware
+utility.mmd: 0.018123974243973093
+utility.mean_emd: 19.06503112010599
+utility.mean_categorical_distance: 0.1166666666666667
+utility.categorical_distance_per_feature: {'num': 0.1166666666666667}
+utility.correlation_distance: 2.07805042075528
+utility.f1_real: 0.8
+utility.f1_synthetic: 0.7280024698981168
+utility.f1_discrepancy: 0.07199753010188326
+privacy.dcr_mean: 5.227454045890855
+privacy.dcr_median: 5.237157475180351
+privacy.dcr_min: 1.5244351734650943
+privacy.dcr_5th_percentile: 3.6787646369702247
+privacy.nndr_mean: 0.9424365107298924
+privacy.nndr_median: 0.9594786634299786
+privacy.nndr_5th_percentile: 0.8407361022874199
+privacy.inference_f1: 0.7280024698981168
+privacy.baseline_f1: 0.3710144927536232
+privacy.inference_risk_delta: 0.3569879771444936
+privacy.disclosure_rate: 0.0
+privacy.n_at_risk: 0
+privacy.threshold_used: 0.5
+artifacts.loss_values: 8000 entries
+artifacts.skipped_steps: present
+artifacts.lambdas: present

@@ -27,6 +27,7 @@ matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+from scipy import stats
 
 from src.experiments.persistence import load_report
 from src.experiments.query import query_index
@@ -123,6 +124,18 @@ METRICS = [
 ]
 
 
+def _ci95_halfwidth(vals: np.ndarray) -> float:
+    """Half-width of the 95% confidence interval for the mean, Student-t.
+
+    CI = mean +/- t_{0.975, n-1} * s / sqrt(n). With n=3 the multiplier on s
+    is ~2.48, with n=5 ~1.24, so few-seed intervals are wide by design."""
+    n = len(vals)
+    if n < 2:
+        return float("nan")
+    s = vals.std(ddof=1)
+    return float(stats.t.ppf(0.975, n - 1) * s / np.sqrt(n))
+
+
 def aggregate(runs: dict[tuple, dict[int, dict]]) -> pd.DataFrame:
     records = []
     for key, per_seed in runs.items():
@@ -133,6 +146,7 @@ def aggregate(runs: dict[tuple, dict[int, dict]]) -> pd.DataFrame:
             vals = np.array([r[section][metric] for r in per_seed.values()], dtype=float)
             rec[f"{metric}_mean"] = vals.mean()
             rec[f"{metric}_std"] = vals.std(ddof=1) if len(vals) > 1 else 0.0
+            rec[f"{metric}_ci95"] = _ci95_halfwidth(vals)
         records.append(rec)
     df = pd.DataFrame(records)
     return df.sort_values(["lambda_priv", "dcr_margin", "lambda_mmd"]).reset_index(drop=True)
@@ -142,11 +156,14 @@ def aggregate(runs: dict[tuple, dict[int, dict]]) -> pd.DataFrame:
 # Plotting
 # ---------------------------------------------------------------------------
 
-def plot_tradeoff(ax, agg: pd.DataFrame, dataset: str) -> None:
+def plot_tradeoff(ax, agg: pd.DataFrame, dataset: str, errorbar: str = "ci95") -> None:
     for _, r in agg.iterrows():
+        xerr = r[f"dcr_mean_{errorbar}"]
+        yerr = r[f"f1_discrepancy_{errorbar}"]
         ax.errorbar(
             r["dcr_mean_mean"], r["f1_discrepancy_mean"],
-            xerr=r["dcr_mean_std"], yerr=r["f1_discrepancy_std"],
+            xerr=0 if np.isnan(xerr) else xerr,
+            yerr=0 if np.isnan(yerr) else yerr,
             fmt="o", capsize=3, markersize=6,
         )
         ax.annotate(
@@ -156,7 +173,8 @@ def plot_tradeoff(ax, agg: pd.DataFrame, dataset: str) -> None:
     ax.axhline(0, color="grey", lw=0.8, ls="--")
     ax.set_xlabel("mean DCR  (higher = more private)")
     ax.set_ylabel("F1 discrepancy  (higher = more utility lost)")
-    ax.set_title(f"Privacy–utility trade-off — {dataset}")
+    bar_label = "95% CI" if errorbar == "ci95" else "±1 sd"
+    ax.set_title(f"Privacy–utility trade-off — {dataset}  (error bars: {bar_label} over seeds)")
     ax.grid(alpha=0.3)
 
 
@@ -209,6 +227,8 @@ def main() -> None:
                    help="dcr_margin of the run to use for the loss-curve panel")
     p.add_argument("--exclude-collapse", type=float, default=None, metavar="DCR",
                    help="drop configurations whose mean DCR exceeds this (keeps the plot readable)")
+    p.add_argument("--errorbar", choices=["ci95", "std"], default="ci95",
+                   help="error bars: 95%% confidence interval of the mean (default) or one std")
     args = p.parse_args()
 
     filters = _parse_kwarg_filters(args.kwarg)
@@ -224,12 +244,15 @@ def main() -> None:
     csv_path = out_dir / f"tradeoff_{tag}.csv"
     agg.to_csv(csv_path, index=False)
 
-    with pd.option_context("display.width", 200, "display.max_columns", 30, "display.float_format", "{:.3f}".format):
+    with pd.option_context("display.width", 220, "display.max_columns", 30, "display.float_format", "{:.3f}".format):
         print(agg[["label", "n_seeds",
-                   "f1_discrepancy_mean", "f1_discrepancy_std",
-                   "dcr_mean_mean", "dcr_mean_std",
-                   "dcr_5th_percentile_mean", "mean_emd_mean",
-                   "correlation_distance_mean", "disclosure_rate_mean"]])
+                   "f1_discrepancy_mean", "f1_discrepancy_ci95",
+                   "dcr_mean_mean", "dcr_mean_ci95",
+                   "dcr_5th_percentile_mean", "dcr_5th_percentile_ci95",
+                   "mean_emd_mean", "mean_emd_ci95",
+                   "correlation_distance_mean", "correlation_distance_ci95",
+                   "disclosure_rate_mean"]])
+    print("\n(_ci95 = half-width of the 95% Student-t confidence interval for the mean across seeds)")
 
     plot_agg = agg if args.exclude_collapse is None else agg[agg["dcr_mean_mean"] <= args.exclude_collapse]
 
@@ -238,7 +261,7 @@ def main() -> None:
     fig, axes = plt.subplots(1, ncols, figsize=(7 * ncols, 5))
     axes = np.atleast_1d(axes)
 
-    plot_tradeoff(axes[0], plot_agg, args.dataset)
+    plot_tradeoff(axes[0], plot_agg, args.dataset, errorbar=args.errorbar)
     if loss_run:
         title, report = loss_run
         plot_loss_curves(axes[1], report, f"Loss components — {title}")

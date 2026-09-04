@@ -18,21 +18,21 @@ from sklearn.metrics import f1_score
 from sklearn.neighbors import NearestNeighbors
 from sklearn.preprocessing import StandardScaler
 
+from src.evaluation.utility import _numeric, _shared_numeric
+
 
 def _prepare_numeric(
     real: pd.DataFrame, synthetic: pd.DataFrame
 ) -> tuple[np.ndarray, np.ndarray]:
     """
-    Extract and normalize shared numeric columns from real and synthetic.
-    Returns (X_real, X_synthetic) as scaled numpy arrays.
+    Extract and normalize shared numeric columns (bool cast to int) from real
+    and synthetic. Returns (X_real, X_synthetic) as scaled numpy arrays.
     """
-    cols = real.select_dtypes(include="number").columns.intersection(
-        synthetic.select_dtypes(include="number").columns
-    ).tolist()
+    R, S = _shared_numeric(real, synthetic)
 
     scaler = StandardScaler()
-    X_real = scaler.fit_transform(real[cols].values.astype(float))
-    X_syn = scaler.transform(synthetic[cols].values.astype(float))
+    X_real = scaler.fit_transform(R.values.astype(float))
+    X_syn = scaler.transform(S.values.astype(float))
 
     return X_real, X_syn
 
@@ -149,17 +149,14 @@ def compute_inference_risk(
     if sensitive_col not in real.columns or sensitive_col not in synthetic.columns:
         raise ValueError(f"sensitive_col '{sensitive_col}' not found in both dataframes.")
 
-    feature_cols = [
-        c for c in real.select_dtypes(include="number").columns
-        if c != sensitive_col
-    ]
+    feature_cols = [c for c in _numeric(real).columns if c != sensitive_col]
     feature_cols = [c for c in feature_cols if c in synthetic.columns]
 
-    X_syn = synthetic[feature_cols].values
-    y_syn = synthetic[sensitive_col].values
+    X_syn = _numeric(synthetic)[feature_cols].values
+    y_syn = synthetic[sensitive_col].astype(int).values
 
-    X_real = real[feature_cols].values
-    y_real = real[sensitive_col].values
+    X_real = _numeric(real)[feature_cols].values
+    y_real = real[sensitive_col].astype(int).values
 
     clf = RandomForestClassifier(n_estimators=100, random_state=42)
     clf.fit(X_syn, y_syn)

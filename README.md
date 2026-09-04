@@ -14,7 +14,7 @@ The project has three parts:
 
 1. **Evaluation framework** (`src/evaluation/`): nine metrics covering distributional fidelity (MMD, EMD, and categorical total variation distance), structural fidelity (correlation distance), downstream utility (F1 discrepancy) and empirical privacy (DCR, NNDR, inference risk, disclosure rate).
 2. **Baseline comparison** (`src/generators/baseline.py`): CTGAN, TVAE and GaussianCopula from `sdv`, run through the framework on three datasets.
-3. **Loss-aware generator** (`src/generators/loss_aware.py`): TVAE with three differentiable penalty terms added to the training loss, an MMD term, a correlation term and a distance-to-closest-record hinge, with a self-calibrating privacy margin. With all weights at zero it is exactly the stock model.
+3. **Loss-aware generators** (`src/generators/loss_aware.py`, `src/generators/loss_aware_ctgan.py`): TVAE and CTGAN with three differentiable penalty terms added to the training loss, an MMD term, a correlation term and a distance-to-closest-record hinge, with a self-calibrating privacy margin. With all weights at zero each is exactly the stock model.
 
 ### Datasets
 | key | dataset | domain | train rows | columns |
@@ -28,7 +28,7 @@ All three are fetched automatically from the UCI repository on first use.
 ## 🔍 Main Findings
 Full details are in `docs/loss_aware_training.md` and in the report.
 
-* **Fidelity regularization is itself a privacy mechanism.** On all three datasets, the MMD and correlation penalties alone raised the distance between synthetic and real records by 17 to 26% while also improving utility.
+* **Fidelity regularization is a privacy mechanism, for generators that memorize.** On TVAE, the MMD and correlation penalties alone raised the distance between synthetic and real records by 17 to 26% on all three datasets while also improving utility. On a properly trained CTGAN, which does not memorize on Heart, the same terms gave no privacy gain.
 * **Whether a privacy penalty costs utility depends on data density.** The same penalty (λ=10) was free by every aggregate metric on Adult, cost measurably on Heart, and collapsed the generator on Diabetes. Density means rows relative to dimensionality, not row count.
 * **The cost lands on the sparsest part of each column.** Minority classes, rare categories and the target rate. On Adult, the six columns that moved most were native-country, race, workclass, sex, income and relationship.
 * **Aggregate utility metrics cannot see this.** On Adult, MMD, correlation distance and F1 all improved while the sex ratio shifted 14 percentage points and the income rate 11. Per-column marginal checks on protected attributes are not optional.
@@ -82,8 +82,8 @@ uv run python -m src.main run --dataset heart --generator tvae_loss_aware \
 uv run python -m src.main run --dataset adult --generator ctgan --seed 1
 ```
 
-Available generators: `ctgan`, `tvae`, `gaussian_copula`, `tvae_loss_aware`.
-Loss-aware kwargs: `lambda_mmd`, `lambda_corr`, `lambda_priv`, `dcr_margin` (relative to the median real-to-real nearest-neighbour distance; 1.0 means "no closer to a real row than real rows are to each other"), `mmd_gamma`.
+Available generators: `ctgan`, `tvae`, `gaussian_copula`, `tvae_loss_aware`, `ctgan_loss_aware`.
+Loss-aware kwargs: `lambda_mmd`, `lambda_corr`, `lambda_priv`, `dcr_margin` (relative to the median real-to-real nearest-neighbour distance; 1.0 means "no closer to a real row than real rows are to each other"), `mmd_gamma`. For `ctgan_loss_aware`, `batch_size` must be even and a multiple of 10 (use 50 on Heart), and it needs many more epochs than TVAE to converge (2000 on Heart).
 
 Every run writes a JSON report to `experiments/results/<run_name>.json` (all metrics, per-batch loss components, effective margin, code version) and appends a line to `experiments/results/index.jsonl`.
 
@@ -123,7 +123,8 @@ src/
   generators/
     base.py                   # SyntheticGenerator interface
     baseline.py               # CTGAN, TVAE, GaussianCopula (sdv-backed)
-    loss_aware.py             # LossAwareTVAE: ctgan TVAE + MMD / correlation / DCR-hinge penalties
+    loss_aware.py             # LossAwareTVAE: ctgan TVAE + MMD / correlation / DCR-hinge penalties; shared helpers
+    loss_aware_ctgan.py       # LossAwareCTGAN: same penalties on CTGAN's generator objective
     registry.py               # name -> generator class
   experiments/
     config.py                 # TrainingConfig, deterministic run names

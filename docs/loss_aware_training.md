@@ -833,6 +833,55 @@ as a required addition, not future work.
 
 ---
 
+## 7h. Loss-aware CTGAN on Heart: is the free lunch TVAE-specific?
+
+`src/generators/loss_aware_ctgan.py` adds the same three penalties to CTGAN's
+generator objective (discriminator unchanged). Heart, `batch_size=50`,
+`epochs=2000` (~8,000 generator steps, where stock CTGAN converges on this
+dataset), 3 seeds, $\pm$ = 95% CI. Raw log: `experiments/heart_ctgan_loss_aware.txt`.
+
+| config | F1 disc | mean EMD | corr dist | DCR mean | DCR 5th | NNDR |
+|---|---|---|---|---|---|---|
+| baseline | $0.012 \pm 0.08$ | $2.57 \pm 0.46$ | $2.14 \pm 0.78$ | $2.59 \pm 0.25$ | 1.37 | 0.89 |
+| utility only | $0.005 \pm 0.05$ | $3.14 \pm 0.75$ | $1.88 \pm 0.45$ | $2.54 \pm 0.08$ | 1.34 | 0.88 |
+| both, $\lambda = 10$, $\mu = 1.5$ | $0.044 \pm 0.07$ | $17.3 \pm 4.1$ | $2.38 \pm 0.97$ | $5.03 \pm 0.42$ | 3.61 | 0.94 |
+
+**The utility terms do not improve privacy on CTGAN.** DCR $2.59 \to 2.54$,
+intervals overlap. Correlation distance improves (the term is in the loss);
+no privacy gain. A properly trained CTGAN starts at DCR 2.59, already above
+the level the utility terms lifted TVAE to (2.02). TVAE at 1.72 was partially
+memorizing; the utility terms corrected that; CTGAN had no memorization to
+correct. The §7 memorization hypothesis returns in a sharper form:
+*fidelity regularization is a privacy mechanism for generators that memorize,
+bounded by how far below the non-memorizing level the baseline sits.*
+
+**The hinge works on CTGAN and lands harder.** DCR nearly doubles, 5th
+percentile $1.37 \to 3.61$, NNDR 0.94 (off-manifold), EMD ×7, F1 discrepancy
+unchanged within its interval. This is TVAE's $\lambda = 10, \mu = 2$
+collapse pattern one step earlier, consistent with the hinge-scale confound:
+the WGAN generator loss has a different scale, so $\lambda = 10$ is a stronger
+penalty here. A $\lambda \in \{2, 5\}$ sweep would locate CTGAN's knee; not
+run.
+
+**A properly trained CTGAN is a good Heart baseline.** F1 disc 0.01, corr
+2.14 (better than TVAE's 2.66), DCR 2.59 (much more private than TVAE's 1.72),
+EMD 2.57 (worse than TVAE's 1.36). The undertrained † row in
+`baseline_comparison.md` should be read against this.
+
+**Two pipeline bugs found along the way**, both fixed in the same PR:
+- the wrappers' discrete-column inference only declared integer columns
+  discrete, so bool targets (after the loader change to bool for sdv metadata)
+  were modelled as continuous and came back constant, and float-typed
+  categoricals (`ca`, `thal`) were mode-normalized instead of one-hot. Fixed by
+  `infer_discrete_columns` (bool / object / low-cardinality whole-number).
+- the evaluation's `select_dtypes("number")` drops bool columns, so under the
+  bool loader every distance metric silently excluded sex and the target.
+  Fixed by casting bool → int inside the evaluation. Verified from the
+  reports that every run behind the docs and the report was evaluated on the
+  full column set (the bool loader reached this checkout later).
+
+---
+
 ## 8. Ethical reading
 
 The weights $\lambda_{\text{mmd}}, \lambda_{\text{corr}}, \lambda_{\text{priv}}$
