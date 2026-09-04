@@ -71,7 +71,30 @@ EMD is in the same units as the original feature values (before any normalizatio
 
 ---
 
-## 3. F1 Discrepancy
+## 3. Categorical Distribution Distance
+
+### What it measures
+
+Categorical Distribution Distance measures whether synthetic categorical and
+boolean features preserve the frequency of each category. It uses the total
+variation distance, which is half the L1 distance between the real and
+synthetic category-frequency distributions.
+
+```text
+TVD(P, Q) = 1/2 · Σ_c |P(c) - Q(c)|
+```
+
+The score ranges from 0 (identical distributions) to 1 (disjoint
+distributions). Categories present in only one dataset are included with zero
+frequency in the other dataset. The report contains both the mean score and a
+per-feature breakdown under `categorical_distance_per_feature`.
+
+This metric complements EMD: EMD covers numeric columns, while this metric
+ensures that columns such as `race`, `gender`, medication indicators, and
+boolean targets are evaluated rather than silently omitted from distributional
+utility.
+
+## 4. F1 Discrepancy
 
 ### What it measures
 
@@ -110,7 +133,7 @@ A negative discrepancy (synthetic F1 > real F1) is theoretically possible if the
 
 ---
 
-## 4. Correlation Distance
+## 5. Correlation Distance
 
 ### What it measures
 
@@ -138,13 +161,15 @@ The Frobenius norm of a p×p correlation matrix ranges from 0 (identical matrice
 
 ## Unified Report
 
-`compute_utility_report(real, synthetic, target_col)` runs all four metrics and returns a single dict:
+`compute_utility_report(real, synthetic, target_col)` runs all five metrics and returns a single dict:
 
 ```python
 {
     "mmd": float,                          # overall distributional distance
     "mean_emd": float,                     # average per-feature Wasserstein distance
     "emd_per_feature": {col: float, ...},  # per-feature breakdown
+    "mean_categorical_distance": float,    # average categorical TVD
+    "categorical_distance_per_feature": {col: float, ...},
     "correlation_distance": float,         # Frobenius norm of correlation matrix diff
     "f1_real": float,                      # baseline F1 on real data
     "f1_synthetic": float,                 # F1 when trained on synthetic
