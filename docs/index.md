@@ -81,7 +81,7 @@ See [experiments.md](experiments.md) for the full CLI reference and how `run_nam
 
 ### Run configured experiments by dataset
 
-The `scripts/` directory contains one editable runner per dataset. Each runner executes the two current Gaussian Copula configurations in `EXPERIMENTS`: the SDV default and a custom numerical-distribution configuration.
+The `scripts/` directory contains one editable runner per dataset. Each runner executes the configurations listed in its `EXPERIMENTS` list; see each script for its current set of generators and preprocessing options.
 
 ```powershell
 uv run python scripts/run_adult.py
@@ -97,7 +97,9 @@ For the complete Adult preprocessing comparison matrix, use:
 uv run python scripts/run_adult_preprocessing.py
 ```
 
-This runs seven configurations: default and modified-distribution Gaussian Copula, default and `LogScaler(fnlwgt)` Gaussian Copula, and default plus `LogScaler(fnlwgt)` variants for CTGAN and TVAE. All runs use the same seed, train/test split, and sample count.
+This runs eight configurations: default, modified-distribution, `LogScaler(fnlwgt)`, and combined modified-distribution plus `LogScaler(fnlwgt)` Gaussian Copula, and default plus `LogScaler(fnlwgt)` variants for CTGAN and TVAE. All runs use the same seed, train/test split, and sample count.
+
+`scripts/run_diabetes.py` runs the equivalent eight-configuration matrix for Diabetes 130-US Hospitals, using `LogScaler(time_in_hospital, num_medications)` as the preprocessing variant. The two columns are positive and right-skewed; zero-inflated utilization counts are left to the distribution configuration because a plain `LogScaler` is not valid for them.
 
 ### Inspect a dataset and plot its distributions
 
