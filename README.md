@@ -40,8 +40,8 @@ The dataset runners repeat every Adult, Diabetes, and Heart configuration over
 the same default seed set `(1, 2, 3)`, then report mean and 95% confidence intervals for all utility
 and privacy metrics, including per-feature numeric EMD and categorical/boolean
 TVD. Three seeds are suitable for an exploratory sweep; set `SEEDS` to five for
-final results. This multiplies the number of trainings (roughly 45 runs
-with three seeds or 75 with five for the current matrices), so CTGAN and TVAE
+final results. This multiplies the number of trainings (roughly 54 runs
+with three seeds or 90 with five for the current matrices), so CTGAN and TVAE
 should be parallelized only when available memory allows it.
 
 ---
