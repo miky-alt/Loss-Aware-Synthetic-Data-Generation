@@ -26,7 +26,7 @@ The Adult dataset is a standard benchmark in the fairness and privacy literature
 
 **Preprocessing decisions:**
 - Target column (`income`) contains values like `">50K"` and `"<=50K"` with trailing periods in some versions of the dataset. We strip whitespace and periods before binarizing to `1` (`>50K`) and `0` (`<=50K`).
-- Categorical columns are label-encoded using pandas `category` codes. We chose label encoding over one-hot encoding because it keeps the feature space compact (important for distance-based privacy metrics like DCR) and is compatible with tree-based classifiers used in F1 discrepancy evaluation.
+- Categorical values are preserved as strings/categories for SDV metadata detection; they are not treated as continuous measurements. This keeps the semantic category support available for the categorical TVD utility metric.
 - Rows with missing values are dropped. The Adult dataset has a small fraction of missing values (marked as `"?"` in the original), and dropping them introduces minimal bias while keeping preprocessing simple.
 
 ---
@@ -49,7 +49,7 @@ The readmission prediction task is also clinically meaningful: a synthetic datas
 - Columns with more than 40% missing values are dropped entirely. This threshold was chosen to balance data retention against imputation uncertainty — columns that are mostly missing carry little statistical signal and would distort the evaluation metrics. In practice this removes `weight`, `payer_code`, and `medical_specialty`.
 - After column pruning, rows with any remaining missing values are dropped.
 - The target column has three values: `"<30"` (readmitted within 30 days), `">30"` (readmitted after 30 days), and `"NO"` (not readmitted). We binarize to `1` for `"<30"` and `0` otherwise, focusing on the clinically critical early readmission case.
-- Categorical columns are label-encoded identically to the Adult dataset.
+- String medication, diagnosis, demographic, and age-band columns remain categorical. Binary `gender`, `change`, and `diabetesMed` values are normalized to booleans, as is the binary `readmitted` target. Numeric admission IDs are converted to categorical codes because their values are labels, not measurements.
 
 ---
 
@@ -66,11 +66,19 @@ The Heart Disease dataset is intentionally small. At ~300 rows, it represents th
 
 Including this dataset allows us to demonstrate that our evaluation framework is sensitive to these failure modes, and motivates why the loss function must explicitly penalize memorization (via NNDR-based terms) in low-data regimes.
 
+The loader also restores the semantic types that are hidden by the UCI numeric
+codes: `sex`, `fbs`, and `exang` are normalized to booleans, while `cp`,
+`restecg`, `slope`, `ca`, and `thal` are categorical. This prevents SDV from
+modeling binary indicators and discrete category codes as continuous numeric
+measurements. The Heart preprocessing matrix compares the default and
+modified Gaussian Copula distributions, `LogScaler(chol)`, their combination,
+and matching CTGAN/TVAE variants.
+
 **Preprocessing decisions:**
 - The original target column (`num`) has integer values 0–4 representing severity of heart disease. We binarize to `0` (no disease) and `1` (disease present, any severity) to keep the downstream classification task consistent with the other datasets.
 - No columns are dropped — the dataset is small enough that all features are retained.
 - Rows with missing values are dropped (very few in this dataset).
-- Categorical columns are label-encoded.
+- Encoded binary columns (`sex`, `fbs`, and `exang`) are normalized to booleans. Encoded discrete columns (`cp`, `restecg`, `slope`, `ca`, and `thal`) are stored as categorical values so SDV and categorical TVD do not interpret their codes as continuous distances.
 
 ---
 

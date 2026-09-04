@@ -116,4 +116,10 @@ def run_experiment_matrix(
         for metric, values in aggregate["metrics"].items():
             print(f"{metric}: {values['mean']} +/- {values['ci95_half_width']}")
 
+    from src.experiments.plot_matrix import plot_matrix_aggregates
+
+    plot_paths = plot_matrix_aggregates(dataset_name, output_dir, seeds)
+    for path in plot_paths:
+        print(f"wrote {path}")
+
     return aggregates
