@@ -11,6 +11,7 @@ src/experiments/
   config.py       — TrainingConfig (hyperparameters) + ExperimentMode (run mode)
   experiment.py   — run_experiment(): the single entry point for a full run
   report.py       — build_report(), save_report(), append_to_index(), summarize_report()
+    multiseed.py    — repeated-seed execution and confidence-interval aggregation
   persistence.py  — save/load generator (.pkl), save_metadata(), load_report()
   query.py        — load_index(), query_index(): find runs by criteria
 ```
@@ -103,6 +104,68 @@ Earlier, `generator.fit()` saw the entire dataset, and `build_report()` evaluate
 `split_dataset()` (in `src/data/loader.py`) fixes this: `generator.fit()` only ever sees `train_bundle.real`. MMD, EMD, categorical total variation distance, and correlation distance compare synthetic data with `test_bundle.real`, which the generator never saw. F1 trains its real-data baseline on `train_bundle.real` and evaluates both that model and the synthetic-trained model on the same held-out `test_bundle.real`.
 
 Privacy metrics answer a different question: DCR, NNDR, and disclosure protection compare synthetic records with `train_bundle.real`, because those are the records the generator could have memorized. Attribute inference trains on synthetic data and evaluates its attack on `test_bundle.real`. Because the split is deterministic — driven only by `(test_size, seed)`, both fixed in `TrainingConfig` — `EVALUATE_ONLY` reconstructs the **exact same** train/test split on every re-run, without ever retraining.
+
+### Repeated runs and confidence intervals
+
+A single run with `seed=42` is useful for debugging, but it is not enough for a
+statistical comparison of generators or preprocessing choices. The configured
+dataset runners (`scripts/run_adult.py`, `scripts/run_diabetes.py`, and
+`scripts/run_heart.py`) should therefore execute every configuration with the
+same set of independent seeds, for example `[1, 2, 3, 4, 5]`. The seed controls
+the stratified split, generator randomness, and synthetic sampling. Using the
+same seed list for every configuration makes comparisons paired: differences
+between two configurations are measured under the same split and random-seed
+conditions.
+
+Each seed produces one complete report. The aggregation step must then compute
+the mean and a 95% confidence interval for every scalar report metric:
+
+- utility: MMD, mean EMD, mean categorical TVD, correlation distance, and F1
+    discrepancy;
+- privacy: DCR, NNDR, inference risk, and disclosure rate;
+- per-feature diagnostics: EMD and categorical TVD for every numeric,
+    categorical, and boolean column.
+
+For a metric with values `x_1, ..., x_n` across seeds, the default interval is
+the two-sided Student-t interval for the mean:
+
+```text
+mean(x) +/- t(0.975, n - 1) * sample_std(x) / sqrt(n)
+```
+
+The report should store the mean and CI half-width (or explicit lower and
+upper bounds), together with `n_seeds`. With only three to five seeds this is
+an empirical uncertainty interval, not a precise population-level guarantee;
+the small sample size must be stated in tables and figures. A bootstrap
+interval can be added later, but it does not remove the need for independent
+repeated trainings.
+
+The three dataset runners now execute every configuration for the configured
+`SEEDS` tuple and write one aggregate JSON under
+`experiments/results/aggregates/`. The individual seed reports remain
+available in the normal results directory, so a failed seed can be inspected
+or rerun independently. The existing loss-aware trade-off aggregation is a
+separate post-processing tool and is not required by the Adult, Diabetes, and
+Heart experiment matrices.
+
+### Runtime trade-off
+
+Repeated training increases cost linearly with the number of seeds. The current
+matrices contain approximately 5 Adult, 8 Diabetes, and 2 Heart configurations.
+With five seeds this becomes about 75 complete trainings instead of 15; with
+three seeds it becomes about 45. Gaussian Copula runs are relatively cheap,
+while CTGAN and TVAE at 500 epochs dominate the runtime, especially on
+Diabetes. A practical protocol is therefore:
+
+1. use the default three common seeds for a fast exploratory sweep;
+2. change `SEEDS` to five or more seeds for the final comparison and narrower confidence intervals;
+3. run configurations and seeds in parallel where memory allows;
+4. keep the same `num_samples`, split fraction, and metric implementation for
+     every seed.
+
+This cost is justified for final claims about improvements: without repeated
+seeds, an apparent preprocessing gain can be indistinguishable from training
+or sampling noise.
 
 ---
 

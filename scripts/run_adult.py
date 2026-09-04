@@ -1,4 +1,4 @@
-"""Run the configured Gaussian Copula experiments for UCI Adult."""
+"""Run the Adult preprocessing comparison matrix."""
 
 import sys
 from pathlib import Path
@@ -8,12 +8,12 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.experiments.config import TrainingConfig
-from src.experiments.experiment import run_experiment
-from src.experiments.report import summarize_report
+from src.experiments.multiseed import run_experiment_matrix
 
 
 NUM_SAMPLES = 38_096
-SEED = 42
+SEEDS = (1, 2, 3)
+SEED = SEEDS[0]
 TEST_SIZE = 0.2
 OUTPUT_DIR = "experiments/results"
 
@@ -22,9 +22,10 @@ EXPERIMENTS = [
         "name": "gaussian_copula_default",
         "generator_name": "gaussian_copula",
         "generator_kwargs": {},
+        "transformer_specs": {},
     },
     {
-        "name": "gaussian_copula_modified",
+        "name": "gaussian_copula_modified_distributions",
         "generator_name": "gaussian_copula",
         "generator_kwargs": {
             "numerical_distributions": {
@@ -33,7 +34,6 @@ EXPERIMENTS = [
                 "education-num": "truncnorm",
                 "capital-gain": "gamma",
                 "capital-loss": "gamma",
-                # gaussian_kde is quadratic in the number of training rows.
                 "hours-per-week": "truncnorm",
             }
         },
@@ -48,38 +48,62 @@ EXPERIMENTS = [
         },
     },
     {
-        "name": "ctgan",
-        "generator_name": "ctgan",
+        "name": "gaussian_copula_modified_log_fnlwgt",
+        "generator_name": "gaussian_copula",
         "generator_kwargs": {
-            "epochs": 500,
-            "verbose": True,
+            "numerical_distributions": {
+                "age": "gamma",
+                "fnlwgt": "gamma",
+                "education-num": "truncnorm",
+                "capital-gain": "gamma",
+                "capital-loss": "gamma",
+                "hours-per-week": "truncnorm",
+            }
+        },
+        "transformer_specs": {
+            "fnlwgt": {"name": "LogScaler", "kwargs": {}},
         },
     },
     {
-        "name": "tvae",
+        "name": "ctgan_default",
+        "generator_name": "ctgan",
+        "generator_kwargs": {"epochs": 500, "verbose": True},
+        "transformer_specs": {},
+    },
+    {
+        "name": "ctgan_log_fnlwgt",
+        "generator_name": "ctgan",
+        "generator_kwargs": {"epochs": 500, "verbose": True},
+        "transformer_specs": {
+            "fnlwgt": {"name": "LogScaler", "kwargs": {}},
+        },
+    },
+    {
+        "name": "tvae_default",
         "generator_name": "tvae",
-        "generator_kwargs": {
-            "epochs": 500,
-            "verbose": True,
+        "generator_kwargs": {"epochs": 500, "verbose": True},
+        "transformer_specs": {},
+    },
+    {
+        "name": "tvae_log_fnlwgt",
+        "generator_name": "tvae",
+        "generator_kwargs": {"epochs": 500, "verbose": True},
+        "transformer_specs": {
+            "fnlwgt": {"name": "LogScaler", "kwargs": {}},
         },
     },
 ]
 
 
 def main() -> None:
-    for experiment in EXPERIMENTS:
-        config = TrainingConfig(
-            dataset_name="adult",
-            generator_name=experiment["generator_name"],
-            num_samples=NUM_SAMPLES,
-            seed=SEED,
-            test_size=TEST_SIZE,
-            generator_kwargs=experiment["generator_kwargs"],
-            transformer_specs=experiment.get("transformer_specs", {}),
-        )
-        report = run_experiment(config, output_dir=OUTPUT_DIR)
-        print(f"\n=== {experiment['name']} ({config.run_name}) ===")
-        print(summarize_report(report))
+    run_experiment_matrix(
+        dataset_name="adult",
+        experiments=EXPERIMENTS,
+        num_samples=NUM_SAMPLES,
+        seeds=SEEDS,
+        test_size=TEST_SIZE,
+        output_dir=OUTPUT_DIR,
+    )
 
 
 if __name__ == "__main__":

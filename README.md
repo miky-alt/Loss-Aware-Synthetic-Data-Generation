@@ -34,6 +34,16 @@ Full details are in `docs/loss_aware_training.md` and in the report.
 * **Aggregate utility metrics cannot see this.** On Adult, MMD, correlation distance and F1 all improved while the sex ratio shifted 14 percentage points and the income rate 11. Per-column marginal checks on protected attributes are not optional.
 * **Privacy scores are meaningless without a utility floor.** Every privacy indicator is trivially maximized by generating noise.
 
+### Repeated-seed evaluation
+
+The dataset runners repeat every Adult, Diabetes, and Heart configuration over
+the same default seed set `(1, 2, 3)`, then report mean and 95% confidence intervals for all utility
+and privacy metrics, including per-feature numeric EMD and categorical/boolean
+TVD. Three seeds are suitable for an exploratory sweep; set `SEEDS` to five for
+final results. This multiplies the number of trainings (roughly 45 runs
+with three seeds or 75 with five for the current matrices), so CTGAN and TVAE
+should be parallelized only when available memory allows it.
+
 ---
 
 ## ⚙️ Setup and Installation
