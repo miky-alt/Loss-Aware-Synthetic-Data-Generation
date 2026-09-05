@@ -129,3 +129,30 @@ artifacts.loss_values: 7700 entries
 artifacts.skipped_steps: present
 artifacts.lambdas: present
 === tvae_loss_aware seed=2 lambda_priv=10 ===
+=== tvae_loss_aware seed=3 lambda_priv=1 ===
+config: adult / tvae_loss_aware
+utility.mmd: 0.01913002141945063
+utility.mean_emd: 7496.744787729661
+utility.mean_categorical_distance: 0.08985564304461942
+utility.categorical_distance_per_feature: {'workclass': 0.09132283464566926, 'education': 0.35092913385826774, 'marital-status': 0.047853018372703414, 'occupation': 0.07828608923884514, 'relationship': 0.09598687664041994, 'race': 0.02337532808398953, 'sex': 0.02417847769028869, 'native-country': 0.08507874015748029, 'income': 0.011690288713910757}
+utility.correlation_distance: 0.5189132915524198
+utility.f1_real: 0.8140378755123141
+utility.f1_synthetic: 0.7845214534141514
+utility.f1_discrepancy: 0.029516422098162742
+privacy.dcr_mean: 0.36445446892860694
+privacy.dcr_median: 0.2822133580786462
+privacy.dcr_min: 0.0003506427884983209
+privacy.dcr_5th_percentile: 0.07340592969244292
+privacy.nndr_mean: 0.7389584283319539
+privacy.nndr_median: 0.799436299933306
+privacy.nndr_5th_percentile: 0.26858286015563965
+privacy.inference_f1: 0.7845214534141514
+privacy.baseline_f1: 0.6532374642991631
+privacy.inference_risk_delta: 0.1312839891149883
+privacy.disclosure_rate: 0.784
+privacy.n_at_risk: 784
+privacy.threshold_used: 0.5
+artifacts.loss_values: 7700 entries
+artifacts.skipped_steps: present
+artifacts.lambdas: present
+=== tvae_loss_aware seed=3 lambda_priv=5 ===
