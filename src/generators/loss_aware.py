@@ -281,7 +281,12 @@ def infer_discrete_columns(df: pd.DataFrame, max_unique: int = 20) -> list[str]:
     out = []
     for c in df.columns:
         s = df[c]
-        if pd.api.types.is_bool_dtype(s) or s.dtype == object or isinstance(s.dtype, pd.CategoricalDtype):
+        if (
+            pd.api.types.is_bool_dtype(s)
+            or s.dtype == object
+            or pd.api.types.is_string_dtype(s)
+            or isinstance(s.dtype, pd.CategoricalDtype)
+        ):
             out.append(c)
             continue
         if pd.api.types.is_numeric_dtype(s) and s.nunique() <= max_unique:

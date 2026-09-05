@@ -91,6 +91,14 @@ class LossAwareCTGAN(CTGAN):
     @random_state
     def fit(self, train_data, discrete_columns=(), epochs=None):
         # --- identical to CTGAN.fit up to the loop ------------------------------
+        if self._batch_size % self.pac != 0:
+            raise ValueError(
+                f"batch_size ({self._batch_size}) must be a multiple of pac "
+                f"({self.pac}); CTGAN's discriminator packs rows in groups of "
+                f"pac and asserts on this at the first forward pass, deep in "
+                f"a third-party call stack. Pick a batch_size divisible by "
+                f"{self.pac} (e.g. 50 for a ~237-row dataset)."
+            )
         self._validate_discrete_columns(train_data, discrete_columns)
         self._validate_null_data(train_data, discrete_columns)
         if epochs is None:

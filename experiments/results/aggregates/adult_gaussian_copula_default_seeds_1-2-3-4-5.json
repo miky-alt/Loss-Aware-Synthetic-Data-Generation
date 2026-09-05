@@ -1,0 +1,274 @@
+{
+  "n_seeds": 5,
+  "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "metrics": {
+    "privacy.baseline_f1": {
+      "mean": 0.6532374642991631,
+      "std": 0.0,
+      "ci95_half_width": 0.0,
+      "ci95_lower": 0.6532374642991631,
+      "ci95_upper": 0.6532374642991631
+    },
+    "privacy.dcr_5th_percentile": {
+      "mean": 0.4078908890072152,
+      "std": 0.1300966676326624,
+      "ci95_half_width": 0.16153634848575782,
+      "ci95_lower": 0.2463545405214574,
+      "ci95_upper": 0.569427237492973
+    },
+    "privacy.dcr_mean": {
+      "mean": 2.153784695015798,
+      "std": 0.9736931627530063,
+      "ci95_half_width": 1.2089997454875663,
+      "ci95_lower": 0.9447849495282319,
+      "ci95_upper": 3.3627844405033644
+    },
+    "privacy.dcr_median": {
+      "mean": 1.7995568088136082,
+      "std": 0.8638657811195645,
+      "ci95_half_width": 1.072631039696336,
+      "ci95_lower": 0.7269257691172721,
+      "ci95_upper": 2.8721878485099444
+    },
+    "privacy.dcr_min": {
+      "mean": 0.06675446030039414,
+      "std": 0.04137445540517169,
+      "ci95_half_width": 0.05137317172188882,
+      "ci95_lower": 0.01538128857850532,
+      "ci95_upper": 0.11812763202228296
+    },
+    "privacy.disclosure_rate": {
+      "mean": 0.1398,
+      "std": 0.12732517425866732,
+      "ci95_half_width": 0.15809508494200786,
+      "ci95_lower": -0.01829508494200785,
+      "ci95_upper": 0.2978950849420079
+    },
+    "privacy.inference_f1": {
+      "mean": 0.6845666337732548,
+      "std": 0.009698857941443146,
+      "ci95_half_width": 0.012042722729582626,
+      "ci95_lower": 0.6725239110436722,
+      "ci95_upper": 0.6966093565028374
+    },
+    "privacy.inference_risk_delta": {
+      "mean": 0.03132916947409163,
+      "std": 0.009698857941443146,
+      "ci95_half_width": 0.012042722729582626,
+      "ci95_lower": 0.019286446744509005,
+      "ci95_upper": 0.04337189220367425
+    },
+    "privacy.n_at_risk": {
+      "mean": 279.6,
+      "std": 254.65034851733466,
+      "ci95_half_width": 316.19016988401575,
+      "ci95_lower": -36.59016988401572,
+      "ci95_upper": 595.7901698840158
+    },
+    "privacy.nndr_5th_percentile": {
+      "mean": 0.6211660500782683,
+      "std": 0.07627012060119688,
+      "ci95_half_width": 0.09470186288916539,
+      "ci95_lower": 0.5264641871891029,
+      "ci95_upper": 0.7158679129674337
+    },
+    "privacy.nndr_mean": {
+      "mean": 0.8811735197963578,
+      "std": 0.02939743071260678,
+      "ci95_half_width": 0.036501731355533466,
+      "ci95_lower": 0.8446717884408244,
+      "ci95_upper": 0.9176752511518913
+    },
+    "privacy.nndr_median": {
+      "mean": 0.9233021897414704,
+      "std": 0.021957076422227877,
+      "ci95_half_width": 0.027263311299289064,
+      "ci95_lower": 0.8960388784421813,
+      "ci95_upper": 0.9505655010407594
+    },
+    "privacy.threshold_used": {
+      "mean": 0.5,
+      "std": 0.0,
+      "ci95_half_width": 0.0,
+      "ci95_lower": 0.5,
+      "ci95_upper": 0.5
+    },
+    "utility.categorical_distance_per_feature.education": {
+      "mean": 0.013915397046389777,
+      "std": 0.0015732878466175769,
+      "ci95_half_width": 0.001953494877956571,
+      "ci95_lower": 0.011961902168433207,
+      "ci95_upper": 0.01586889192434635
+    },
+    "utility.categorical_distance_per_feature.income": {
+      "mean": 0.001191241686977282,
+      "std": 0.001105266543422237,
+      "ci95_half_width": 0.001372369675386509,
+      "ci95_lower": -0.0001811279884092272,
+      "ci95_upper": 0.0025636113623637912
+    },
+    "utility.categorical_distance_per_feature.marital-status": {
+      "mean": 0.008533998375150613,
+      "std": 0.002126669770487442,
+      "ci95_half_width": 0.0026406092900825187,
+      "ci95_lower": 0.005893389085068094,
+      "ci95_upper": 0.011174607665233132
+    },
+    "utility.categorical_distance_per_feature.native-country": {
+      "mean": 0.01107955423568692,
+      "std": 0.0011522618986514104,
+      "ci95_half_width": 0.0014307221160573705,
+      "ci95_lower": 0.009648832119629549,
+      "ci95_upper": 0.01251027635174429
+    },
+    "utility.categorical_distance_per_feature.occupation": {
+      "mean": 0.016839609507022454,
+      "std": 0.003618868180303499,
+      "ci95_half_width": 0.0044934183337280225,
+      "ci95_lower": 0.01234619117329443,
+      "ci95_upper": 0.021333027840750477
+    },
+    "utility.categorical_distance_per_feature.race": {
+      "mean": 0.004347618008269758,
+      "std": 0.0015221674500318838,
+      "ci95_half_width": 0.0018900205219422174,
+      "ci95_lower": 0.002457597486327541,
+      "ci95_upper": 0.006237638530211975
+    },
+    "utility.categorical_distance_per_feature.relationship": {
+      "mean": 0.011024903517677664,
+      "std": 0.001230330303091471,
+      "ci95_half_width": 0.0015276568432478048,
+      "ci95_lower": 0.009497246674429858,
+      "ci95_upper": 0.012552560360925469
+    },
+    "utility.categorical_distance_per_feature.sex": {
+      "mean": 0.006854359369505525,
+      "std": 0.005237670866773733,
+      "ci95_half_width": 0.006503427349713648,
+      "ci95_lower": 0.0003509320197918773,
+      "ci95_upper": 0.013357786719219174
+    },
+    "utility.categorical_distance_per_feature.workclass": {
+      "mean": 0.008150866274013097,
+      "std": 0.0011705010399763298,
+      "ci95_half_width": 0.0014533690011986737,
+      "ci95_lower": 0.006697497272814423,
+      "ci95_upper": 0.009604235275211771
+    },
+    "utility.correlation_distance": {
+      "mean": 0.4659878339053695,
+      "std": 0.026675856607859923,
+      "ci95_half_width": 0.03312245077122565,
+      "ci95_lower": 0.43286538313414386,
+      "ci95_upper": 0.4991102846765952
+    },
+    "utility.emd_per_feature.age": {
+      "mean": 0.5425195775612048,
+      "std": 0.07227316163253275,
+      "ci95_half_width": 0.0897389828354775,
+      "ci95_lower": 0.45278059472572735,
+      "ci95_upper": 0.6322585603966824
+    },
+    "utility.emd_per_feature.capital-gain": {
+      "mean": 18705.397208440954,
+      "std": 14255.949949243442,
+      "ci95_half_width": 17701.09981217036,
+      "ci95_lower": 1004.2973962705946,
+      "ci95_upper": 36406.497020611314
+    },
+    "utility.emd_per_feature.capital-loss": {
+      "mean": 601.8002350321498,
+      "std": 519.1988482717944,
+      "ci95_half_width": 644.6705178079458,
+      "ci95_lower": -42.870282775796,
+      "ci95_upper": 1246.4707528400954
+    },
+    "utility.emd_per_feature.education-num": {
+      "mean": 0.5146326054581272,
+      "std": 0.026355791153395206,
+      "ci95_half_width": 0.03272503701934809,
+      "ci95_lower": 0.4819075684387791,
+      "ci95_upper": 0.5473576424774753
+    },
+    "utility.emd_per_feature.fnlwgt": {
+      "mean": 17015.21371010437,
+      "std": 4869.1126321121865,
+      "ci95_half_width": 6045.801858492871,
+      "ci95_lower": 10969.411851611498,
+      "ci95_upper": 23061.015568597242
+    },
+    "utility.emd_per_feature.hours-per-week": {
+      "mean": 3.5678505314933076,
+      "std": 0.06785168905905065,
+      "ci95_half_width": 0.08424899952193943,
+      "ci95_lower": 3.483601531971368,
+      "ci95_upper": 3.652099531015247
+    },
+    "utility.emd_per_feature.income": {
+      "mean": 0.0011912416869772845,
+      "std": 0.001105266543422233,
+      "ci95_half_width": 0.001372369675386504,
+      "ci95_lower": -0.00018112798840921938,
+      "ci95_upper": 0.0025636113623637886
+    },
+    "utility.emd_per_feature.sex": {
+      "mean": 0.006854359369505514,
+      "std": 0.005237670866773752,
+      "ci95_half_width": 0.006503427349713672,
+      "ci95_lower": 0.00035093201979184176,
+      "ci95_upper": 0.013357786719219186
+    },
+    "utility.f1_discrepancy": {
+      "mean": 0.12717675829181535,
+      "std": 0.008264123461969955,
+      "ci95_half_width": 0.010261264579439149,
+      "ci95_lower": 0.1169154937123762,
+      "ci95_upper": 0.1374380228712545
+    },
+    "utility.f1_real": {
+      "mean": 0.8117433920650701,
+      "std": 0.0019122384331018935,
+      "ci95_half_width": 0.002374357618364198,
+      "ci95_lower": 0.8093690344467058,
+      "ci95_upper": 0.8141177496834343
+    },
+    "utility.f1_synthetic": {
+      "mean": 0.6845666337732548,
+      "std": 0.009698857941443146,
+      "ci95_half_width": 0.012042722729582626,
+      "ci95_lower": 0.6725239110436722,
+      "ci95_upper": 0.6966093565028374
+    },
+    "utility.mean_categorical_distance": {
+      "mean": 0.009104172002299233,
+      "std": 0.0012172090248017636,
+      "ci95_half_width": 0.0015113646243850624,
+      "ci95_lower": 0.0075928073779141705,
+      "ci95_upper": 0.010615536626684295
+    },
+    "utility.mean_emd": {
+      "mean": 4540.880525236631,
+      "std": 1786.972572728768,
+      "ci95_half_width": 2218.8195093348686,
+      "ci95_lower": 2322.0610159017624,
+      "ci95_upper": 6759.7000345715
+    },
+    "utility.mmd": {
+      "mean": 0.012348002862219345,
+      "std": 0.004604854695573076,
+      "ci95_half_width": 0.005717682292452643,
+      "ci95_lower": 0.006630320569766702,
+      "ci95_upper": 0.01806568515467199
+    }
+  },
+  "dataset_name": "adult",
+  "experiment_name": "gaussian_copula_default",
+  "generator_name": "gaussian_copula"
+}

@@ -1,0 +1,274 @@
+{
+  "n_seeds": 5,
+  "seeds": [
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "metrics": {
+    "privacy.baseline_f1": {
+      "mean": 0.6532374642991631,
+      "std": 0.0,
+      "ci95_half_width": 0.0,
+      "ci95_lower": 0.6532374642991631,
+      "ci95_upper": 0.6532374642991631
+    },
+    "privacy.dcr_5th_percentile": {
+      "mean": 0.07534700134881886,
+      "std": 0.004406793524799585,
+      "ci95_half_width": 0.005471756867261111,
+      "ci95_lower": 0.06987524448155774,
+      "ci95_upper": 0.08081875821607998
+    },
+    "privacy.dcr_mean": {
+      "mean": 0.43862694042614336,
+      "std": 0.040813905080180374,
+      "ci95_half_width": 0.05067715656416568,
+      "ci95_lower": 0.3879497838619777,
+      "ci95_upper": 0.489304096990309
+    },
+    "privacy.dcr_median": {
+      "mean": 0.3744788138431706,
+      "std": 0.049645803676484815,
+      "ci95_half_width": 0.06164340708698327,
+      "ci95_lower": 0.3128354067561873,
+      "ci95_upper": 0.4361222209301539
+    },
+    "privacy.dcr_min": {
+      "mean": 0.0012958684447768505,
+      "std": 0.001164123239588931,
+      "ci95_half_width": 0.0014454499160699104,
+      "ci95_lower": -0.0001495814712930599,
+      "ci95_upper": 0.002741318360846761
+    },
+    "privacy.disclosure_rate": {
+      "mean": 0.6920999999999999,
+      "std": 0.042862279454084114,
+      "ci95_half_width": 0.053220549279085136,
+      "ci95_lower": 0.6388794507209148,
+      "ci95_upper": 0.7453205492790851
+    },
+    "privacy.inference_f1": {
+      "mean": 0.7866695998807047,
+      "std": 0.005454864604353341,
+      "ci95_half_width": 0.006773108994301563,
+      "ci95_lower": 0.7798964908864031,
+      "ci95_upper": 0.7934427088750063
+    },
+    "privacy.inference_risk_delta": {
+      "mean": 0.13343213558154168,
+      "std": 0.005454864604353341,
+      "ci95_half_width": 0.006773108994301563,
+      "ci95_lower": 0.12665902658724013,
+      "ci95_upper": 0.14020524457584324
+    },
+    "privacy.n_at_risk": {
+      "mean": 1384.2,
+      "std": 85.7245589081682,
+      "ci95_half_width": 106.44109855817024,
+      "ci95_lower": 1277.7589014418297,
+      "ci95_upper": 1490.6410985581704
+    },
+    "privacy.nndr_5th_percentile": {
+      "mean": 0.313989320761416,
+      "std": 0.02895413402625246,
+      "ci95_half_width": 0.03595130581956428,
+      "ci95_lower": 0.2780380149418517,
+      "ci95_upper": 0.3499406265809803
+    },
+    "privacy.nndr_mean": {
+      "mean": 0.7556381580490739,
+      "std": 0.013189085044803974,
+      "ci95_half_width": 0.016376412069380775,
+      "ci95_lower": 0.7392617459796931,
+      "ci95_upper": 0.7720145701184546
+    },
+    "privacy.nndr_median": {
+      "mean": 0.8193355136938061,
+      "std": 0.015341054732515421,
+      "ci95_half_width": 0.019048435355837876,
+      "ci95_lower": 0.8002870783379682,
+      "ci95_upper": 0.838383949049644
+    },
+    "privacy.threshold_used": {
+      "mean": 0.5,
+      "std": 0.0,
+      "ci95_half_width": 0.0,
+      "ci95_lower": 0.5,
+      "ci95_upper": 0.5
+    },
+    "utility.categorical_distance_per_feature.education": {
+      "mean": 0.1085639710040445,
+      "std": 0.11007248721434605,
+      "ci95_half_width": 0.1366730445667976,
+      "ci95_lower": -0.028109073562753106,
+      "ci95_upper": 0.2452370155708421
+    },
+    "utility.categorical_distance_per_feature.income": {
+      "mean": 0.026843520609902766,
+      "std": 0.008254376872423141,
+      "ci95_half_width": 0.0102491625900936,
+      "ci95_lower": 0.016594358019809165,
+      "ci95_upper": 0.03709268319999637
+    },
+    "utility.categorical_distance_per_feature.marital-status": {
+      "mean": 0.028250006338455917,
+      "std": 0.0077503141717347275,
+      "ci95_half_width": 0.009623286081811436,
+      "ci95_lower": 0.018626720256644483,
+      "ci95_upper": 0.03787329242026735
+    },
+    "utility.categorical_distance_per_feature.native-country": {
+      "mean": 0.07584627480678734,
+      "std": 0.008178905762388115,
+      "ci95_half_width": 0.01015545282985863,
+      "ci95_lower": 0.0656908219769287,
+      "ci95_upper": 0.08600172763664597
+    },
+    "utility.categorical_distance_per_feature.occupation": {
+      "mean": 0.09613542083489039,
+      "std": 0.04878834474733671,
+      "ci95_half_width": 0.060578731204721716,
+      "ci95_lower": 0.03555668963016868,
+      "ci95_upper": 0.15671415203961211
+    },
+    "utility.categorical_distance_per_feature.race": {
+      "mean": 0.035645148435613984,
+      "std": 0.017181700278481433,
+      "ci95_half_width": 0.021333898663717984,
+      "ci95_lower": 0.014311249771896,
+      "ci95_upper": 0.056979047099331964
+    },
+    "utility.categorical_distance_per_feature.relationship": {
+      "mean": 0.08187045739400174,
+      "std": 0.01856058450406126,
+      "ci95_half_width": 0.02304600956431153,
+      "ci95_lower": 0.05882444782969021,
+      "ci95_upper": 0.10491646695831328
+    },
+    "utility.categorical_distance_per_feature.sex": {
+      "mean": 0.012890513370834961,
+      "std": 0.007916299605235303,
+      "ci95_half_width": 0.009829384218815344,
+      "ci95_lower": 0.0030611291520196166,
+      "ci95_upper": 0.022719897589650304
+    },
+    "utility.categorical_distance_per_feature.workclass": {
+      "mean": 0.08875081600730188,
+      "std": 0.03787019344967688,
+      "ci95_half_width": 0.047022055811475796,
+      "ci95_lower": 0.04172876019582608,
+      "ci95_upper": 0.13577287181877767
+    },
+    "utility.correlation_distance": {
+      "mean": 0.40376082374165023,
+      "std": 0.08094644918725451,
+      "ci95_half_width": 0.10050829173824427,
+      "ci95_lower": 0.30325253200340596,
+      "ci95_upper": 0.5042691154798945
+    },
+    "utility.emd_per_feature.age": {
+      "mean": 1.014745580993892,
+      "std": 0.42824296021545655,
+      "ci95_half_width": 0.5317338661837393,
+      "ci95_lower": 0.4830117148101526,
+      "ci95_upper": 1.546479447177631
+    },
+    "utility.emd_per_feature.capital-gain": {
+      "mean": 491.36156583561143,
+      "std": 299.7202394964806,
+      "ci95_half_width": 372.1518309157898,
+      "ci95_lower": 119.20973491982164,
+      "ci95_upper": 863.5133967514012
+    },
+    "utility.emd_per_feature.capital-loss": {
+      "mean": 21.167764077710547,
+      "std": 13.184070510340256,
+      "ci95_half_width": 16.370185702469424,
+      "ci95_lower": 4.797578375241123,
+      "ci95_upper": 37.53794978017997
+    },
+    "utility.emd_per_feature.education-num": {
+      "mean": 0.23613040298249147,
+      "std": 0.22899562901470855,
+      "ci95_half_width": 0.2843356282935889,
+      "ci95_lower": -0.048205225311097416,
+      "ci95_upper": 0.5204660312760804
+    },
+    "utility.emd_per_feature.fnlwgt": {
+      "mean": 45105.74404762385,
+      "std": 16395.141573812514,
+      "ci95_half_width": 20357.2570376568,
+      "ci95_lower": 24748.487009967048,
+      "ci95_upper": 65463.001085280644
+    },
+    "utility.emd_per_feature.hours-per-week": {
+      "mean": 2.3956583043142285,
+      "std": 0.6692493292463227,
+      "ci95_half_width": 0.8309827979471764,
+      "ci95_lower": 1.564675506367052,
+      "ci95_upper": 3.226641102261405
+    },
+    "utility.emd_per_feature.income": {
+      "mean": 0.02684352060990276,
+      "std": 0.008254376872423138,
+      "ci95_half_width": 0.010249162590093595,
+      "ci95_lower": 0.016594358019809165,
+      "ci95_upper": 0.037092683199996354
+    },
+    "utility.emd_per_feature.sex": {
+      "mean": 0.012890513370834944,
+      "std": 0.007916299605235304,
+      "ci95_half_width": 0.009829384218815348,
+      "ci95_lower": 0.003061129152019596,
+      "ci95_upper": 0.02271989758965029
+    },
+    "utility.f1_discrepancy": {
+      "mean": 0.02507379218436532,
+      "std": 0.0069705072027444045,
+      "ci95_half_width": 0.008655027842867752,
+      "ci95_lower": 0.01641876434149757,
+      "ci95_upper": 0.03372882002723307
+    },
+    "utility.f1_real": {
+      "mean": 0.8117433920650701,
+      "std": 0.0019122384331018935,
+      "ci95_half_width": 0.002374357618364198,
+      "ci95_lower": 0.8093690344467058,
+      "ci95_upper": 0.8141177496834343
+    },
+    "utility.f1_synthetic": {
+      "mean": 0.7866695998807047,
+      "std": 0.005454864604353341,
+      "ci95_half_width": 0.006773108994301563,
+      "ci95_lower": 0.7798964908864031,
+      "ci95_upper": 0.7934427088750063
+    },
+    "utility.mean_categorical_distance": {
+      "mean": 0.06164401431131482,
+      "std": 0.015458617555273791,
+      "ci95_half_width": 0.019194408880384154,
+      "ci95_lower": 0.04244960543093067,
+      "ci95_upper": 0.08083842319169897
+    },
+    "utility.mean_emd": {
+      "mean": 5702.744955732431,
+      "std": 2061.1709388041554,
+      "ci95_half_width": 2559.2817488569735,
+      "ci95_lower": 3143.463206875457,
+      "ci95_upper": 8262.026704589403
+    },
+    "utility.mmd": {
+      "mean": 0.006471718586153761,
+      "std": 0.004185961064674719,
+      "ci95_half_width": 0.0051975571518892965,
+      "ci95_lower": 0.0012741614342644649,
+      "ci95_upper": 0.011669275738043057
+    }
+  },
+  "dataset_name": "adult",
+  "experiment_name": "tvae_default",
+  "generator_name": "tvae"
+}
