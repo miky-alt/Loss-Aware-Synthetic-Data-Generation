@@ -1,4 +1,4 @@
-"""Run the Adult preprocessing comparison matrix."""
+"""Run the default baseline generator comparison for UCI Adult."""
 
 import sys
 from pathlib import Path
@@ -24,76 +24,16 @@ EXPERIMENTS = [
         "transformer_specs": {},
     },
     {
-        "name": "gaussian_copula_modified",
-        "generator_name": "gaussian_copula",
-        "generator_kwargs": {
-            "numerical_distributions": {
-                "age": "gamma",
-                "fnlwgt": "gamma",
-                "education-num": "truncnorm",
-                "hours-per-week": "truncnorm",
-            }
-        },
-        "transformer_specs": {},
-    },
-    {
-        "name": "gaussian_copula_preprocessed",
-        "generator_name": "gaussian_copula",
-        "generator_kwargs": {},
-        "transformer_specs": {
-            "fnlwgt": {"name": "LogScaler", "kwargs": {}},
-            "capital-gain": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
-            "capital-loss": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
-        },
-    },
-    {
-        "name": "gaussian_copula_modified_preprocessed",
-        "generator_name": "gaussian_copula",
-        "generator_kwargs": {
-            "numerical_distributions": {
-                "age": "gamma",
-                "fnlwgt": "gamma",
-                "education-num": "truncnorm",
-                "hours-per-week": "truncnorm",
-            }
-        },
-        "transformer_specs": {
-            "fnlwgt": {"name": "LogScaler", "kwargs": {}},
-            "capital-gain": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
-            "capital-loss": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
-        },
-    },
-    {
         "name": "ctgan_default",
         "generator_name": "ctgan",
         "generator_kwargs": {"epochs": 500, "verbose": True},
         "transformer_specs": {},
     },
     {
-        "name": "ctgan_preprocessed",
-        "generator_name": "ctgan",
-        "generator_kwargs": {"epochs": 500, "verbose": True},
-        "transformer_specs": {
-            "fnlwgt": {"name": "LogScaler", "kwargs": {}},
-            "capital-gain": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
-            "capital-loss": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
-        },
-    },
-    {
         "name": "tvae_default",
         "generator_name": "tvae",
         "generator_kwargs": {"epochs": 500, "verbose": True},
         "transformer_specs": {},
-    },
-    {
-        "name": "tvae_preprocessed",
-        "generator_name": "tvae",
-        "generator_kwargs": {"epochs": 500, "verbose": True},
-        "transformer_specs": {
-            "fnlwgt": {"name": "LogScaler", "kwargs": {}},
-            "capital-gain": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
-            "capital-loss": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
-        },
     },
 ]
 

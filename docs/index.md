@@ -91,7 +91,7 @@ uv run python scripts/run_diabetes.py
 uv run python scripts/run_heart.py
 ```
 
-Edit `NUM_SAMPLES`, `SEEDS`, `TEST_SIZE`, `OUTPUT_DIR`, or the `EXPERIMENTS` list at the top of the relevant script to add generators or change their kwargs. Each configuration now runs with the common default seeds `(1, 2, 3, 4, 5)`; individual reports are saved in `experiments/results/`, confidence-interval aggregates in `experiments/results/aggregates/`, and utility/privacy CI plots in `experiments/results/figures/`. The Adult script uses `truncnorm` for `hours-per-week`; `gaussian_kde` is intentionally not the default there because its fit requires quadratic memory in the number of training rows.
+Edit `NUM_SAMPLES`, `SEEDS`, `TEST_SIZE`, `OUTPUT_DIR`, or the `EXPERIMENTS` list at the top of the relevant script to add generators or change their kwargs. The baseline runners intentionally execute only the three default generator families; each configuration uses the common seeds `(1, 2, 3, 4, 5)`. Individual reports are saved in `experiments/results/`, confidence-interval aggregates in `experiments/results/aggregates/`, and utility/privacy CI plots in `experiments/results/figures/`.
 
 `scripts/run_diabetes.py` runs the equivalent eight-configuration matrix for Diabetes 130-US Hospitals, using `LogScaler(time_in_hospital, num_medications)` and `ClusterBasedNormalizer` for the zero-inflated utilization counts. The two LogScaler columns are positive and right-skewed; the three utilization counts contain many zeros, so a plain LogScaler is not valid for them.
 
@@ -102,6 +102,18 @@ preprocessed variants for CTGAN and TVAE. `chol` is positive and right-skewed
 with a high-value tail; `oldpeak` contains 32% zeros and is handled by
 `ClusterBasedNormalizer` rather than `LogScaler`.
 
+For the loss-aware ablation matrices, run the corresponding dedicated scripts:
+
+```powershell
+uv run python scripts/run_adult_loss_aware.py
+uv run python scripts/run_diabetes_loss_aware.py
+uv run python scripts/run_heart_loss_aware.py
+```
+
+Each loss-aware matrix contains eight configurations: TVAE and CTGAN, each
+with baseline (all penalty weights zero), utility-only, privacy-only, and full
+loss-aware penalties. These scripts use the same five seeds and automatically
+write confidence-interval aggregates and utility/privacy plots.
 ### Inspect a dataset and plot its distributions
 
 ```bash
