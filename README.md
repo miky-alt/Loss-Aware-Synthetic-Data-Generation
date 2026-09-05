@@ -44,6 +44,14 @@ final results. This multiplies the number of trainings (roughly 54 runs
 with three seeds or 90 with five for the current matrices), so CTGAN and TVAE
 should be parallelized only when available memory allows it.
 
+The baseline dataset runners intentionally run only the three default generator
+families (Gaussian Copula, CTGAN, and TVAE) over five seeds. The loss-aware
+ablations are kept in separate dataset runners. Each runs eight
+configurations (TVAE and CTGAN across baseline, utility-only, privacy-only,
+and full penalty regimes) over five seeds. Together with the baseline matrices,
+this is 165 training runs, so these scripts should be run as a separate,
+deliberate experiment budget rather than as part of a quick smoke test.
+
 ---
 
 ## ⚙️ Setup and Installation

@@ -1,4 +1,4 @@
-"""Run the configured Gaussian Copula experiments for Heart Disease."""
+"""Run the default baseline generator comparison for Heart Disease."""
 
 import sys
 from pathlib import Path
@@ -7,7 +7,6 @@ PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from src.experiments.config import TrainingConfig
 from src.experiments.multiseed import run_experiment_matrix
 
 
@@ -22,43 +21,7 @@ EXPERIMENTS = [
         "name": "gaussian_copula_default",
         "generator_name": "gaussian_copula",
         "generator_kwargs": {},
-    },
-    {
-        "name": "gaussian_copula_modified",
-        "generator_name": "gaussian_copula",
-        "generator_kwargs": {
-            "numerical_distributions": {
-                "age": "gamma",
-                "trestbps": "truncnorm",
-                "chol": "gamma",
-                "thalach": "truncnorm",
-            }
-        },
-    },
-    {
-        "name": "gaussian_copula_log_chol",
-        "generator_name": "gaussian_copula",
-        "generator_kwargs": {},
-        "transformer_specs": {
-            "chol": {"name": "LogScaler", "kwargs": {}},
-            "oldpeak": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
-        },
-    },
-    {
-        "name": "gaussian_copula_modified_log_chol",
-        "generator_name": "gaussian_copula",
-        "generator_kwargs": {
-            "numerical_distributions": {
-                "age": "gamma",
-                "trestbps": "truncnorm",
-                "chol": "gamma",
-                "thalach": "truncnorm",
-            }
-        },
-        "transformer_specs": {
-            "chol": {"name": "LogScaler", "kwargs": {}},
-            "oldpeak": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
-        },
+        "transformer_specs": {},
     },
     {
         "name": "ctgan_default",
@@ -67,28 +30,10 @@ EXPERIMENTS = [
         "transformer_specs": {},
     },
     {
-        "name": "ctgan_log_chol",
-        "generator_name": "ctgan",
-        "generator_kwargs": {"epochs": 500, "verbose": True},
-        "transformer_specs": {
-            "chol": {"name": "LogScaler", "kwargs": {}},
-            "oldpeak": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
-        },
-    },
-    {
         "name": "tvae_default",
         "generator_name": "tvae",
         "generator_kwargs": {"epochs": 500, "verbose": True},
         "transformer_specs": {},
-    },
-    {
-        "name": "tvae_log_chol",
-        "generator_name": "tvae",
-        "generator_kwargs": {"epochs": 500, "verbose": True},
-        "transformer_specs": {
-            "chol": {"name": "LogScaler", "kwargs": {}},
-            "oldpeak": {"name": "ClusterBasedNormalizer", "kwargs": {"max_clusters": 10}},
-        },
     },
 ]
 

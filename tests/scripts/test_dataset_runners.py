@@ -15,8 +15,12 @@ def test_dataset_runner_configuration(module_name, dataset_name, num_samples):
     module = importlib.import_module(module_name)
 
     assert module.NUM_SAMPLES == num_samples
-    assert len(module.EXPERIMENTS) >= 2
-    assert module.EXPERIMENTS[0]["generator_name"] == "gaussian_copula"
-    assert module.EXPERIMENTS[1]["generator_name"] == "gaussian_copula"
+    assert module.SEEDS == (1, 2, 3, 4, 5)
+    assert len(module.EXPERIMENTS) == 3
+    assert [item["generator_name"] for item in module.EXPERIMENTS] == [
+        "gaussian_copula",
+        "ctgan",
+        "tvae",
+    ]
     assert module.EXPERIMENTS[0]["generator_kwargs"] == {}
-    assert module.EXPERIMENTS[1]["generator_kwargs"]["numerical_distributions"]
+    assert all(item["transformer_specs"] == {} for item in module.EXPERIMENTS)
