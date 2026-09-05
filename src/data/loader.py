@@ -96,7 +96,7 @@ def load_diabetes_130() -> DatasetBundle:
     # ID columns are codes for categories, not continuous measurements.
     for column in ("admission_type_id", "discharge_disposition_id", "admission_source_id"):
         if column in df:
-            df[column] = df[column].astype(str).astype("category")
+            df[column] = df[column].astype(str)
 
     return DatasetBundle(
         real=df,
@@ -130,7 +130,7 @@ def load_heart_disease() -> DatasetBundle:
     for column in ("sex", "fbs", "exang"):
         df[column] = df[column].astype(bool)
     for column in ("cp", "restecg", "slope", "ca", "thal"):
-        df[column] = df[column].astype(str).astype("category")
+        df[column] = df[column].astype(str)
 
     return DatasetBundle(
         real=df,
