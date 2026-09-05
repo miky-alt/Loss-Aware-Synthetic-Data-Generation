@@ -382,9 +382,24 @@ did not make that decision. It made it possible to see that there was one.
 
 We use three public tabular datasets from the UCI repository, chosen to vary
 in domain, size and shape (Table~\ref{tab:datasets}). Each loader returns a
-label-encoded \texttt{DataFrame} without missing values and with a binary
-target, behind a single \texttt{DatasetBundle} interface, so that no
-downstream code depends on which dataset it is handling.
+clean \texttt{DataFrame} without missing values and with a binary target,
+behind a single \texttt{DatasetBundle} interface, so that no downstream code
+depends on which dataset it is handling. The loaders preserve semantic types:
+continuous measurements remain numerical, categorical attributes are kept as
+strings, and binary attributes and targets are normalized to boolean values.
+The categorical values are therefore not label-encoded into arbitrary integer
+codes at the loader stage; categorical handling is delegated to the generator
+transformers.
+
+The baseline and loss-aware experiments share this dataset-loading stage and
+the same stratified train/test split. They differ only at the generator layer.
+The SDV baselines construct an SDV metadata object and let the SDV data
+processor select RDT transformers. The loss-aware CTGAN bypasses the SDV
+synthesizer because its training loop must be modified directly; it instead
+uses CTGAN's native \texttt{DataTransformer}, with discrete columns supplied
+by the project's semantic-type and low-cardinality inference rule. Thus, the
+two pipelines preserve the same distinction between discrete and continuous
+features, but implement it through different library interfaces.
 
 \begin{table}[htbp]
 \caption{Datasets after preprocessing. Row counts are the 80\% training split
@@ -409,9 +424,20 @@ benchmark in the fairness and privacy literature and contains demographically
 sensitive attributes. \textbf{Diabetes} contains real hospital admission data
 with diagnosis codes and medication histories; it is the most ethically
 sensitive of the three and, with about forty columns, the highest-dimensional.
-The preprocessing decisions (label encoding rather than one-hot, a 40\%
-missingness threshold for dropping columns on Diabetes, binarization of the
-Heart Disease severity score) are documented in the repository.
+For Adult, the income target is normalized to a boolean and the sex column is
+normalized from its textual values to a boolean. For Diabetes, ``?'' entries
+are treated as missing, columns with more than 40\% missing values are dropped,
+remaining incomplete rows are removed, the readmission target is binarized to
+``readmitted within 30 days'', and the admission, discharge and source ID
+codes are stored as strings because they represent categories rather than
+continuous measurements. For Heart Disease, the target is binarized as
+``disease present'' (the original severity score is positive), the binary
+columns \texttt{sex}, \texttt{fbs} and \texttt{exang} are stored as booleans,
+and the encoded categorical columns \texttt{cp}, \texttt{restecg},
+\texttt{slope}, \texttt{ca} and \texttt{thal} are stored as strings. No
+one-hot encoding is performed by the loaders. During CTGAN and TVAE fitting,
+the generator-side transformer one-hot encodes the columns inferred as
+discrete and applies mode-specific normalization to continuous columns.
 
 % =============================================================================
 \section{Evaluation framework}
@@ -619,13 +645,32 @@ seed, test fraction and generator keyword arguments. The seed controls the
 train/test split, the initialization and the sampling. Each run writes a full
 JSON report (all metrics, per-batch loss components, effective margin, code
 version) and appends a summary line to a queryable index, so that every number
-in this report can be reproduced from disk. \todo{miky: one paragraph on
-the experiment framework (registry, persistence, CLI)}
+in this report can be reproduced from disk. The orchestration layer is kept
+separate from both the generators and the metrics: \texttt{run\_experiment()}
+loads and splits a dataset, obtains the requested model from the central
+generator registry, trains or reloads it, samples synthetic rows, and passes
+the result to the evaluation and reporting functions. The registry maps the
+same names used in the configuration and in the command line to objects that
+share a common \texttt{fit}/\texttt{sample} interface, so adding a generator
+does not require changes to the experiment pipeline. Persistence stores the
+trained model, the detected SDV metadata, the complete JSON report and an
+append-only \texttt{index.jsonl}; this supports both exact re-evaluation of a
+saved model and later querying of runs without reopening every report. Finally,
+\texttt{src/main.py} exposes the workflow through four CLI commands: \texttt{run}
+for training and evaluation, \texttt{evaluate} for a persisted model,
+\texttt{show} for inspecting a report, and \texttt{find} for filtering the run
+index. Generator parameters are passed through repeatable \texttt{--kwarg
+KEY=VALUE} options, keeping the experimental protocol explicit and avoiding
+dataset- or architecture-specific logic in the command interface.
 
-Heart Disease runs use \texttt{batch\_size=32} and 300 epochs; Adult and
-Diabetes use \texttt{batch\_size=500} and 100 epochs. The utility weights are
-fixed at $\lmmd = 1$, $\lcorr = 0.5$ whenever they are enabled. We report
-means across seeds. Wherever a $\pm$ appears it is the half-width of the 95\%
+The TVAE loss-aware runs use \texttt{batch\_size=32} and 300 epochs for Heart,
+and \texttt{batch\_size=500} and 100 epochs for Adult and Diabetes. The
+loss-aware CTGAN Heart comparison uses \texttt{batch\_size=50}, 2,000 epochs,
+and three seeds ($1,2,3$); each seed is run under the baseline, utility-only,
+and both-penalties configurations. Unless overridden on the command line,
+each run samples 1,000 synthetic rows. The utility weights are fixed at
+$\lmmd = 1$, $\lcorr = 0.5$ whenever they are enabled. We report means across
+seeds. Wherever a $\pm$ appears it is the half-width of the 95\%
 confidence interval for the mean, computed with the Student-t distribution,
 $\bar{x} \pm t_{0.975,\,n-1}\, s/\sqrt{n}$. With $n = 3$ seeds the multiplier
 on the sample standard deviation is about $2.5$ and with $n = 5$ about $1.2$,
