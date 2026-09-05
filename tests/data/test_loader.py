@@ -102,6 +102,7 @@ def test_diabetes_loader_normalizes_binary_columns_to_boolean(monkeypatch):
     assert pd.api.types.is_string_dtype(bundle.real["race"])
     for column in ("admission_type_id", "discharge_disposition_id", "admission_source_id"):
         assert isinstance(bundle.real[column].dtype, pd.CategoricalDtype)
+        assert all(isinstance(value, str) for value in bundle.real[column].dropna())
     for column in ("gender", "change", "diabetesMed", "readmitted"):
         assert pd.api.types.is_bool_dtype(bundle.real[column])
     assert bundle.real["gender"].tolist() == [True, False]
@@ -137,6 +138,7 @@ def test_heart_loader_preserves_binary_and_categorical_semantics(monkeypatch):
         assert pd.api.types.is_bool_dtype(bundle.real[column])
     for column in ("cp", "restecg", "slope", "ca", "thal"):
         assert isinstance(bundle.real[column].dtype, pd.CategoricalDtype)
+        assert all(isinstance(value, str) for value in bundle.real[column].dropna())
 
 
 def test_describe_dataset_includes_head_and_summary(bundle):
