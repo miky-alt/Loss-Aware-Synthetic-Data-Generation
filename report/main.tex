@@ -542,6 +542,34 @@ d_i = \min_j \|\tilde{x}^{\text{hard}}_i - x_j\|_2, \qquad
 The hinge is zero when every row keeps its distance, and grows linearly as a
 row gets closer to a real record.
 
+\subsection{The same objective on CTGAN}
+\label{sec:lossaware:ctgan}
+
+Section~\ref{sec:results:ctgan} also tests the three penalties on CTGAN, to
+check whether the effects found on TVAE depend on the base architecture.
+CTGAN \citep{xu2019ctgan} trains a generator $G_\theta$ and a discriminator
+$D_\psi$ with a conditional Wasserstein objective; only the generator side is
+modified. With $\tilde x = \sigma(G_\theta(z, c))$ for a sampled condition
+vector $c$, the stock generator loss is
+\begin{equation}
+\mathcal{L}_G^{\text{stock}} = -\mathbb{E}\big[D_\psi(\tilde x, c)\big] + \text{CE}(\hat c, c),
+\end{equation}
+the critic score plus a cross-entropy term that keeps the generated row
+consistent with the sampled condition. The loss-aware generator objective
+adds the same three terms as Equation~\ref{eq:objective}, applied to the same
+fake batch $\tilde x$ and a real batch drawn under the matching condition:
+\begin{equation}
+\mathcal{L}_G = \mathcal{L}_G^{\text{stock}} + \lmmd\,\Lmmd + \lcorr\,\Lcorr + \lpriv\,\Lpriv .
+\label{eq:objective-ctgan}
+\end{equation}
+$\Lmmd$, $\Lcorr$ and $\Lpriv$ are defined exactly as before; only the base
+term they are added to differs (a WGAN critic score instead of a VAE
+reconstruction and KL term), and the discriminator's own loss and gradient
+penalty are untouched. Because the critic score has an arbitrary scale, the
+same numeric $\lpriv$ does not carry the same relative weight it did on TVAE;
+we come back to this in \S\ref{sec:limitations}. Algorithm~\ref{alg:lossaware-ctgan}
+in Appendix~\ref{app:algorithm} gives the full training loop.
+
 \subsection{Two things that had to be fixed before the privacy term worked}
 \label{sec:fixes}
 
@@ -1430,6 +1458,45 @@ $\lmmd = \lcorr = \lpriv = 0$ the inserted block is skipped entirely.
 
 Sampling is unchanged from TVAE: draw $z \sim \mathcal N(0,I)$, decode, apply
 $\tanh$ and $\arg\max$, and invert the transformer.
+
+\bigskip
+Algorithm~\ref{alg:lossaware-ctgan} is the corresponding loop for
+\texttt{LossAwareCTGAN.fit()} (\S\ref{sec:lossaware:ctgan}). The discriminator
+steps are unchanged from \texttt{ctgan.CTGAN}; the inserted block (lines
+11--16) mirrors Algorithm~\ref{alg:lossaware}'s penalty block applied to the
+generator's own fake batch rather than a fresh prior sample, since CTGAN
+already produces one every step.
+
+\begin{algorithm}[htbp]
+\caption{Loss-aware CTGAN training (generator step only; discriminator steps unchanged from stock CTGAN)}
+\label{alg:lossaware-ctgan}
+\begin{algorithmic}[1]
+\Require training table $D$; discrete columns; weights $\lmmd, \lcorr, \lpriv$; relative margin $\mu$; bandwidth $\gamma$
+\State $T \gets \textsc{DataTransformer}(D)$; \; $X \gets T(D)$; initialise $G_\theta$, $D_\psi$, optimisers
+\State $\tilde d_{\text{real}} \gets \operatorname{median}_i \min_{j \ne i} \|X_i - X_j\|_2$; \; $m \gets \mu \cdot \tilde d_{\text{real}}$
+\For{epoch $= 1 \dots E$}
+  \For{each step}
+    \State \Comment{discriminator steps: unchanged from stock CTGAN, omitted here}
+    \State $c \gets$ sampled condition vector; $z \sim \mathcal N(0,I)$
+    \State $\tilde x_{\text{raw}} \gets G_\theta(z, c)$; \; $\tilde x \gets \sigma(\tilde x_{\text{raw}})$ \Comment{$\tanh$ / softmax, as in Alg.~\ref{alg:lossaware}}
+    \State $\mathcal L_G \gets -D_\psi(\tilde x, c) + \text{CE}(\hat c, c)$ \Comment{stock CTGAN generator loss}
+    \If{$\lmmd > 0$ or $\lcorr > 0$ or $\lpriv > 0$}
+      \State $x \gets$ real batch sampled under condition $c$
+      \If{$\lmmd > 0$ or $\lcorr > 0$}
+        \State $\mathcal L_G \gets \mathcal L_G + \lmmd \cdot \textsc{MMD}^2_\gamma(\tilde x, x) + \lcorr \cdot \|\mathrm{Corr}(\tilde x) - \mathrm{Corr}(x)\|_F$
+      \EndIf
+      \If{$\lpriv > 0$}
+        \State $\tilde x^{\text{hard}} \gets \sigma_{\text{hard}}(\tilde x_{\text{raw}})$; \; $d_i \gets \min_j \|\tilde x^{\text{hard}}_i - x_j\|_2$
+        \State $\mathcal L_G \gets \mathcal L_G + \lpriv \cdot \frac1B \sum_i \max(0, m - d_i)$
+      \EndIf
+    \EndIf
+    \If{$\mathcal L_G$ is not finite} \textbf{skip step} \EndIf
+    \State backpropagate $\mathcal L_G$; generator optimiser step
+    \State log $(\mathcal L_G, \mathcal L_D, \Lmmd, \Lcorr, \Lpriv, \bar d)$
+  \EndFor
+\EndFor
+\end{algorithmic}
+\end{algorithm}
 
 % -----------------------------------------------------------------------------
 \section{Full per-feature EMD tables}
