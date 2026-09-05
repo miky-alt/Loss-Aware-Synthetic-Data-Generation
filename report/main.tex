@@ -615,9 +615,12 @@ Four configurations recur: \emph{baseline} (all $\lambda = 0$),
 \label{sec:results:baselines}
 
 Before the loss-aware experiments, we ran three generator families through the
-evaluation pipeline without modifications: CTGAN and TVAE from the
-\texttt{sdv} library, and a Gaussian copula, which is a purely statistical
-model without a neural network that fits marginals and a correlation matrix.
+evaluation pipeline without modifications: CTGAN and TVAE via the
+\texttt{sdv} library's \texttt{CTGANSynthesizer} and \texttt{TVAESynthesizer}
+(which wrap the same \texttt{ctgan} package models used directly in
+\S\ref{sec:lossaware}, with \texttt{sdv}'s metadata-driven preprocessing on
+top), and a Gaussian copula, which is a purely statistical model without a
+neural network that fits marginals and a correlation matrix.
 
 \begin{table}[htbp]
 \caption{Baseline generators, library defaults, 3 seeds. $^\dagger$CTGAN on
